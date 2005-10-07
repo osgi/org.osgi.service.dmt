@@ -88,14 +88,14 @@ public class FatalExceptionDataPlugin implements DataPluginFactory, Transactiona
 
 	public void createInteriorNode(String[] nodeUri, String type)
 			throws DmtException {
-		throw new DmtException(nodeUri,DmtException.COMMAND_NOT_ALLOWED,null,null,true);
+
 	}
 
 
 
 	public void createLeafNode(String[] nodeUri, DmtData value, String mimeType)
 			throws DmtException {
-
+		throw new DmtException(nodeUri,DmtException.COMMAND_NOT_ALLOWED,null,null,true);
 	}
 
 	public void copy(String[] nodeUri, String[] newNodeUri, boolean recursive)
@@ -111,7 +111,8 @@ public class FatalExceptionDataPlugin implements DataPluginFactory, Transactiona
 
 	public boolean isNodeUri(String[] nodeUri) {
         String nodeName = tbc.mangleUri(nodeUri);
-        if (nodeName.equals(FatalExceptionDataPluginActivator.INEXISTENT_NODE)) {
+        if (nodeName.equals(FatalExceptionDataPluginActivator.INEXISTENT_NODE) ||
+    		nodeName.equals(FatalExceptionDataPluginActivator.INEXISTENT_LEAF_NODE)) {
 			return false;
 		} else {
 			return true;

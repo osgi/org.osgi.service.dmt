@@ -52,6 +52,8 @@ public class FatalExceptionDataPluginActivator implements BundleActivator {
 	
 	public static final String INEXISTENT_NODE = TEST_EXCEPTION_PLUGIN_ROOT +"/inexistent";
 	
+	public static final String INEXISTENT_LEAF_NODE = TEST_EXCEPTION_PLUGIN_ROOT +"/inex_leaf";
+	
     private DmtTestControl tbc;
     
 	private FatalExceptionDataPlugin fatalExceptionDataPlugin;
