@@ -1,32 +1,11 @@
 # Set javac settings from JDT prefs
--include: ${includes}/jdt.bnd, ${includes}/osgi.tck.junit-platform.bnd, ${includes}/tck.bnd, ${includes}/cmpn.bnd
 
 -conditionalpackage					= org.osgi.test.support.*
 -privatepackage						=  \
 	${p}.*
 
--buildpath = \
-	org.osgi.test.support;version=project 	, \
-    org.osgi.framework;maven-scope=provided;version=1.8, \
-    org.osgi.resource;maven-scope=provided;version=1.0, \
-    org.osgi.service.startlevel;maven-scope=provided;version=1.1,\
-    org.osgi.util.tracker;maven-scope=provided;version=1.5,\
-	org.osgi.service.dmt;version=latest, \
-	org.osgi.service.event;version=1.3, \
-	org.osgi.service.log;version=1.4
 
--runbundles = \
-	org.osgi.service.dmt;version=latest, \
-	org.osgi.impl.service.log;						version=latest, \
-    org.osgi.impl.service.cm;						version=latest, \
-    org.osgi.impl.service.event;					version=latest, \
-	org.osgi.impl.service.dmt;						version=latest, \
-	org.osgi.impl.service.residentialmanagement;	version=latest
 	
--runproperties = ${runsecureproperties}, \
-	org.osgi.framework.system.packages.extra=${p}.syspkg;"version=1.0.0" ,\
-	org.osgi.dmt.residential=./Scaffold/RMT ,\
-	org.osgi.test.cases.rmt.delay=1000
 
 Export-Package = \
 	${p}.util;version=1.0.0
@@ -42,3 +21,17 @@ Export-Package = \
 	${p}.tb8.jar=tb8.jar ,\
 	${p}.tb9.jar=tb9.jar ,\
 	${p}.tbnontrusted.jar=tbnontrusted.jar
+
+p: org.osgi.test.cases.residentialmanagement
+
+# Maven build: workspace includes replaced inline (from cnf/includes and build.bnd in osgi/osgi)
+# -make.maven, not -make: the key is a map entry and would displace
+# a project-level -make (webcontainer also builds .war recipes this
+# way). bnd merges all -make.* entries.
+-make.maven: (*).(jar); type=bnd; recipe="bnd/$1.bnd"
+
+testcases.junit3: ${classes;EXTENDS;junit.framework.TestCase;CONCRETE}
+testcases.junit4: ${classes;HIERARCHY_ANNOTATED;org.junit.Test;CONCRETE}
+testcases.junit5: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
+Test-Cases: ${sort;${uniq;${testcases.junit3};${testcases.junit4};${testcases.junit5}}}
+-plugin.signer: aQute.bnd.signing.JartoolSigner;keystore="../keystore";keypass=testtest;storepass=testtest;digestalg=SHA-256
