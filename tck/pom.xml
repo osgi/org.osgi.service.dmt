@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.osgi</groupId>
+		<artifactId>org.osgi.service.dmt.reactor</artifactId>
+		<version>${revision}</version>
+	</parent>
+	<groupId>org.osgi.tck</groupId>
+	<artifactId>org.osgi.tck.service.dmt</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>org.osgi.test.cases.dmt.tc1</module>
+		<module>org.osgi.test.cases.dmt.tc2</module>
+		<module>org.osgi.test.cases.dmt.tc3</module>
+		<module>org.osgi.test.cases.dmt.tc4</module>
+		<module>org.osgi.test.cases.residentialmanagement</module>
+		<module>org.osgi.impl.service.dmt</module>
+		<module>org.osgi.impl.service.residentialmanagement</module>
+		<module>dmforest</module>
+		<module>org.osgi.test.run.dmt.tc1</module>
+		<module>org.osgi.test.run.dmt.tc2</module>
+		<module>org.osgi.test.run.dmt.tc3</module>
+		<module>org.osgi.test.run.dmt.tc4</module>
+		<module>org.osgi.test.run.residentialmanagement</module>
+	</modules>
+
+</project>
