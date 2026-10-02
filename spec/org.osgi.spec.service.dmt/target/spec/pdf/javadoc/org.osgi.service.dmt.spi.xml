@@ -1,0 +1,1893 @@
+<section xmlns="http://docbook.org/ns/docbook"
+         xreflabel="org.osgi.service.dmt.spi"
+         version="5"
+         role="package"
+         xml:id="org.osgi.service.dmt.spi">
+   <title>org.osgi.service.dmt.spi</title>
+   <info>
+      <releaseinfo xml:id="org.osgi.service.dmt.spi-version">Version 2.0</releaseinfo>
+      <edition xml:id="org.osgi.service.dmt.spi-version.number">2.0</edition>
+   </info>
+   <para>
+Device Management Tree SPI Package Version 2.0.
+ 
+ </para>
+   <para>
+ This package contains the interface classes that compose the Device Management 
+ SPI (Service Provider Interface).  These interfaces are implemented by DMT plugins;
+ users of the {@code DmtAdmin} interface do not interact directly with these.
+ 
+ </para>
+   <para>
+ Bundles wishing to use this package must list the package in the
+ Import-Package header of the bundle's manifest. This package has two types of
+ users: the consumers that use the API in this package and the providers that
+ implement the API in this package.
+ 
+ </para>
+   <para>
+ Example import for consumers using the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.dmt.spi; version="[2.0,3.0)"}
+ </para>
+   <para>
+ Example import for providers implementing the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.dmt.spi; version="[2.0,2.1)"}</para>
+   <section role="summary">
+      <title>Summary</title>
+      <itemizedlist>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.spi.DataPlugin">
+                  <code>DataPlugin</code>
+               </link> - 
+An implementation of this interface takes the responsibility of handling data
+ requests in a subtree of the DMT.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.spi.ExecPlugin">
+                  <code>ExecPlugin</code>
+               </link> - 
+An implementation of this interface takes the responsibility of handling node
+ execute requests in a subtree of the DMT.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.spi.MountPlugin">
+                  <code>MountPlugin</code>
+               </link> - 
+This interface can be optionally implemented by a {@code DataPlugin} or
+ {@code ExecPlugin} in order to get information about its absolute mount
+ points in the overall DMT.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.spi.MountPoint">
+                  <code>MountPoint</code>
+               </link> - 
+This interface can be implemented to represent a single mount point.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.spi.ReadableDataSession">
+                  <code>ReadableDataSession</code>
+               </link> - 
+Provides read-only access to the part of the tree handled by the plugin that
+ created this session.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.spi.ReadWriteDataSession">
+                  <code>ReadWriteDataSession</code>
+               </link> - 
+Provides non-atomic read-write access to the part of the tree handled by the
+ plugin that created this session.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.spi.TransactionalDataSession">
+                  <code>TransactionalDataSession</code>
+               </link> - 
+Provides atomic read-write access to the part of the tree handled by the
+ plugin that created this session.
+   </para>
+         </listitem>
+      </itemizedlist>
+   </section>
+   <section xreflabel="DataPlugin"
+            role="class"
+            xml:id="org.osgi.service.dmt.spi.DataPlugin">
+      <title>public abstract DataPlugin</title>
+      <para>
+An implementation of this interface takes the responsibility of handling data
+ requests in a subtree of the DMT.
+ </para>
+      <para>
+ In an OSGi environment such implementations should be registered at the OSGi
+ service registry specifying the list of root node URIs in a {@code String}
+ array or in case of a single value as {@code String} in the
+ {@code dataRootURIs} registration parameter.
+ </para>
+      <para>
+ When the first reference in a session is made to a node handled by this
+ plugin, the DmtAdmin calls one of the {@code open...} methods to retrieve a
+ plugin session object for processing the request. The called method depends
+ on the lock type of the current session. In case of
+ {@link #openReadWriteSession(String[], DmtSession)} and
+ {@link #openAtomicSession(String[], DmtSession)}, the plugin may return
+ {@code null} to indicate that the specified lock type is not supported. In
+ this case the DmtAdmin may call
+ {@link #openReadOnlySession(String[], DmtSession)} to start a read-only
+ plugin session, which can be used as long as there are no write operations on
+ the nodes handled by this plugin.
+ </para>
+      <para>
+ The {@code sessionRoot} parameter of each method is a String array containing
+ the segments of the URI pointing to the root of the session. This is an
+ absolute path, so the first segment is always ".". Special
+ characters appear escaped in the segments.
+ </para>
+      <para/>
+      <section xreflabel="DATA_ROOT_URIS"
+               role="field"
+               xml:id="org.osgi.service.dmt.spi.DataPlugin.DATA_ROOT_URIS">
+         <title>public static final String DATA_ROOT_URIS = "dataRootURIs"</title>
+         <para>
+The string to be used as key for the "dataRootURIs" property when an
+ DataPlugin is registered.
+   </para>
+         <formalpara role="parameter">
+            <title>Since</title>
+            <para>@since 2.0</para>
+         </formalpara>
+      </section>
+      <section xreflabel="MOUNT_POINTS"
+               role="field"
+               xml:id="org.osgi.service.dmt.spi.DataPlugin.MOUNT_POINTS">
+         <title>public static final String MOUNT_POINTS = "mountPoints"</title>
+         <para>
+The string to be used as key for the mount points property when a
+ DataPlugin is registered with mount points.
+   </para>
+      </section>
+      <section xreflabel="openAtomicSession(String[],DmtSession)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.DataPlugin.openAtomicSession-String---DmtSession-">
+         <title>public abstract TransactionalDataSession openAtomicSession(String[][] sessionRoot, DmtSession session) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>sessionRoot</title>
+            <para>the path to the subtree which is locked in the current
+        session, must not be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>session</title>
+            <para>the session from which this plugin instance is accessed,
+        must not be {@code null}</para>
+         </formalpara>
+         <para role="description">
+This method is called to signal the start of an atomic read-write session
+ when the first reference is made within a {@code DmtSession} to a node
+ which is handled by this plugin. Session information is given as it is
+ needed for sending alerts back from the plugin.
+ </para>
+         <para>
+ The plugin can assume that there are no other sessions open on any
+ subtree that has any overlap with the subtree of this session.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>a plugin session capable of executing read-write operations in an
+         atomic block, or {@code null} if the plugin does not support
+         atomic read-write sessions</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code sessionRoot} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some
+         unspecified error is encountered while attempting to complete the
+         command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if some underlying operation failed because of
+         lack of permissions</para>
+         </formalpara>
+      </section>
+      <section xreflabel="openReadOnlySession(String[],DmtSession)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.DataPlugin.openReadOnlySession-String---DmtSession-">
+         <title>public abstract ReadableDataSession openReadOnlySession(String[][] sessionRoot, DmtSession session) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>sessionRoot</title>
+            <para>the path to the subtree which is accessed in the
+        current session, must not be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>session</title>
+            <para>the session from which this plugin instance is accessed,
+        must not be {@code null}</para>
+         </formalpara>
+         <para role="description">
+This method is called to signal the start of a read-only session when the
+ first reference is made within a {@code DmtSession} to a node which is
+ handled by this plugin. Session information is given as it is needed for
+ sending alerts back from the plugin.
+ </para>
+         <para>
+ The plugin can assume that there are no writing sessions open on any
+ subtree that has any overlap with the subtree of this session.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>a plugin session capable of executing read operations</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code sessionRoot} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some
+         unspecified error is encountered while attempting to complete the
+         command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if some underlying operation failed because of
+         lack of permissions</para>
+         </formalpara>
+      </section>
+      <section xreflabel="openReadWriteSession(String[],DmtSession)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.DataPlugin.openReadWriteSession-String---DmtSession-">
+         <title>public abstract ReadWriteDataSession openReadWriteSession(String[][] sessionRoot, DmtSession session) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>sessionRoot</title>
+            <para>the path to the subtree which is locked in the current
+        session, must not be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>session</title>
+            <para>the session from which this plugin instance is accessed,
+        must not be {@code null}</para>
+         </formalpara>
+         <para role="description">
+This method is called to signal the start of a non-atomic read-write
+ session when the first reference is made within a {@code DmtSession} to a
+ node which is handled by this plugin. Session information is given as it
+ is needed for sending alerts back from the plugin.
+ </para>
+         <para>
+ The plugin can assume that there are no other sessions open on any
+ subtree that has any overlap with the subtree of this session.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>a plugin session capable of executing read-write operations, or
+         {@code null} if the plugin does not support non-atomic read-write
+         sessions</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code sessionRoot} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some
+         unspecified error is encountered while attempting to complete the
+         command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if some underlying operation failed because of
+         lack of permissions</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="ExecPlugin"
+            role="class"
+            xml:id="org.osgi.service.dmt.spi.ExecPlugin">
+      <title>public abstract ExecPlugin</title>
+      <para>
+An implementation of this interface takes the responsibility of handling node
+ execute requests in a subtree of the DMT.
+ </para>
+      <para>
+ In an OSGi environment such implementations should be registered at the OSGi
+ service registry specifying the list of root node URIs in a {@code String}
+ array or in case of a single value as {@code String} in the
+ {@code execRootURIs} registration parameter.</para>
+      <section xreflabel="EXEC_ROOT_URIS"
+               role="field"
+               xml:id="org.osgi.service.dmt.spi.ExecPlugin.EXEC_ROOT_URIS">
+         <title>public static final String EXEC_ROOT_URIS = "execRootURIs"</title>
+         <para>
+The string to be used as key for the "execRootURIs" property when an
+ ExecPlugin is registered.
+   </para>
+         <formalpara role="parameter">
+            <title>Since</title>
+            <para>@since 2.0</para>
+         </formalpara>
+      </section>
+      <section xreflabel="MOUNT_POINTS"
+               role="field"
+               xml:id="org.osgi.service.dmt.spi.ExecPlugin.MOUNT_POINTS">
+         <title>public static final String MOUNT_POINTS = "mountPoints"</title>
+         <para>
+The string to be used as key for the mount points property when an Exec
+ Plugin is registered with mount points.
+   </para>
+      </section>
+      <section xreflabel="execute(DmtSession,String[],String,String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ExecPlugin.execute-DmtSession-String---String-String-">
+         <title>public abstract void execute(DmtSession session, String[][] nodePath, String correlator, String data) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>session</title>
+            <para>a reference to the session in which the operation was
+        issued, must not be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node to be executed, must not be
+        {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>correlator</title>
+            <para>an identifier to associate this operation with any
+        alerts sent in response to it, can be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>data</title>
+            <para>the parameter of the execute operation, can be {@code null}</para>
+         </formalpara>
+         <para role="description">
+Execute the given node with the given data. This operation corresponds to
+ the EXEC command in OMA DM.
+ </para>
+         <para>
+ The semantics of an execute operation and the data parameter it takes
+ depends on the definition of the managed object on which the command is
+ issued. Session information is given as it is needed for sending alerts
+ back from the plugin. If a correlation ID is specified, it should be used
+ as the {@code correlator} parameter for alerts sent in response to this
+ execute operation.
+ </para>
+         <para>
+ The {@code nodePath} parameter contains an array of path segments
+ identifying the node to be executed in the subtree of this plugin. This
+ is an absolute path, so the first segment is always ".".
+ Special characters appear escaped in the segments.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if the node does not exist</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code  METADATA_MISMATCH} if the command failed because of
+         meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an
+         error occurred while accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code  COMMAND_FAILED} if some unspecified error is encountered
+         while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.execute(String, String)</link>, <link linkend="UNRESOLVED">DmtSession.execute(String, String, String)</link>
+            </para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="MountPlugin"
+            role="class"
+            xml:id="org.osgi.service.dmt.spi.MountPlugin">
+      <title>public abstract MountPlugin</title>
+      <para>
+This interface can be optionally implemented by a {@code DataPlugin} or
+ {@code ExecPlugin} in order to get information about its absolute mount
+ points in the overall DMT.
+ </para>
+      <para>
+ This is especially interesting, if the plugin is mapped to the tree as part
+ of a list. In such a case the id for this particular data plugin is
+ determined by the DmtAdmin after the registration of the plugin and therefore
+ unknown to the plugin in advance.
+ </para>
+      <para>
+ This is not a service interface, the Data or Exec Plugin does not also have
+ to register this interface as a service, the Dmt Admin should use an
+ {@code instanceof} to detect that a Plugin is also a Mount Plugin.</para>
+      <formalpara role="parameter">
+         <title>Since</title>
+         <para>@since 2.0</para>
+      </formalpara>
+      <section xreflabel="mountPointAdded(MountPoint)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.MountPlugin.mountPointAdded-MountPoint-">
+         <title>public abstract void mountPointAdded(MountPoint mountPoint)</title>
+         <formalpara role="parameter">
+            <title>mountPoint</title>
+            <para>the newly mapped mount point</para>
+         </formalpara>
+         <para role="description">
+Provides the {@code MountPoint} describing the path where the plugin is
+ mapped in the overall DMT. The given mountPoint is withdrawn with the
+ {@link #mountPointRemoved(MountPoint)} method. Corresponding mount points
+ must compare equal and have an appropriate hash code.
+   </para>
+      </section>
+      <section xreflabel="mountPointRemoved(MountPoint)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.MountPlugin.mountPointRemoved-MountPoint-">
+         <title>public abstract void mountPointRemoved(MountPoint mountPoint)</title>
+         <formalpara role="parameter">
+            <title>mountPoint</title>
+            <para>The unmapped mount point array of {@code MountPoint}
+        objects that have been removed from the mapping</para>
+         </formalpara>
+         <para role="description">
+Informs the plugin that the provided {@code MountPoint} objects have been
+ removed from the mapping. The given mountPoint is withdrawn method. Mount
+ points must compare equal and have an appropriate hash code with the
+ given Mount Point in {@link #mountPointAdded(MountPoint)}.
+ </para>
+         <para>
+ NOTE: attempts to invoke the {@code postEvent} method on the provided
+ {@code MountPoint} must be ignored.</para>
+      </section>
+   </section>
+   <section xreflabel="MountPoint"
+            role="class"
+            xml:id="org.osgi.service.dmt.spi.MountPoint">
+      <title>public abstract MountPoint</title>
+      <para>
+This interface can be implemented to represent a single mount point.
+ </para>
+      <para>
+ It provides function to get the absolute mounted uri and a shortcut method to
+ post events via the DmtAdmin.</para>
+      <formalpara role="parameter">
+         <title>Since</title>
+         <para>@since 2.0</para>
+      </formalpara>
+      <section xreflabel="equals(Object)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.MountPoint.equals-Object-">
+         <title>public abstract boolean equals(Object other)</title>
+         <para role="description">
+This object must provide a suitable hash function such that a Mount Point
+ given in {@link MountPlugin#mountPointAdded(MountPoint)} is equal to the
+ corresponding Mount Point in
+ {@link MountPlugin#mountPointRemoved(MountPoint)}.
+ 
+ {@link Object#equals(Object)}
+   </para>
+      </section>
+      <section xreflabel="getMountPath()"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.MountPoint.getMountPath--">
+         <title>public abstract String[][] getMountPath()</title>
+         <para role="description">
+Provides the absolute mount path of this {@code MountPoint}
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the absolute mount path of this {@code MountPoint}</para>
+         </formalpara>
+      </section>
+      <section xreflabel="hashCode()"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.MountPoint.hashCode--">
+         <title>public abstract int hashCode()</title>
+         <para role="description">
+This object must provide a suitable hash function such that a Mount Point
+ given in {@link MountPlugin#mountPointAdded(MountPoint)} has the same
+ hashCode as the corresponding Mount Point in
+ {@link MountPlugin#mountPointRemoved(MountPoint)}.
+ 
+ {@link Object#hashCode()}
+   </para>
+      </section>
+      <section xreflabel="postEvent(String,String[],Dictionary)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.MountPoint.postEvent-String-String---Dictionary-">
+         <title>public abstract void postEvent(String topic, String[][] relativeURIs, Dictionary&lt;String, ?&gt; properties)</title>
+         <formalpara role="parameter">
+            <title>topic</title>
+            <para>the topic of the event to send. Valid values are:
+        <itemizedlist>
+                  <listitem>
+                     <para>{@code org/osgi/service/dmt/DmtEvent/ADDED} if the change was
+        caused by an add action</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+        {@code org/osgi/service/dmt/DmtEvent/DELETED} if the change was
+        caused by a delete action</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+        {@code org/osgi/service/dmt/DmtEvent/REPLACED} if the change was
+        caused by a replace action</para>
+                  </listitem>
+               </itemizedlist>
+        Must not be {@code null}.</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>relativeURIs</title>
+            <para>an array of affected node {@code URI}'s. All
+        {@code URI}'s specified here are relative to the current
+        {@code MountPoint}'s mountPath. The value of this parameter
+        determines the value of the event property
+        {@code EVENT_PROPERTY_NODES}. An empty array or {@code null} is
+        permitted. In both cases the value of the events
+        {@code EVENT_PROPERTY_NODES} property will be set to an empty
+        array.</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>properties</title>
+            <para>an optional parameter that can be provided to add
+        properties to the Event that is going to be send by the DMTAdmin.
+        If the properties contain a key {@code EVENT_PROPERTY_NODES}, then
+        the value of this property is ignored and will be overwritten by
+        {@code relativeURIs}.</para>
+         </formalpara>
+         <para role="description">
+Posts an event via the DmtAdmin about changes in the current plugins
+ subtree.
+ </para>
+         <para>
+ This method distributes Events asynchronously to the EventAdmin as well
+ as to matching local DmtEventListeners.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>IllegalArgumentException</code>– if the topic has not one of the defined
+         values</para>
+         </formalpara>
+      </section>
+      <section xreflabel="postEvent(String,String[],String[],Dictionary)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.MountPoint.postEvent-String-String---String---Dictionary-">
+         <title>public abstract void postEvent(String topic, String[][] relativeURIs, String[][] newRelativeURIs, Dictionary&lt;String, ?&gt; properties)</title>
+         <formalpara role="parameter">
+            <title>topic</title>
+            <para>the topic of the event to send. Valid values are:
+        <itemizedlist>
+                  <listitem>
+                     <para>{@code org/osgi/service/dmt/DmtEvent/RENAMED} if the change
+        was caused by a rename action</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+        {@code org/osgi/service/dmt/DmtEvent/COPIED} if the change was
+        caused by a copy action</para>
+                  </listitem>
+               </itemizedlist>
+        Must not be {@code null}.</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>relativeURIs</title>
+            <para>an array of affected node {@code URI}'s.
+        </para>
+         </formalpara>
+         <para>
+        All {@code URI}'s specified here are relative to the current
+        {@code MountPoint}'s mountPath. The value of this parameter
+        determines the value of the event property
+        {@code EVENT_PROPERTY_NODES}. An empty array or {@code null} is
+        permitted. In both cases the value of the events
+        {@code EVENT_PROPERTY_NODES} property will be set to an empty
+        array.</para>
+         <formalpara role="parameter">
+            <title>newRelativeURIs</title>
+            <para>an array of affected node {@code URI}'s. The value
+        of this parameter determines the value of the event property
+        {@code EVENT_PROPERTY_NEW_NODES}. An empty array or {@code null}
+        is permitted. In both cases the value of the events
+        {@code EVENT_PROPERTY_NEW_NODES} property will be set to an empty
+        array.</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>properties</title>
+            <para>an optional parameter that can be provided to add
+        properties to the Event that is going to be send by the DMTAdmin.
+        If the properties contain the keys {@code EVENT_PROPERTY_NODES} or
+        {@code EVENT_PROPERTY_NEW_NODES}, then the values of these
+        properties are ignored and will be overwritten by
+        {@code relativeURIs} and {@code newRelativeURIs}.</para>
+         </formalpara>
+         <para role="description">
+Posts an event via the DmtAdmin about changes in the current plugins
+ subtree.
+ </para>
+         <para>
+ This method distributes Events asynchronously to the EventAdmin as well
+ as to matching local DmtEventListeners.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>IllegalArgumentException</code>– if the topic has not one of the defined
+         values</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="ReadableDataSession"
+            role="class"
+            xml:id="org.osgi.service.dmt.spi.ReadableDataSession">
+      <title>public abstract ReadableDataSession</title>
+      <para>
+Provides read-only access to the part of the tree handled by the plugin that
+ created this session.
+ </para>
+      <para>
+ Since the {@link ReadWriteDataSession} and {@link TransactionalDataSession}
+ interfaces inherit from this interface, some of the method descriptions do
+ not apply for an instance that is only a {@code ReadableDataSession}. For
+ example, the {@link #close()} method description also contains information
+ about its behavior when invoked as part of a transactional session.
+ </para>
+      <para>
+ The {@code nodePath} parameters appearing in this interface always contain an
+ array of path segments identifying a node in the subtree of this plugin. This
+ parameter contains an absolute path, so the first segment is always
+ ".". Special characters appear escaped in the segments.
+ </para>
+      <para>
+         <emphasis role="strong">Error handling</emphasis>
+      </para>
+      <para>
+ When a tree access command is called on the DmtAdmin service, it must perform
+ an extensive set of checks on the parameters and the authority of the caller
+ before delegating the call to a plugin. Therefore plugins can take certain
+ circumstances for granted: that the path is valid and is within the subtree
+ of the plugin and the session, the command can be applied to the given node
+ (e.g. the target of {@code getChildNodeNames} is an interior node), etc. All
+ errors described by the error codes {@link DmtException#INVALID_URI},
+ {@link DmtException#URI_TOO_LONG}, {@link DmtException#PERMISSION_DENIED},
+ {@link DmtException#COMMAND_NOT_ALLOWED} and
+ {@link DmtException#TRANSACTION_ERROR} are fully filtered out before control
+ reaches the plugin.
+ </para>
+      <para>
+ If the plugin provides meta-data for a node, the DmtAdmin service must also
+ check the constraints specified by it, as described in {@link MetaNode}. If
+ the plugin does not provide meta-data, it must perform the necessary checks
+ for itself and use the {@link DmtException#METADATA_MISMATCH} error code to
+ indicate such discrepancies.
+ </para>
+      <para>
+ The DmtAdmin does not check that the targeted node exists before calling the
+ plugin. It is the responsibility of the plugin to perform this check and to
+ throw a {@link DmtException#NODE_NOT_FOUND} if needed. In this case the
+ DmtAdmin must pass through this exception to the caller of the corresponding
+ DmtSession method.
+ </para>
+      <para>
+ The plugin can use the remaining error codes as needed. If an error does not
+ fit into any other category, the {@link DmtException#COMMAND_FAILED} code
+ should be used.</para>
+      <section xreflabel="close()"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.close--">
+         <title>public abstract void close() throws DmtException</title>
+         <para role="description">
+Closes a session. This method is always called when the session ends for
+ any reason: if the session is closed, if a fatal error occurs in any
+ method, or if any error occurs during commit or rollback. In case the
+ session was invalidated due to an exception during commit or rollback, it
+ is guaranteed that no methods are called on the plugin until it is
+ closed. In case the session was invalidated due to a fatal exception in
+ one of the tree manipulation methods, only the rollback method is called
+ before this (and only in atomic sessions).
+ </para>
+         <para>
+ This method should not perform any data manipulation, only cleanup
+ operations. In non-atomic read-write sessions the data manipulation
+ should be done instantly during each tree operation, while in atomic
+ sessions the {@code DmtAdmin} always calls
+ {@link TransactionalDataSession#commit()} automatically before the
+ session is actually closed.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the error code {@code COMMAND_FAILED} if the
+         plugin failed to close for any reason</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getChildNodeNames(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getChildNodeNames-String---">
+         <title>public abstract String[][] getChildNodeNames(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <para role="description">
+Get the list of children names of a node. The returned array contains the
+ names - not the URIs - of the immediate children nodes of the given node.
+ The returned array may contain {@code null} entries, but these are
+ removed by the DmtAdmin before returning it to the client.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the list of child node names as a string array or an empty string
+         array if the node has no children</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getMetaNode(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getMetaNode-String---">
+         <title>public abstract MetaNode getMetaNode(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <para role="description">
+Get the meta data which describes a given node. Meta data can be only
+ inspected, it can not be changed.
+ </para>
+         <para>
+ Meta data support by plugins is an optional feature. It can be used, for
+ example, when a data plugin is implemented on top of a data store or
+ another API that has their own metadata, such as a relational database,
+ in order to avoid metadata duplication and inconsistency. The meta data
+ specific to the plugin returned by this method is complemented by meta
+ data from the DmtAdmin before returning it to the client. If there are
+ differences in the meta data elements known by the plugin and the
+ {@code DmtAdmin} then the plugin specific elements take precedence.
+ </para>
+         <para>
+ Note, that a node does not have to exist for having meta-data associated
+ with it. This method may provide meta-data for any node that can possibly
+ exist in the tree (any node defined by the Management Object provided by
+ the plugin). For nodes that are not defined, a {@code DmtException} may
+ be thrown with the {@code NODE_NOT_FOUND} error code. To allow easier
+ implementation of plugins that do not provide meta-data, it is allowed to
+ return {@code null} for any node, regardless of whether it is defined or
+ not.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>a MetaNode which describes meta data information, can be
+         {@code null} if there is no meta data available for the given
+         node</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodeUri} points to a node
+         that is not defined in the tree (see above)</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code DATA_STORE_FAILURE} if an error occurred while accessing
+         the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified
+         error is encountered while attempting to complete the command
+         </para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getNodeSize(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getNodeSize-String---">
+         <title>public abstract int getNodeSize(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the leaf node</para>
+         </formalpara>
+         <para role="description">
+Get the size of the data in a leaf node. The value to return depends on
+ the format of the data in the node, see the description of the
+ {@link DmtData#getSize()} method for the definition of node size for each
+ format.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the size of the data in the node</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code FEATURE_NOT_SUPPORTED} if the Size property is not
+         supported by the plugin</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtData.getSize()</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="getNodeTimestamp(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getNodeTimestamp-String---">
+         <title>public abstract Date getNodeTimestamp(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <para role="description">
+Get the timestamp when the node was last modified.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the timestamp of the last modification</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code FEATURE_NOT_SUPPORTED} if the Timestamp property is
+         not supported by the plugin</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getNodeTitle(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getNodeTitle-String---">
+         <title>public abstract String getNodeTitle(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <para role="description">
+Get the title of a node. There might be no title property set for a node.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the title of the node, or {@code null} if the node has no title</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code FEATURE_NOT_SUPPORTED} if the Title property is not
+         supported by the plugin</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getNodeType(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getNodeType-String---">
+         <title>public abstract String getNodeType(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <para role="description">
+Get the type of a node. The type of leaf node is the MIME type of the
+ data it contains. The type of an interior node is a URI identifying a DDF
+ document; a {@code null} type means that there is no DDF document
+ overriding the tree structure defined by the ancestors.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the type of the node, can be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getNodeValue(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getNodeValue-String---">
+         <title>public abstract DmtData getNodeValue(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node to retrieve</para>
+         </formalpara>
+         <para role="description">
+Get the data contained in a leaf or interior node.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the data of the leaf node, must not be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code FEATURE_NOT_SUPPORTED} if the specified node is an
+         interior node and does not support Java object values</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getNodeVersion(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.getNodeVersion-String---">
+         <title>public abstract int getNodeVersion(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <para role="description">
+Get the version of a node. The version can not be set, it is calculated
+ automatically by the device. It is incremented modulo 0x10000 at every
+ modification of the value or any other property of the node, for both
+ leaf and interior nodes. When a node is created the initial value is 0.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the version of the node</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code FEATURE_NOT_SUPPORTED} if the Version property is not
+         supported by the plugin</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="isLeafNode(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.isLeafNode-String---">
+         <title>public abstract boolean isLeafNode(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <para role="description">
+Tells whether a node is a leaf or an interior node of the DMT.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>true if the given node is a leaf node</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the information could not be
+         retrieved because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="isNodeUri(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.isNodeUri-String---">
+         <title>public abstract boolean isNodeUri(String[][] nodePath)</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path to check</para>
+         </formalpara>
+         <para role="description">
+Check whether the specified path corresponds to a valid node in the DMT.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>true if the given node exists in the DMT</para>
+         </formalpara>
+      </section>
+      <section xreflabel="nodeChanged(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadableDataSession.nodeChanged-String---">
+         <title>public abstract void nodeChanged(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node that has changed</para>
+         </formalpara>
+         <para role="description">
+Notifies the plugin that the given node has changed outside the scope of
+ the plugin, therefore the Version and Timestamp properties must be
+ updated (if supported). This method is needed because the ACL property of
+ a node is managed by the DmtAdmin instead of the plugin. The DmtAdmin
+ must call this method whenever the ACL property of a node changes.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="ReadWriteDataSession"
+            role="class"
+            xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession">
+      <title>public abstract ReadWriteDataSession<?line-break?> extends ReadableDataSession</title>
+      <para>
+Provides non-atomic read-write access to the part of the tree handled by the
+ plugin that created this session.
+ </para>
+      <para>
+ The {@code nodePath} parameters appearing in this interface always contain an
+ array of path segments identifying a node in the subtree of this plugin. This
+ parameter contains an absolute path, so the first segment is always
+ ".". Special characters appear escaped in the segments.
+ </para>
+      <para>
+         <emphasis role="strong">Error handling</emphasis>
+      </para>
+      <para>
+ When a tree manipulation command is called on the DmtAdmin service, it must
+ perform an extensive set of checks on the parameters and the authority of the
+ caller before delegating the call to a plugin. Therefore plugins can take
+ certain circumstances for granted: that the path is valid and is within the
+ subtree of the plugin and the session, the command can be applied to the
+ given node (e.g. the target of {@code setNodeValue} is a leaf node), etc. All
+ errors described by the error codes {@link DmtException#INVALID_URI},
+ {@link DmtException#URI_TOO_LONG}, {@link DmtException#PERMISSION_DENIED},
+ {@link DmtException#COMMAND_NOT_ALLOWED} and
+ {@link DmtException#TRANSACTION_ERROR} are fully filtered out before control
+ reaches the plugin.
+ </para>
+      <para>
+ If the plugin provides meta-data for a node, the DmtAdmin service must also
+ check the constraints specified by it, as described in {@link MetaNode}. If
+ the plugin does not provide meta-data, it must perform the necessary checks
+ for itself and use the {@link DmtException#METADATA_MISMATCH} error code to
+ indicate such discrepancies.
+ </para>
+      <para>
+ The DmtAdmin does not check that the targeted node exists (or that it does
+ not exist, in case of a node creation) before calling the plugin. It is the
+ responsibility of the plugin to perform this check and to throw a
+ {@link DmtException#NODE_NOT_FOUND} or
+ {@link DmtException#NODE_ALREADY_EXISTS} if needed. In this case the DmtAdmin
+ must pass through this exception to the caller of the corresponding
+ DmtSession method.
+ </para>
+      <para>
+ The plugin can use the remaining error codes as needed. If an error does not
+ fit into any other category, the {@link DmtException#COMMAND_FAILED} code
+ should be used.</para>
+      <section xreflabel="copy(String[],String[],boolean)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.copy-String---String---boolean-">
+         <title>public abstract void copy(String[][] nodePath, String[][] newNodePath, boolean recursive) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>an absolute path specifying the node or the root of a
+        subtree to be copied</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>newNodePath</title>
+            <para>the absolute path of the new node or root of a subtree</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>recursive</title>
+            <para>{@code false} if only a single node is copied,
+        {@code true} if the whole subtree is copied</para>
+         </formalpara>
+         <para role="description">
+Create a copy of a node or a whole subtree. Beside the structure and
+ values of the nodes, most properties managed by the plugin must also be
+ copied, with the exception of the Timestamp and Version properties.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node, or if {@code newNodePath} points to a node
+         that cannot exist in the tree</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code NODE_ALREADY_EXISTS} if {@code newNodePath} points to
+         a node that already exists</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the node could not be copied
+         because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code FEATURE_NOT_SUPPORTED} if the copy operation is not
+         supported by the plugin</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.copy(String, String, boolean)</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="createInteriorNode(String[],String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.createInteriorNode-String---String-">
+         <title>public abstract void createInteriorNode(String[][] nodePath, String type) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node to create</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>type</title>
+            <para>the type URI of the interior node, can be {@code null} if no
+        node type is defined</para>
+         </formalpara>
+         <para role="description">
+Create an interior node with a given type. The type of interior node, if
+ specified, is a URI identifying a DDF document.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a node
+         that cannot exist in the tree</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code NODE_ALREADY_EXISTS} if {@code nodeUri} points to a
+         node that already exists</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the node could not be created
+         because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.createInteriorNode(String)</link>, <link linkend="UNRESOLVED">DmtSession.createInteriorNode(String, String)</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="createLeafNode(String[],DmtData,String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.createLeafNode-String---DmtData-String-">
+         <title>public abstract void createLeafNode(String[][] nodePath, DmtData value, String mimeType) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node to create</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>value</title>
+            <para>the value to be given to the new node, can be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>mimeType</title>
+            <para>the MIME type to be given to the new node, can be
+        {@code null}</para>
+         </formalpara>
+         <para role="description">
+Create a leaf node with a given value and MIME type. If the specified
+ value or MIME type is {@code null}, their default values must be taken.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a node
+         that cannot exist in the tree</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code NODE_ALREADY_EXISTS} if {@code nodePath} points to a
+         node that already exists</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the node could not be created
+         because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.createLeafNode(String)</link>, <link linkend="UNRESOLVED">DmtSession.createLeafNode(String, DmtData)</link>, <link linkend="UNRESOLVED">DmtSession.createLeafNode(String, DmtData, String)</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="deleteNode(String[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.deleteNode-String---">
+         <title>public abstract void deleteNode(String[][] nodePath) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node to delete</para>
+         </formalpara>
+         <para role="description">
+Delete the given node. Deleting interior nodes is recursive, the whole
+ subtree under the given node is deleted.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the node could not be deleted
+         because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.deleteNode(String)</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="renameNode(String[],String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.renameNode-String---String-">
+         <title>public abstract void renameNode(String[][] nodePath, String newName) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node to rename</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>newName</title>
+            <para>the new name property of the node</para>
+         </formalpara>
+         <para role="description">
+Rename a node. This operation only changes the name of the node (updating
+ the timestamp and version properties if they are supported), the value
+ and the other properties are not changed. The new name of the node must
+ be provided, the new path is constructed from the base of the old path
+ and the given name.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node, or if the new node is not defined in the tree</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code NODE_ALREADY_EXISTS} if there already exists a sibling
+         of {@code nodePath} with the name {@code newName}</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the node could not be renamed
+         because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.renameNode(String, String)</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="setNodeTitle(String[],String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.setNodeTitle-String---String-">
+         <title>public abstract void setNodeTitle(String[][] nodePath, String title) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>title</title>
+            <para>the title text of the node, can be {@code null}</para>
+         </formalpara>
+         <para role="description">
+Set the title property of a node. The length of the title is guaranteed
+ not to exceed the limit of 255 bytes in UTF-8 encoding.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the title could not be set
+         because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code FEATURE_NOT_SUPPORTED} if the Title property is not
+         supported by the plugin</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified error is
+         encountered while attempting to complete the command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.setNodeTitle(String, String)</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="setNodeType(String[],String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.setNodeType-String---String-">
+         <title>public abstract void setNodeType(String[][] nodePath, String type) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>type</title>
+            <para>the type of the node, can be {@code null}</para>
+         </formalpara>
+         <para role="description">
+Set the type of a node. The type of leaf node is the MIME type of the
+ data it contains. The type of an interior node is a URI identifying a DDF
+ document.
+ </para>
+         <para>
+ For interior nodes, the {@code null} type should remove the reference (if
+ any) to a DDF document overriding the tree structure defined by the
+ ancestors. For leaf nodes, it requests that the default MIME type is used
+ for the given node.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the type
+         could not be set because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code DATA_STORE_FAILURE} if an error occurred while accessing
+         the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified
+         error is encountered while attempting to complete the command
+         </para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.setNodeType(String, String)</link>
+            </para>
+         </formalpara>
+      </section>
+      <section xreflabel="setNodeValue(String[],DmtData)"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.ReadWriteDataSession.setNodeValue-String---DmtData-">
+         <title>public abstract void setNodeValue(String[][] nodePath, DmtData data) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>nodePath</title>
+            <para>the absolute path of the node</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>data</title>
+            <para>the data to be set, can be {@code null}</para>
+         </formalpara>
+         <para role="description">
+Set the value of a leaf or interior node. The format of the node is
+ contained in the {@code DmtData} object. For interior nodes, the format
+ is {@code FORMAT_NODE}, while for leaf nodes this format is never used.
+ </para>
+         <para>
+ If the specified value is {@code null}, the default value must be taken;
+ if there is no default value, a {@code DmtException} with error code
+ {@code METADATA_MISMATCH} must be thrown.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code NODE_NOT_FOUND} if {@code nodePath} points to a
+         non-existing node</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the value
+         could not be set because of meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code FEATURE_NOT_SUPPORTED} if the specified node is an
+         interior node and does not support Java object values</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code DATA_STORE_FAILURE} if an error occurred while accessing
+         the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some unspecified
+         error is encountered while attempting to complete the command
+         </para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>See Also</title>
+            <para>
+               <link linkend="UNRESOLVED">DmtSession.setNodeValue(String, DmtData)</link>
+            </para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="TransactionalDataSession"
+            role="class"
+            xml:id="org.osgi.service.dmt.spi.TransactionalDataSession">
+      <title>public abstract TransactionalDataSession<?line-break?> extends ReadWriteDataSession</title>
+      <para>
+Provides atomic read-write access to the part of the tree handled by the
+ plugin that created this session.
+   </para>
+      <section xreflabel="commit()"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.TransactionalDataSession.commit--">
+         <title>public abstract void commit() throws DmtException</title>
+         <para role="description">
+Commits a series of DMT operations issued in the current atomic session
+ since the last transaction boundary. Transaction boundaries are the
+ creation of this object that starts the session, and all subsequent
+ {@link #commit()} and {@link #rollback()} calls.
+ </para>
+         <para>
+ This method can fail even if all operations were successful. This can
+ happen due to some multi-node semantic constraints defined by a specific
+ implementation. For example, node A can be required to always have
+ children A/B, A/C and A/D. If this condition is broken when
+ {@code commit()} is executed, the method will fail, and throw a
+ {@code METADATA_MISMATCH} exception.
+ </para>
+         <para>
+ In many cases the tree is not the only way to manage a given part of the
+ system. It may happen that while modifying some nodes in an atomic
+ session, the underlying settings are modified in parallel outside the
+ scope of the DMT. If this is detected during commit, an exception with
+ the code {@code CONCURRENT_ACCESS} is thrown.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code METADATA_MISMATCH} if the operation failed because of
+         meta-data restrictions</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code CONCURRENT_ACCESS} if it is
+         detected that some modification has been made outside the scope
+         of the DMT to the nodes affected in the session's operations</para>
+                  </listitem>
+                  <listitem>
+                     <para> {@code DATA_STORE_FAILURE} if an error occurred while
+         accessing the data store</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code COMMAND_FAILED} if some
+         unspecified error is encountered while attempting to complete the
+         command</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+      <section xreflabel="rollback()"
+               role="method"
+               xml:id="org.osgi.service.dmt.spi.TransactionalDataSession.rollback--">
+         <title>public abstract void rollback() throws DmtException</title>
+         <para role="description">
+Rolls back a series of DMT operations issued in the current atomic
+ session since the last transaction boundary. Transaction boundaries are
+ the creation of this object that starts the session, and all subsequent
+ {@link #commit} and {@link #rollback} calls.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the error code {@code ROLLBACK_FAILED} in case
+         the rollback did not succeed</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the necessary
+         permissions to execute the underlying management operation</para>
+         </formalpara>
+      </section>
+   </section>
+</section>

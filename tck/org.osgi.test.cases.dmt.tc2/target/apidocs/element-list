@@ -1,0 +1,13 @@
+org.osgi.test.cases.dmt.tc2.tb1
+org.osgi.test.cases.dmt.tc2.tb1.DmtAdmin
+org.osgi.test.cases.dmt.tc2.tb1.DmtEvent
+org.osgi.test.cases.dmt.tc2.tb1.DmtSession
+org.osgi.test.cases.dmt.tc2.tb1.NotificationService
+org.osgi.test.cases.dmt.tc2.tbc
+org.osgi.test.cases.dmt.tc2.tbc.Activators
+org.osgi.test.cases.dmt.tc2.tbc.Constraints
+org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin
+org.osgi.test.cases.dmt.tc2.tbc.Plugin.LogPlugin
+org.osgi.test.cases.dmt.tc2.tbc.Plugin.NonAtomic
+org.osgi.test.cases.dmt.tc2.tbc.Plugin.ReadOnly
+org.osgi.test.cases.dmt.tc2.tbc.Uri

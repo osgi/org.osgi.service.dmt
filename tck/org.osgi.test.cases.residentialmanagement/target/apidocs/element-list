@@ -1,0 +1,14 @@
+org.osgi.test.cases.residentialmanagement
+org.osgi.test.cases.residentialmanagement.plugins
+org.osgi.test.cases.residentialmanagement.sharedpackage
+org.osgi.test.cases.residentialmanagement.tb1
+org.osgi.test.cases.residentialmanagement.tb2
+org.osgi.test.cases.residentialmanagement.tb3
+org.osgi.test.cases.residentialmanagement.tb4
+org.osgi.test.cases.residentialmanagement.tb5
+org.osgi.test.cases.residentialmanagement.tb6
+org.osgi.test.cases.residentialmanagement.tb7
+org.osgi.test.cases.residentialmanagement.tb8
+org.osgi.test.cases.residentialmanagement.tb9
+org.osgi.test.cases.residentialmanagement.tbnontrusted
+org.osgi.test.cases.residentialmanagement.util
