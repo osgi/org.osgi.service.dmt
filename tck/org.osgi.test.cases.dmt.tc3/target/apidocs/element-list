@@ -1,0 +1,11 @@
+org.osgi.test.cases.dmt.tc3.tbc
+org.osgi.test.cases.dmt.tc3.tbc.ConfigurationPlugin
+org.osgi.test.cases.dmt.tc3.tbc.DataPlugin
+org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession
+org.osgi.test.cases.dmt.tc3.tbc.ExecPlugin
+org.osgi.test.cases.dmt.tc3.tbc.LogPlugin
+org.osgi.test.cases.dmt.tc3.tbc.MetaNode
+org.osgi.test.cases.dmt.tc3.tbc.MetaNode.MetaData
+org.osgi.test.cases.dmt.tc3.tbc.Others
+org.osgi.test.cases.dmt.tc3.tbc.Plugins
+org.osgi.test.cases.dmt.tc3.tbc.TreeStructure

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.osgi.dmt.ddf"},{"l":"org.osgi.dmt.residential"},{"l":"org.osgi.dmt.service.log"}];updateSearchResults();

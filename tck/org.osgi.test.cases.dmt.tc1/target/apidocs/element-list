@@ -1,0 +1,8 @@
+org.osgi.test.cases.dmt.tc1.tbc
+org.osgi.test.cases.dmt.tc1.tbc.Acl
+org.osgi.test.cases.dmt.tc1.tbc.AlertItem
+org.osgi.test.cases.dmt.tc1.tbc.AlertPermission
+org.osgi.test.cases.dmt.tc1.tbc.DmtData
+org.osgi.test.cases.dmt.tc1.tbc.DmtException
+org.osgi.test.cases.dmt.tc1.tbc.DmtPermission
+org.osgi.test.cases.dmt.tc1.tbc.DmtPrincipalPermission

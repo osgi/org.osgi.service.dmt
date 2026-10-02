@@ -1,0 +1,352 @@
+<section xmlns="http://docbook.org/ns/docbook"
+         xreflabel="org.osgi.service.dmt.notification"
+         version="5"
+         role="package"
+         xml:id="org.osgi.service.dmt.notification">
+   <title>org.osgi.service.dmt.notification</title>
+   <info>
+      <releaseinfo xml:id="org.osgi.service.dmt.notification-version">Version 2.0</releaseinfo>
+      <edition xml:id="org.osgi.service.dmt.notification-version.number">2.0</edition>
+   </info>
+   <para>
+Device Management Tree Notification Package Version 2.0.
+ 
+ </para>
+   <para>
+ This package contains the public API of the Notification service. This service
+ enables the sending of asynchronous notifications to management servers.
+ Permission classes are provided by the {@code org.osgi.service.dmt.security} package.
+ 
+ </para>
+   <para>
+ Bundles wishing to use this package must list the package in the
+ Import-Package header of the bundle's manifest. This package has two types of
+ users: the consumers that use the API in this package and the providers that
+ implement the API in this package.
+ 
+ </para>
+   <para>
+ Example import for consumers using the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.dmt.notification; version="[2.0,3.0)"}
+ </para>
+   <para>
+ Example import for providers implementing the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.dmt.notification; version="[2.0,2.1)"}</para>
+   <section role="summary">
+      <title>Summary</title>
+      <itemizedlist>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.notification.AlertItem">
+                  <code>AlertItem</code>
+               </link> - 
+Immutable data structure carried in an alert (client initiated notification).
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.notification.NotificationService">
+                  <code>NotificationService</code>
+               </link> - 
+NotificationService enables sending asynchronous notifications to a
+ management server.
+   </para>
+         </listitem>
+      </itemizedlist>
+   </section>
+   <section xreflabel="AlertItem"
+            role="class"
+            xml:id="org.osgi.service.dmt.notification.AlertItem">
+      <title>public class AlertItem</title>
+      <para>
+Immutable data structure carried in an alert (client initiated notification).
+ The {@code AlertItem} describes details of various notifications that can be
+ sent by the client, for example as alerts in the OMA DM protocol. The use
+ cases include the client sending a session request to the server (alert
+ 1201), the client notifying the server of completion of a software update
+ operation (alert 1226) or sending back results in response to an asynchronous
+ EXEC command.
+ </para>
+      <para>
+ The data syntax and semantics varies widely between various alerts, so does
+ the optionality of particular parameters of an alert item. If an item, such
+ as source or type, is not defined, the corresponding getter method returns
+ {@code null}. For example, for alert 1201 (client-initiated session) all
+ elements will be {@code null}.
+ </para>
+      <para>
+ The syntax used in {@code AlertItem} class corresponds to the OMA DM alert
+ format. {@link NotificationService} implementations on other management
+ protocols should map these constructs to the underlying protocol.</para>
+      <section xreflabel="AlertItem(String,String,String,DmtData)"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.AlertItem.AlertItem-String-String-String-DmtData-">
+         <title>public  AlertItem(String source, String type, String mark, DmtData data)</title>
+         <formalpara role="parameter">
+            <title>source</title>
+            <para>the URI of the node which is the source of the alert item</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>type</title>
+            <para>a MIME type or a URN that identifies the type of the data in
+        the alert item</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>data</title>
+            <para>a {@code DmtData} object that contains the format and value
+        of the data in the alert item</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>mark</title>
+            <para>the mark parameter of the alert item</para>
+         </formalpara>
+         <para role="description">
+Create an instance of the alert item. The constructor takes all possible
+ data entries as parameters. Any of these parameters can be {@code null}.
+ The semantics of the parameters may be refined by the definition of a
+ specific alert, identified by its alert code (see
+ {@link NotificationService#sendNotification(String, int, String, AlertItem[])}
+ ). In case of Generic Alerts for example (code 1226), the {@code mark}
+ parameter contains a severity string.
+   </para>
+      </section>
+      <section xreflabel="AlertItem(String[],String,String,DmtData)"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.AlertItem.AlertItem-String---String-String-DmtData-">
+         <title>public  AlertItem(String[][] source, String type, String mark, DmtData data)</title>
+         <formalpara role="parameter">
+            <title>source</title>
+            <para>the path of the node which is the source of the alert item</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>type</title>
+            <para>a MIME type or a URN that identifies the type of the data in
+        the alert item</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>data</title>
+            <para>a {@code DmtData} object that contains the format and value
+        of the data in the alert item</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>mark</title>
+            <para>the mark parameter of the alert item</para>
+         </formalpara>
+         <para role="description">
+Create an instance of the alert item, specifying the source node URI as
+ an array of path segments. The constructor takes all possible data
+ entries as parameters. Any of these parameters can be {@code null}. The
+ semantics of the parameters may be refined by the definition of a
+ specific alert, identified by its alert code (see
+ {@link NotificationService#sendNotification(String, int, String, AlertItem[])}
+ ). In case of Generic Alerts for example (code 1226), the {@code mark}
+ parameter contains a severity string.
+   </para>
+      </section>
+      <section xreflabel="getData()"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.AlertItem.getData--">
+         <title>public DmtData getData()</title>
+         <para role="description">
+Get the data associated with the alert item. The returned {@code DmtData}
+ object contains the format and the value of the data in the alert item.
+ There might be no data associated with the alert item.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the data associated with the alert item, or {@code null} if there
+         is no data</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getMark()"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.AlertItem.getMark--">
+         <title>public String getMark()</title>
+         <para role="description">
+Get the mark parameter associated with the alert item. The interpretation
+ of the mark parameter depends on the alert being sent, as identified by
+ the alert code in
+ {@link NotificationService#sendNotification(String, int, String, AlertItem[])}
+ . There might be no mark associated with the alert item.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the mark associated with the alert item, or {@code null} if there
+         is no mark</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getSource()"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.AlertItem.getSource--">
+         <title>public String getSource()</title>
+         <para role="description">
+Get the node which is the source of the alert. There might be no source
+ associated with the alert item.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the URI of the node which is the source of this alert, or
+         {@code null} if there is no source</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getType()"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.AlertItem.getType--">
+         <title>public String getType()</title>
+         <para role="description">
+Get the type associated with the alert item. The type string is a MIME
+ type or a URN that identifies the type of the data in the alert item
+ (returned by {@link #getData()}). There might be no type associated with
+ the alert item.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the type associated with the alert item, or {@code null} if there
+         is no type</para>
+         </formalpara>
+      </section>
+      <section xreflabel="toString()"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.AlertItem.toString--">
+         <title>public String toString()</title>
+         <para role="description">
+Returns the string representation of this alert item. The returned string
+ includes all parameters of the alert item, and has the following format:
+ 
+ </para>
+         <programlisting>   AlertItem(&lt;source&gt;, &lt;type&gt;, &lt;mark&gt;, &lt;data&gt;)</programlisting>
+         <para>
+ 
+ The last parameter is the string representation of the data value. The
+ format of the data is not explicitly included.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the string representation of this alert item</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="NotificationService"
+            role="class"
+            xml:id="org.osgi.service.dmt.notification.NotificationService">
+      <title>public abstract NotificationService</title>
+      <para>
+NotificationService enables sending asynchronous notifications to a
+ management server. The implementation of {@code NotificationService} should
+ register itself in the OSGi service registry as a service.
+   </para>
+      <section xreflabel="sendNotification(String,int,String,AlertItem[])"
+               role="method"
+               xml:id="org.osgi.service.dmt.notification.NotificationService.sendNotification-String-int-String-AlertItem---">
+         <title>public abstract void sendNotification(String principal, int code, String correlator, AlertItem[][] items) throws DmtException</title>
+         <formalpara role="parameter">
+            <title>principal</title>
+            <para>the principal name which is the recipient of this
+        notification, can be {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>code</title>
+            <para>the alert code, can be 0 if not needed</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>correlator</title>
+            <para>optional field that contains the correlation identifier
+        of an associated exec command, can be {@code null} if not needed</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>items</title>
+            <para>the data of the alert items carried in this alert, can be
+        {@code null} or empty if not needed</para>
+         </formalpara>
+         <para role="description">
+Sends a notification to a named principal. It is the responsibility of
+ the {@code NotificationService} to route the notification to the given
+ principal using the registered
+ {@link org.osgi.service.dmt.notification.spi.RemoteAlertSender} services.
+ </para>
+         <para>
+ In remotely initiated sessions the principal name identifies the remote
+ server that created the session, this can be obtained using the session's
+ {@link DmtSession#getPrincipal() getPrincipal} call.
+ </para>
+         <para>
+ The principal name may be omitted if the client does not know the
+ principal name. Even in this case the routing might be possible if the
+ Notification Service finds an appropriate default destination (for
+ example if it is only connected to one protocol adapter, which is only
+ connected to one management server).
+ </para>
+         <para>
+ Since sending the notification and receiving acknowledgment for it is
+ potentially a very time-consuming operation, notifications are sent
+ asynchronously. This method should attempt to ensure that the
+ notification can be sent successfully, and should throw an exception if
+ it detects any problems. If the method returns without error, the
+ notification is accepted for sending and the implementation must make a
+ best-effort attempt to deliver it.
+ </para>
+         <para>
+ In case the notification is an asynchronous response to a previous
+ {@link DmtSession#execute(String, String, String) execute} command, a
+ correlation identifier can be specified to provide the association
+ between the execute and the notification.
+ </para>
+         <para>
+ In order to send a notification using this method, the caller must have
+ an {@code AlertPermission} with a target string matching the specified
+ principal name. If the {@code principal} parameter is {@code null} (the
+ principal name is not known), the target of the {@code AlertPermission}
+ must be "*".
+ </para>
+         <para>
+ When this method is called with null correlator, null or empty AlertItem
+ array, and a 0 code as values, it should send a protocol specific default
+ notification to initiate a management session. For example, in case of
+ OMA DM this is alert 1201 "Client Initiated Session". The
+ {@code principal} parameter can be used to determine the recipient of the
+ session initiation request.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>DmtException</code>– with the following possible error codes:
+         <itemizedlist>
+                  <listitem>
+                     <para>{@code UNAUTHORIZED} when the remote server rejected the
+         request due to insufficient authorization</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code ALERT_NOT_ROUTED} when the alert can not be routed to the
+         given principal</para>
+                  </listitem>
+                  <listitem>
+                     <para>{@code REMOTE_ERROR} in case of
+         communication problems between the device and the destination
+         </para>
+                  </listitem>
+                  <listitem>
+                     <para> {@code COMMAND_FAILED} for unspecified errors
+         encountered while attempting to complete the command</para>
+                  </listitem>
+                  <listitem>
+                     <para>
+         {@code FEATURE_NOT_SUPPORTED} if the underlying management
+         protocol doesn't support asynchronous notifications</para>
+                  </listitem>
+               </itemizedlist>
+            </para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>SecurityException</code>– if the caller does not have the required
+         {@code AlertPermission} with a target matching the
+         {@code principal} parameter, as described above</para>
+         </formalpara>
+      </section>
+   </section>
+</section>

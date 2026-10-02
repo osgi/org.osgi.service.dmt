@@ -1,0 +1,614 @@
+<section xmlns="http://docbook.org/ns/docbook"
+         xreflabel="org.osgi.service.dmt.security"
+         version="5"
+         role="package"
+         xml:id="org.osgi.service.dmt.security">
+   <title>org.osgi.service.dmt.security</title>
+   <info>
+      <releaseinfo xml:id="org.osgi.service.dmt.security-version">Version 2.0</releaseinfo>
+      <edition xml:id="org.osgi.service.dmt.security-version.number">2.0</edition>
+   </info>
+   <para>
+Device Management Tree Security Package Version 2.0.
+ 
+ </para>
+   <para>
+ This package contains the permission classes used by the Device
+ Management API in environments that support the Java 2 security model.
+ 
+ </para>
+   <para>
+ Bundles wishing to use this package must list the package in the
+ Import-Package header of the bundle's manifest. This package has two types of
+ users: the consumers that use the API in this package and the providers that
+ implement the API in this package.
+ 
+ </para>
+   <para>
+ Example import for consumers using the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.dmt.security; version="[2.0,3.0)"}
+ </para>
+   <para>
+ Example import for providers implementing the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.dmt.security; version="[2.0,2.1)"}</para>
+   <section role="summary">
+      <title>Summary</title>
+      <itemizedlist>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.security.AlertPermission">
+                  <code>AlertPermission</code>
+               </link> - 
+Indicates the callers authority to send alerts to management servers,
+ identified by their principal names.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.security.DmtPermission">
+                  <code>DmtPermission</code>
+               </link> - 
+Controls access to management objects in the Device Management Tree (DMT).
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.dmt.security.DmtPrincipalPermission">
+                  <code>DmtPrincipalPermission</code>
+               </link> - 
+Indicates the callers authority to create DMT sessions on behalf of a remote
+ management server.
+   </para>
+         </listitem>
+      </itemizedlist>
+   </section>
+   <section xreflabel="AlertPermission"
+            role="class"
+            xml:id="org.osgi.service.dmt.security.AlertPermission">
+      <title>public class AlertPermission<?line-break?> extends Permission</title>
+      <para>
+Indicates the callers authority to send alerts to management servers,
+ identified by their principal names.
+ </para>
+      <para>
+ {@code AlertPermission} has a target string which controls the principal
+ names where alerts can be sent. A wildcard is allowed at the end of the
+ target string, to allow sending alerts to any principal with a name matching
+ the given prefix. The "*" target means that alerts can be sent to
+ any destination.</para>
+      <section xreflabel="AlertPermission(String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.AlertPermission.AlertPermission-String-">
+         <title>public  AlertPermission(String target)</title>
+         <formalpara role="parameter">
+            <title>target</title>
+            <para>the name of a principal, can end with {@code *} to match
+        any principal identifier with the given prefix</para>
+         </formalpara>
+         <para role="description">
+Creates a new {@code AlertPermission} object with its name set to the
+ target string. Name must be non-null and non-empty.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>NullPointerException</code>– if {@code name} is {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>IllegalArgumentException</code>– if {@code name} is empty</para>
+         </formalpara>
+      </section>
+      <section xreflabel="AlertPermission(String,String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.AlertPermission.AlertPermission-String-String-">
+         <title>public  AlertPermission(String target, String actions)</title>
+         <formalpara role="parameter">
+            <title>target</title>
+            <para>the name of the server, can end with {@code *} to match any
+        server identifier with the given prefix</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>actions</title>
+            <para>no actions defined, must be "*" for forward compatibility</para>
+         </formalpara>
+         <para role="description">
+Creates a new {@code AlertPermission} object using the 'canonical' two
+ argument constructor. In this version this class does not define any
+ actions, the second argument of this constructor must be "*" so that this
+ class can later be extended in a backward compatible way.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>NullPointerException</code>– if {@code name} or {@code actions} is
+         {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>IllegalArgumentException</code>– if {@code name} is empty or
+         {@code actions} is not "*"</para>
+         </formalpara>
+      </section>
+      <section xreflabel="equals(Object)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.AlertPermission.equals-Object-">
+         <title>public boolean equals(Object obj)</title>
+         <formalpara role="parameter">
+            <title>obj</title>
+            <para>the object to compare to this AlertPermission instance</para>
+         </formalpara>
+         <para role="description">
+Checks whether the given object is equal to this AlertPermission
+ instance. Two AlertPermission instances are equal if they have the same
+ target string.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>{@code true} if the parameter represents the same permissions as
+         this instance</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getActions()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.AlertPermission.getActions--">
+         <title>public String getActions()</title>
+         <para role="description">
+Returns the action list (always {@code *} in the current version).
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the action string "*"</para>
+         </formalpara>
+      </section>
+      <section xreflabel="hashCode()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.AlertPermission.hashCode--">
+         <title>public int hashCode()</title>
+         <para role="description">
+Returns the hash code for this permission object. If two AlertPermission
+ objects are equal according to the {@link #equals(Object)} method, then
+ calling this method on each of the two AlertPermission objects must
+ produce the same integer result.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>hash code for this permission object</para>
+         </formalpara>
+      </section>
+      <section xreflabel="implies(Permission)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.AlertPermission.implies-Permission-">
+         <title>public boolean implies(Permission p)</title>
+         <formalpara role="parameter">
+            <title>p</title>
+            <para>the permission to check for implication</para>
+         </formalpara>
+         <para role="description">
+Checks if this AlertPermission object implies the specified permission.
+ Another AlertPermission instance is implied by this permission either if
+ the target strings are identical, or if this target can be made identical
+ to the other target by replacing a trailing "*" with any
+ string.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>true if this AlertPermission instance implies the specified
+         permission</para>
+         </formalpara>
+      </section>
+      <section xreflabel="newPermissionCollection()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.AlertPermission.newPermissionCollection--">
+         <title>public PermissionCollection newPermissionCollection()</title>
+         <para role="description">
+Returns a new PermissionCollection object for storing AlertPermission
+ objects.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the new PermissionCollection</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="DmtPermission"
+            role="class"
+            xml:id="org.osgi.service.dmt.security.DmtPermission">
+      <title>public class DmtPermission<?line-break?> extends Permission</title>
+      <para>
+Controls access to management objects in the Device Management Tree (DMT). It
+ is intended to control local access to the DMT. DmtPermission target string
+ identifies the management object URI and the action field lists the OMA DM
+ commands that are permitted on the management object. Example:
+ 
+ </para>
+      <programlisting> DmtPermission("./OSGi/bundles", "Add,Replace,Get");</programlisting>
+      <para>
+ 
+ This means that owner of this permission can execute Add, Replace and Get
+ commands on the ./OSGi/bundles management object. It is possible to use
+ wildcards in both the target and the actions field. Wildcard in the target
+ field means that the owner of the permission can access children nodes of the
+ target node. Example:
+ 
+ </para>
+      <programlisting> DmtPermission("./OSGi/bundles/*", "Get");</programlisting>
+      <para>
+ 
+ This means that owner of this permission has Get access on every child node
+ of ./OSGi/bundles. The asterisk does not necessarily have to follow a '/'
+ character. For example the {@code "./OSGi/a*"} target matches the
+ {@code ./OSGi/applications} subtree.
+ </para>
+      <para>
+ If wildcard is present in the actions field, all legal OMA DM commands are
+ allowed on the designated nodes(s) by the owner of the permission. Action
+ names are interpreted case-insensitively, but the canonical action string
+ returned by {@link #getActions()} uses the forms defined by the action
+ constants.</para>
+      <section xreflabel="ADD"
+               role="field"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.ADD">
+         <title>public static final String ADD = "Add"</title>
+         <para>
+Holders of DmtPermission with the Add action present can create new nodes
+ in the DMT, that is they are authorized to execute the
+ createInteriorNode() and createLeafNode() methods of the DmtSession. This
+ action is also required for the copy() command, which needs to perform
+ node creation operations (among others).
+   </para>
+      </section>
+      <section xreflabel="DELETE"
+               role="field"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.DELETE">
+         <title>public static final String DELETE = "Delete"</title>
+         <para>
+Holders of DmtPermission with the Delete action present can delete nodes
+ from the DMT, that is they are authorized to execute the deleteNode()
+ method of the DmtSession.
+   </para>
+      </section>
+      <section xreflabel="EXEC"
+               role="field"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.EXEC">
+         <title>public static final String EXEC = "Exec"</title>
+         <para>
+Holders of DmtPermission with the Exec action present can execute nodes
+ in the DMT, that is they are authorized to call the execute() method of
+ the DmtSession.
+   </para>
+      </section>
+      <section xreflabel="GET"
+               role="field"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.GET">
+         <title>public static final String GET = "Get"</title>
+         <para>
+Holders of DmtPermission with the Get action present can query DMT node
+ value or properties, that is they are authorized to execute the
+ isLeafNode(), getNodeAcl(), getEffectiveNodeAcl(), getMetaNode(),
+ getNodeValue(), getChildNodeNames(), getNodeTitle(), getNodeVersion(),
+ getNodeTimeStamp(), getNodeSize() and getNodeType() methods of the
+ DmtSession. This action is also required for the copy() command, which
+ needs to perform node query operations (among others).
+   </para>
+      </section>
+      <section xreflabel="REPLACE"
+               role="field"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.REPLACE">
+         <title>public static final String REPLACE = "Replace"</title>
+         <para>
+Holders of DmtPermission with the Replace action present can update DMT
+ node value or properties, that is they are authorized to execute the
+ setNodeAcl(), setNodeTitle(), setNodeValue(), setNodeType() and
+ renameNode() methods of the DmtSession. This action is also be required
+ for the copy() command if the original node had a title property (which
+ must be set in the new node).
+   </para>
+      </section>
+      <section xreflabel="DmtPermission(String,String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.DmtPermission-String-String-">
+         <title>public  DmtPermission(String dmtUri, String actions)</title>
+         <formalpara role="parameter">
+            <title>dmtUri</title>
+            <para>URI of the management object (or subtree)</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>actions</title>
+            <para>OMA DM actions allowed</para>
+         </formalpara>
+         <para role="description">
+Creates a new DmtPermission object for the specified DMT URI with the
+ specified actions. The given URI can be:
+ </para>
+         <itemizedlist>
+            <listitem>
+               <para> {@code "*"}, which matches all valid (see
+ {@link Uri#isValidUri(String)}) absolute URIs;</para>
+            </listitem>
+            <listitem>
+               <para>the prefix of an absolute URI followed by the {@code *} character
+ (for example {@code "./OSGi/L*"}), which matches all valid absolute URIs
+ beginning with the given prefix;</para>
+            </listitem>
+            <listitem>
+               <para>a valid absolute URI, which matches itself.</para>
+            </listitem>
+         </itemizedlist>
+         <para>
+ Since the {@code *} character is itself a valid URI character, it can
+ appear as the last character of a valid absolute URI. To distinguish this
+ case from using {@code *} as a wildcard, the {@code *} character at the
+ end of the URI must be escaped with the {@code \} character. For example
+ the URI {@code "./a*"} matches {@code "./a"}, {@code "./aa"},
+ {@code "./a/b"} etc. while {@code "./a\*"} matches {@code "./a*"} only.
+ </para>
+         <para>
+ The actions string must either be "*" to allow all actions, or it must
+ contain a non-empty subset of the valid actions, defined as constants in
+ this class.</para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>NullPointerException</code>– if any of the parameters are {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>IllegalArgumentException</code>– if any of the parameters are invalid</para>
+         </formalpara>
+      </section>
+      <section xreflabel="equals(Object)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.equals-Object-">
+         <title>public boolean equals(Object obj)</title>
+         <formalpara role="parameter">
+            <title>obj</title>
+            <para>the object to compare to this DmtPermission instance</para>
+         </formalpara>
+         <para role="description">
+Checks whether the given object is equal to this DmtPermission instance.
+ Two DmtPermission instances are equal if they have the same target string
+ and the same action mask. The "*" action mask is considered equal to a
+ mask containing all actions.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>{@code true} if the parameter represents the same permissions as
+         this instance</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getActions()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.getActions--">
+         <title>public String getActions()</title>
+         <para role="description">
+Returns the String representation of the action list. The allowed actions
+ are listed in the following order: Add, Delete, Exec, Get, Replace. The
+ wildcard character is not used in the returned string, even if the class
+ was created using the "*" wildcard.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>canonical action list for this permission object</para>
+         </formalpara>
+      </section>
+      <section xreflabel="hashCode()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.hashCode--">
+         <title>public int hashCode()</title>
+         <para role="description">
+Returns the hash code for this permission object. If two DmtPermission
+ objects are equal according to the {@link #equals(Object)} method, then
+ calling this method on each of the two DmtPermission objects must produce
+ the same integer result.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>hash code for this permission object</para>
+         </formalpara>
+      </section>
+      <section xreflabel="implies(Permission)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.implies-Permission-">
+         <title>public boolean implies(Permission p)</title>
+         <formalpara role="parameter">
+            <title>p</title>
+            <para>the permission to check for implication</para>
+         </formalpara>
+         <para role="description">
+Checks if this DmtPermission object "implies" the specified
+ permission. This method returns {@code false} if and only if at least one
+ of the following conditions are fulfilled for the specified permission:
+ </para>
+         <itemizedlist>
+            <listitem>
+               <para>it is not a DmtPermission</para>
+            </listitem>
+            <listitem>
+               <para>its set of actions contains an action not allowed by this permission</para>
+            </listitem>
+            <listitem>
+               <para>the set of nodes defined by its path contains a node not defined by
+ the path of this permission</para>
+            </listitem>
+         </itemizedlist>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>true if this DmtPermission instance implies the specified
+         permission</para>
+         </formalpara>
+      </section>
+      <section xreflabel="newPermissionCollection()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPermission.newPermissionCollection--">
+         <title>public PermissionCollection newPermissionCollection()</title>
+         <para role="description">
+Returns a new PermissionCollection object for storing DmtPermission
+ objects.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the new PermissionCollection</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="DmtPrincipalPermission"
+            role="class"
+            xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission">
+      <title>public class DmtPrincipalPermission<?line-break?> extends Permission</title>
+      <para>
+Indicates the callers authority to create DMT sessions on behalf of a remote
+ management server. Only protocol adapters communicating with management
+ servers should be granted this permission.
+ </para>
+      <para>
+ {@code DmtPrincipalPermission} has a target string which controls the name of
+ the principal on whose behalf the protocol adapter can act. A wildcard is
+ allowed at the end of the target string, to allow using any principal name
+ with the given prefix. The "*" target means the adapter can create
+ a session in the name of any principal.</para>
+      <section xreflabel="DmtPrincipalPermission(String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission.DmtPrincipalPermission-String-">
+         <title>public  DmtPrincipalPermission(String target)</title>
+         <formalpara role="parameter">
+            <title>target</title>
+            <para>the name of the principal, can end with {@code *} to match
+        any principal with the given prefix</para>
+         </formalpara>
+         <para role="description">
+Creates a new {@code DmtPrincipalPermission} object with its name set to
+ the target string. Name must be non-null and non-empty.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>NullPointerException</code>– if {@code name} is {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>IllegalArgumentException</code>– if {@code name} is empty</para>
+         </formalpara>
+      </section>
+      <section xreflabel="DmtPrincipalPermission(String,String)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission.DmtPrincipalPermission-String-String-">
+         <title>public  DmtPrincipalPermission(String target, String actions)</title>
+         <formalpara role="parameter">
+            <title>target</title>
+            <para>the name of the principal, can end with {@code *} to match
+        any principal with the given prefix</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>actions</title>
+            <para>no actions defined, must be "*" for forward compatibility</para>
+         </formalpara>
+         <para role="description">
+Creates a new {@code DmtPrincipalPermission} object using the 'canonical'
+ two argument constructor. In this version this class does not define any
+ actions, the second argument of this constructor must be "*" so that this
+ class can later be extended in a backward compatible way.
+   </para>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>NullPointerException</code>– if {@code name} or {@code actions} is
+         {@code null}</para>
+         </formalpara>
+         <formalpara role="parameter">
+            <title>Throws</title>
+            <para>
+               <code>IllegalArgumentException</code>– if {@code name} is empty or
+         {@code actions} is not "*"</para>
+         </formalpara>
+      </section>
+      <section xreflabel="equals(Object)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission.equals-Object-">
+         <title>public boolean equals(Object obj)</title>
+         <formalpara role="parameter">
+            <title>obj</title>
+            <para>the object to compare to this DmtPrincipalPermission instance</para>
+         </formalpara>
+         <para role="description">
+Checks whether the given object is equal to this DmtPrincipalPermission
+ instance. Two DmtPrincipalPermission instances are equal if they have the
+ same target string.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>{@code true} if the parameter represents the same permissions as
+         this instance</para>
+         </formalpara>
+      </section>
+      <section xreflabel="getActions()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission.getActions--">
+         <title>public String getActions()</title>
+         <para role="description">
+Returns the action list (always {@code *} in the current version).
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the action string "*"</para>
+         </formalpara>
+      </section>
+      <section xreflabel="hashCode()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission.hashCode--">
+         <title>public int hashCode()</title>
+         <para role="description">
+Returns the hash code for this permission object. If two
+ DmtPrincipalPermission objects are equal according to the
+ {@link #equals(Object)} method, then calling this method on each of the
+ two DmtPrincipalPermission objects must produce the same integer result.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>hash code for this permission object</para>
+         </formalpara>
+      </section>
+      <section xreflabel="implies(Permission)"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission.implies-Permission-">
+         <title>public boolean implies(Permission p)</title>
+         <formalpara role="parameter">
+            <title>p</title>
+            <para>the permission to check for implication</para>
+         </formalpara>
+         <para role="description">
+Checks if this DmtPrincipalPermission object implies the specified
+ permission. Another DmtPrincipalPermission instance is implied by this
+ permission either if the target strings are identical, or if this target
+ can be made identical to the other target by replacing a trailing
+ "*" with any string.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>true if this DmtPrincipalPermission instance implies the
+         specified permission</para>
+         </formalpara>
+      </section>
+      <section xreflabel="newPermissionCollection()"
+               role="method"
+               xml:id="org.osgi.service.dmt.security.DmtPrincipalPermission.newPermissionCollection--">
+         <title>public PermissionCollection newPermissionCollection()</title>
+         <para role="description">
+Returns a new PermissionCollection object for storing
+ DmtPrincipalPermission objects.
+   </para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the new PermissionCollection</para>
+         </formalpara>
+      </section>
+   </section>
+</section>
