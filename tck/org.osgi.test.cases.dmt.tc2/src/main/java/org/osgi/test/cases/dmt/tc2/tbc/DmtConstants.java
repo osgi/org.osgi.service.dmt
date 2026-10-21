@@ -31,11 +31,10 @@ package org.osgi.test.cases.dmt.tc2.tbc;
 
 import org.osgi.service.dmt.DmtEvent;
 import org.osgi.service.dmt.security.DmtPermission;
-import org.osgi.test.support.OSGiTestCaseProperties;
 
 public class DmtConstants {
 
-	public static final String	OSGi_ROOT			= OSGiTestCaseProperties
+	public static final String	OSGi_ROOT			= DmtTestProperties
 															.getProperty("org.osgi.service.dmt.osgi.root");
 
 	public static final String OSGi_LOG = OSGi_ROOT + "/Log";
@@ -102,20 +101,20 @@ public class DmtConstants {
     public static final boolean SUPPORTS_ASYNCHRONOUS_NOTIFICATION;
     
     static {
-		SUPPORTS_NODE_TITLE = OSGiTestCaseProperties.getBooleanProperty(
+		SUPPORTS_NODE_TITLE = DmtTestProperties.getBooleanProperty(
 				"org.osgi.test.cases.dmt.tc2.supports_node_title", true);
-		SUPPORTS_NODE_TIMESTAMP = OSGiTestCaseProperties.getBooleanProperty(
+		SUPPORTS_NODE_TIMESTAMP = DmtTestProperties.getBooleanProperty(
 				"org.osgi.test.cases.dmt.tc2.supports_node_timestamp", true);
-		SUPPORTS_NODE_SIZE = OSGiTestCaseProperties.getBooleanProperty(
+		SUPPORTS_NODE_SIZE = DmtTestProperties.getBooleanProperty(
 				"org.osgi.test.cases.dmt.tc2.supports_node_size", true);
-		SUPPORTS_NODE_VERSION = OSGiTestCaseProperties.getBooleanProperty(
+		SUPPORTS_NODE_VERSION = DmtTestProperties.getBooleanProperty(
 				"org.osgi.test.cases.dmt.tc2.supports_node_version", true);
-		TIMEOUT = OSGiTestCaseProperties.getIntegerProperty(
+		TIMEOUT = DmtTestProperties.getIntegerProperty(
 				"org.osgi.test.cases.dmt.tc2.timeout", 30000) + 1000;
-		WAITING_TIME = OSGiTestCaseProperties.getIntegerProperty(
+		WAITING_TIME = DmtTestProperties.getIntegerProperty(
 				"org.osgi.test.cases.dmt.tc2.wait_for_event", 1200);
     	
-		SUPPORTS_ASYNCHRONOUS_NOTIFICATION = OSGiTestCaseProperties
+		SUPPORTS_ASYNCHRONOUS_NOTIFICATION = DmtTestProperties
 				.getBooleanProperty(
 										"org.osgi.test.cases.dmt.tc2.supports_asynchronous_notifications",
 						true);

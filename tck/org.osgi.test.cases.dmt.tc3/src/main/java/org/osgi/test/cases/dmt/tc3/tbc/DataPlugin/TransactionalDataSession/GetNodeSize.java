@@ -29,14 +29,14 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -64,13 +64,13 @@ public class GetNodeSize {
 	public void testGetNodeSize001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeSize001");
+			System.out.println("#testGetNodeSize001");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			
 			int nodeSize = session.getNodeSize(TestDataPluginActivator.LEAF_NODE);
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "+ TestDataPlugin.GETNODESIZE
-					+" to the correct plugin",TestDataPlugin.GETNODESIZE_VALUE,nodeSize);
+			assertThat(nodeSize).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.GETNODESIZE
+					+" to the correct plugin").isEqualTo(TestDataPlugin.GETNODESIZE_VALUE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -86,20 +86,17 @@ public class GetNodeSize {
 	public void testGetNodeSize002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeSize002");
+			System.out.println("#testGetNodeSize002");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.getNodeSize(TestDataPluginActivator.LEAF_NODE_EXCEPTION);
 			
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
 			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ", 
-					TestDataPluginActivator.LEAF_NODE_EXCEPTION, e.getURI());			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct code: ", 
-					DmtException.ALERT_NOT_ROUTED, e.getCode());
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded the DmtException with the correct message. ", 
-					e.getMessage().indexOf(TestDataPlugin.GETNODESIZE)>-1);
+			assertThat(e.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.LEAF_NODE_EXCEPTION);			
+			assertThat(e.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.ALERT_NOT_ROUTED);
+			assertThat(e.getMessage().indexOf(TestDataPlugin.GETNODESIZE)>-1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 			
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);

@@ -17,9 +17,13 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtConstants;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtSession;
@@ -37,6 +41,7 @@ public class TestBug1735_ScaffoldMetaData extends ScaffoldNodeHelper {
 	 * Checks metadata of a Scaffold node as described in RFC141
 	 * (RFC141, section 6.3.1)
 	 */
+	@Test
 	public void testScaffoldMetaData() throws Exception {
 
 		preparePlugin();
@@ -45,11 +50,11 @@ public class TestBug1735_ScaffoldMetaData extends ScaffoldNodeHelper {
 		session = dmtAdmin.getSession( uri, DmtSession.LOCK_TYPE_SHARED);
 		MetaNode metaNode = session.getMetaNode(uri);
 		
-		assertNotNull("DmtAdmin must provide MetaData for a scaffold node!", metaNode );
+		assertThat(metaNode).as("DmtAdmin must provide MetaData for a scaffold node!").isNotNull();
 		
 		checkMetaNode(metaNode);
 
-		assertEquals( "The type of a scaffold node must be: " + DmtConstants.DDF_SCAFFOLD, DmtConstants.DDF_SCAFFOLD, session.getNodeType(uri));
+		assertThat(session.getNodeType(uri)).as("The type of a scaffold node must be: " + DmtConstants.DDF_SCAFFOLD).isEqualTo(DmtConstants.DDF_SCAFFOLD);
 	}
 
 	/**
@@ -58,13 +63,14 @@ public class TestBug1735_ScaffoldMetaData extends ScaffoldNodeHelper {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testScaffoldNodeType() throws Exception {
 		preparePlugin();
 
-		log( "testing node type of scaffold nodes ...");
+		System.out.println("testing node type of scaffold nodes ...");
 		String uri = "./A";
 		session = dmtAdmin.getSession( uri, DmtSession.LOCK_TYPE_SHARED);
-		assertEquals( "Scaffold nodes must have node type: '" + DmtConstants.DDF_SCAFFOLD + "'!", session.getNodeType(uri), DmtConstants.DDF_SCAFFOLD );
+		assertThat(DmtConstants.DDF_SCAFFOLD).as("Scaffold nodes must have node type: '" + DmtConstants.DDF_SCAFFOLD + "'!").isEqualTo(session.getNodeType(uri));
 	}
 
 	
@@ -82,37 +88,37 @@ public class TestBug1735_ScaffoldMetaData extends ScaffoldNodeHelper {
 	//	- isValidName(): true
 	//	- isValidValue(): false
 	private void checkMetaNode( MetaNode metaNode ) {
-		assertEquals( "Scaffold nodes must be interior nodes!", false, metaNode.isLeaf() );
+		assertThat(metaNode.isLeaf()).as("Scaffold nodes must be interior nodes!").isFalse();
 		
-		assertEquals( "Scaffold nodes must support the GET operation!", true, metaNode.can( MetaNode.CMD_GET ) );
-		assertEquals( "Scaffold nodes must not support the ADD operation!", false, metaNode.can( MetaNode.CMD_ADD ) );
-		assertEquals( "Scaffold nodes must not support the DELETE operation!", false, metaNode.can( MetaNode.CMD_DELETE ) );
-		assertEquals( "Scaffold nodes must not support the EXECUTE operation!", false, metaNode.can( MetaNode.CMD_EXECUTE ) );
-		assertEquals( "Scaffold nodes must not support the REPLACE operation!", false, metaNode.can( MetaNode.CMD_REPLACE ) );
+		assertThat(metaNode.can(MetaNode.CMD_GET)).as("Scaffold nodes must support the GET operation!").isTrue();
+		assertThat(metaNode.can(MetaNode.CMD_ADD)).as("Scaffold nodes must not support the ADD operation!").isFalse();
+		assertThat(metaNode.can(MetaNode.CMD_DELETE)).as("Scaffold nodes must not support the DELETE operation!").isFalse();
+		assertThat(metaNode.can(MetaNode.CMD_EXECUTE)).as("Scaffold nodes must not support the EXECUTE operation!").isFalse();
+		assertThat(metaNode.can(MetaNode.CMD_REPLACE)).as("Scaffold nodes must not support the REPLACE operation!").isFalse();
 
-		assertEquals( "Scaffold nodes must have scope PERMANENT!", MetaNode.PERMANENT, metaNode.getScope() );
+		assertThat(metaNode.getScope()).as("Scaffold nodes must have scope PERMANENT!").isEqualTo(MetaNode.PERMANENT);
 
-		assertNull("The MetaData of scaffold nodes must not provide a description!", metaNode.getDescription() );
-		
-		assertEquals( "The MetaData of scaffold nodes must have max occurence of 1!", 1, metaNode.getMaxOccurrence() );
+		assertThat(metaNode.getDescription()).as("The MetaData of scaffold nodes must not provide a description!").isNull();
 
-		assertEquals( "The MetaData of scaffold nodes must allow zero occurrence!", true, metaNode.isZeroOccurrenceAllowed() );
+		assertThat(metaNode.getMaxOccurrence()).as("The MetaData of scaffold nodes must have max occurence of 1!").isOne();
 
-		assertNull("The MetaData of scaffold nodes must not provide a default!", metaNode.getDefault() );
-		assertNull("The MetaData of scaffold nodes must not provide values for 'getValidNames()'!", metaNode.getValidNames() );
-		assertNull("The MetaData of scaffold nodes must not provide values for 'getValidValues()'!", metaNode.getValidValues() );
+		assertThat(metaNode.isZeroOccurrenceAllowed()).as("The MetaData of scaffold nodes must allow zero occurrence!").isTrue();
 
-		assertEquals( "The MetaData of scaffold nodes must allow a max value of " + Double.MAX_VALUE, Double.MAX_VALUE, metaNode.getMax(), 0 );
-		assertEquals( "The MetaData of scaffold nodes must allow a min value of " + Double.MIN_VALUE, Double.MIN_VALUE, metaNode.getMin(), 0 );
+		assertThat(metaNode.getDefault()).as("The MetaData of scaffold nodes must not provide a default!").isNull();
+		assertThat(metaNode.getValidNames()).as("The MetaData of scaffold nodes must not provide values for 'getValidNames()'!").isNull();
+		assertThat(metaNode.getValidValues()).as("The MetaData of scaffold nodes must not provide values for 'getValidValues()'!").isNull();
 
-		assertNull("The MetaData of scaffold nodes must not provide raw format names!", metaNode.getRawFormatNames() );
+		assertThat(metaNode.getMax()).as("The MetaData of scaffold nodes must allow a max value of " + Double.MAX_VALUE).isCloseTo(Double.MAX_VALUE, within(0.0));
+		assertThat(metaNode.getMin()).as("The MetaData of scaffold nodes must allow a min value of " + Double.MIN_VALUE).isCloseTo(Double.MIN_VALUE, within(0.0));
+
+		assertThat(metaNode.getRawFormatNames()).as("The MetaData of scaffold nodes must not provide raw format names!").isNull();
 		ArrayAssert.assertEquivalenceArrays("The MetaData of scaffold nodes must not provide mime types!", 
 				metaNode.getMimeTypes(), new String[]{ DmtConstants.DDF_SCAFFOLD });
 
-		assertEquals( "The method 'isValidName()' of a scaffolds MetaData must return 'true' for all params!", true, metaNode.isValidName("any name") );
-		assertEquals( "The method 'isValidValue()' of a scaffolds MetaData must return 'false' for all params!", false, metaNode.isValidValue( new DmtData("value")) );
+		assertThat(metaNode.isValidName("any name")).as("The method 'isValidName()' of a scaffolds MetaData must return 'true' for all params!").isTrue();
+		assertThat(metaNode.isValidValue(new DmtData("value"))).as("The method 'isValidValue()' of a scaffolds MetaData must return 'false' for all params!").isFalse();
 
-		assertEquals( "Scaffold nodes must have the format DmtData.FORMAT_NODE: " + DmtData.FORMAT_NODE, DmtData.FORMAT_NODE, metaNode.getFormat() );
+		assertThat(metaNode.getFormat()).as("Scaffold nodes must have the format DmtData.FORMAT_NODE: " + DmtData.FORMAT_NODE).isEqualTo(DmtData.FORMAT_NODE);
 		
 	}
 	

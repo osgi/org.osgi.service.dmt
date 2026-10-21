@@ -17,8 +17,15 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.ext.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.within;
+
 import java.util.Date;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtConstants;
@@ -34,18 +41,21 @@ import org.osgi.test.cases.dmt.tc4.ext.util.TestDataPlugin;
 public class ScaffoldNodeTest extends DmtAdminTestCase {
 
     @Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
         super.setUp();
         getDmtAdmin();
     }
 
     @Override
-	protected void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
         unregisterPlugins();
         closeDmtSession();
         super.tearDown();
     }
 
+    @Test
     public void testScaffoldNodeData() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A/B");
@@ -57,70 +67,71 @@ public class ScaffoldNodeTest extends DmtAdminTestCase {
         assertInteriorNode("./A/B");
 
         MetaNode metaNode = session.getMetaNode("./A");
-        assertEquals(false, metaNode.can(MetaNode.CMD_ADD));
-        assertEquals(false, metaNode.can(MetaNode.CMD_DELETE));
-        assertEquals(false, metaNode.can(MetaNode.CMD_EXECUTE));
-        assertEquals(true, metaNode.can(MetaNode.CMD_GET));
-        assertEquals(false, metaNode.can(MetaNode.CMD_REPLACE));
+		assertThat(metaNode.can(MetaNode.CMD_ADD)).isFalse();
+		assertThat(metaNode.can(MetaNode.CMD_DELETE)).isFalse();
+		assertThat(metaNode.can(MetaNode.CMD_EXECUTE)).isFalse();
+		assertThat(metaNode.can(MetaNode.CMD_GET)).isTrue();
+		assertThat(metaNode.can(MetaNode.CMD_REPLACE)).isFalse();
 
-        assertEquals(false, metaNode.isLeaf());
-        assertEquals(MetaNode.PERMANENT, metaNode.getScope());
-        assertEquals(null, metaNode.getDescription());
-        assertEquals(1, metaNode.getMaxOccurrence());
-        assertEquals(true, metaNode.isZeroOccurrenceAllowed());
-        assertEquals(null, metaNode.getDefault());
-        assertEquals(null, metaNode.getValidNames());
-        assertEquals(null, metaNode.getValidValues());
-        assertEquals(Double.MAX_VALUE, metaNode.getMax(), 0.0d);
-        assertEquals(Double.MIN_VALUE, metaNode.getMin(), 0.0d);
-        assertEquals(null, metaNode.getRawFormatNames());
+		assertThat(metaNode.isLeaf()).isFalse();
+        assertThat(metaNode.getScope()).isEqualTo(MetaNode.PERMANENT);
+		assertThat(metaNode.getDescription()).isNull();
+		assertThat(metaNode.getMaxOccurrence()).isOne();
+		assertThat(metaNode.isZeroOccurrenceAllowed()).isTrue();
+		assertThat(metaNode.getDefault()).isNull();
+		assertThat(metaNode.getValidNames()).isNull();
+		assertThat(metaNode.getValidValues()).isNull();
+        assertThat(metaNode.getMax()).isCloseTo(Double.MAX_VALUE, within(0.0d));
+        assertThat(metaNode.getMin()).isCloseTo(Double.MIN_VALUE, within(0.0d));
+		assertThat(metaNode.getRawFormatNames()).isNull();
         ArrayAssert.assertEquivalenceArrays(metaNode.getMimeTypes(), new String[]{ DmtConstants.DDF_SCAFFOLD });
 
-        assertEquals(true, metaNode.isValidName(""));
-        assertEquals(true, metaNode.isValidName("A"));
-        assertEquals(true, metaNode.isValidName("."));
-        assertEquals(true, metaNode.isValidName("/"));
+		assertThat(metaNode.isValidName("")).isTrue();
+		assertThat(metaNode.isValidName("A")).isTrue();
+		assertThat(metaNode.isValidName(".")).isTrue();
+		assertThat(metaNode.isValidName("/")).isTrue();
 
-        assertEquals(false, metaNode.isValidValue(new DmtData(true)));
-        assertEquals(false, metaNode.isValidValue(new DmtData(new byte[] { (byte) 0, (byte) 1, (byte) 2 })));
-        assertEquals(false, metaNode.isValidValue(new DmtData("ABC")));
-        assertEquals(false, metaNode.isValidValue(new DmtData(new Object())));
+		assertThat(metaNode.isValidValue(new DmtData(true))).isFalse();
+		assertThat(metaNode.isValidValue(new DmtData(new byte[]{(byte) 0, (byte) 1, (byte) 2}))).isFalse();
+		assertThat(metaNode.isValidValue(new DmtData("ABC"))).isFalse();
+		assertThat(metaNode.isValidValue(new DmtData(new Object()))).isFalse();
 
-        assertEquals(DmtData.FORMAT_NODE, metaNode.getFormat());
+        assertThat(metaNode.getFormat()).isEqualTo(DmtData.FORMAT_NODE);
 
         ArrayAssert.assertEquivalenceArrays(new String[] { "B" }, session.getChildNodeNames("./A"));
         Acl acl = session.getNodeAcl(".");
-        assertEquals(null, session.getNodeAcl("./A"));
-        assertEquals(acl, session.getEffectiveNodeAcl("./A"));
-        assertEquals(null, session.getNodeTitle("./A"));
-        assertEquals(DmtConstants.DDF_SCAFFOLD, session.getNodeType("./A"));
+		assertThat(session.getNodeAcl("./A")).isNull();
+        assertThat(session.getEffectiveNodeAcl("./A")).isEqualTo(acl);
+		assertThat(session.getNodeTitle("./A")).isNull();
+        assertThat(session.getNodeType("./A")).isEqualTo(DmtConstants.DDF_SCAFFOLD);
         try {
-            assertEquals(-1, session.getNodeSize("./A"));
+            assertThat(session.getNodeSize("./A")).isEqualTo(-1);
         } catch (DmtException dmtException) {
-            assertEquals(DmtException.COMMAND_NOT_ALLOWED, dmtException.getCode());
-            assertEquals("./A", dmtException.getURI());
-            assertEquals(null, dmtException.getCause());
-            assertEquals(0, dmtException.getCauses().length);
+            assertThat(dmtException.getCode()).isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
+            assertThat(dmtException.getURI()).isEqualTo("./A");
+			assertThat(dmtException.getCause()).isNull();
+			assertThat(dmtException.getCauses()).isEmpty();
         }
         try {
-            assertEquals(null, session.getNodeValue("./A"));
-            fail();
+			assertThat(session.getNodeValue("./A")).isNull();
+            fail("");
         } catch (DmtException dmtException) {
-            assertEquals(DmtException.COMMAND_NOT_ALLOWED, dmtException.getCode());
-            assertEquals("./A", dmtException.getURI());
-            assertEquals(null, dmtException.getCause());
-            assertEquals(0, dmtException.getCauses().length);
+            assertThat(dmtException.getCode()).isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
+            assertThat(dmtException.getURI()).isEqualTo("./A");
+            assertThat(dmtException.getCause()).isEqualTo(null);
+            assertThat(dmtException.getCauses().length).isEqualTo(0);
         }
 
-        assertEquals(0, session.getNodeVersion("./A"));
+        assertThat(session.getNodeVersion("./A")).isEqualTo(0);
 
         Date timeStamp = session.getNodeTimestamp("./A");
-        assertTrue(pluginRegistrationTime <= timeStamp.getTime());
-        assertTrue(timeStamp.getTime() <= System.currentTimeMillis());
+        assertThat(pluginRegistrationTime <= timeStamp.getTime()).isTrue();
+        assertThat(timeStamp.getTime() <= System.currentTimeMillis()).isTrue();
 
         session.close();
     }
 
+    @Test
     public void testScaffoldNodePattern01() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A/B");
@@ -140,6 +151,7 @@ public class ScaffoldNodeTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void testScaffoldNodePattern02() throws DmtException {
         TestDataPlugin dataPluginB = new TestDataPlugin();
         setInteriorNode(dataPluginB, "./A/B");
@@ -174,6 +186,7 @@ public class ScaffoldNodeTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void testScaffoldNodePattern03() throws DmtException {
         TestDataPlugin dataPluginB = new TestDataPlugin();
         setInteriorNode(dataPluginB, "./A/B");
@@ -229,6 +242,7 @@ public class ScaffoldNodeTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void testWriteCommandToScaffoldNodeIsNotAllowedOnExclusiveLockType() throws DmtException {
         TestDataPlugin dataPluginB = new TestDataPlugin();
         setInteriorNode(dataPluginB, "./A/B");
@@ -319,6 +333,7 @@ public class ScaffoldNodeTest extends DmtAdminTestCase {
         unregister(registrationD);
     }
 
+    @Test
     public void testWriteCommandToScaffoldNodeIsNotAllowedOnAtomicLockType() throws DmtException {
         TestDataPlugin dataPluginB = new TestDataPlugin();
         setInteriorNode(dataPluginB, "./A/B");
@@ -409,6 +424,7 @@ public class ScaffoldNodeTest extends DmtAdminTestCase {
         unregister(registrationD);
     }
 
+    @Test
     public void testScaffoldNodeFromParentPluginToChildPlugin() throws Exception {
         TestDataMountPlugin plugin1 = new TestDataMountPlugin();
         setInteriorNode(plugin1, "./A");
@@ -509,9 +525,9 @@ public class ScaffoldNodeTest extends DmtAdminTestCase {
     }
 
     private void assertThrownDmtException(DmtException dmtException, int code, String uri) {
-        assertEquals(code, dmtException.getCode());
-        assertEquals(uri, dmtException.getURI());
-        assertEquals(null, dmtException.getCause());
-        assertEquals(0, dmtException.getCauses().length);
+        assertThat(dmtException.getCode()).isEqualTo(code);
+        assertThat(dmtException.getURI()).isEqualTo(uri);
+		assertThat(dmtException.getCause()).isNull();
+		assertThat(dmtException.getCauses()).isEmpty();
     }
 }

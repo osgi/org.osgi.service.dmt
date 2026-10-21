@@ -32,12 +32,12 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * This class tests all constants of DmtSession
@@ -65,13 +65,13 @@ public class DmtSessionConstants implements TestInterface {
      * @spec 118.12.16
      */    
     private void testConstants001() {
-		DefaultTestBundleControl.log("#testConstants001");
-        TestCase.assertEquals("Asserting LOCK_TYPE_SHARED value", 0, DmtSession.LOCK_TYPE_SHARED);
-        TestCase.assertEquals("Asserting LOCK_TYPE_EXCLUSIVE value", 1, DmtSession.LOCK_TYPE_EXCLUSIVE);
-        TestCase.assertEquals("Asserting LOCK_TYPE_ATOMIC value", 2, DmtSession.LOCK_TYPE_ATOMIC);
-        TestCase.assertEquals("Asserting STATE_OPEN value", 0, DmtSession.STATE_OPEN);
-        TestCase.assertEquals("Asserting STATE_CLOSED value", 1, DmtSession.STATE_CLOSED);
-        TestCase.assertEquals("Asserting STATE_INVALID value", 2, DmtSession.STATE_INVALID);
+		System.out.println("#testConstants001");
+		assertThat(DmtSession.LOCK_TYPE_SHARED).as("Asserting LOCK_TYPE_SHARED value").isZero();
+		assertThat(DmtSession.LOCK_TYPE_EXCLUSIVE).as("Asserting LOCK_TYPE_EXCLUSIVE value").isOne();
+        assertThat(DmtSession.LOCK_TYPE_ATOMIC).as("Asserting LOCK_TYPE_ATOMIC value").isEqualTo(2);
+		assertThat(DmtSession.STATE_OPEN).as("Asserting STATE_OPEN value").isZero();
+		assertThat(DmtSession.STATE_CLOSED).as("Asserting STATE_CLOSED value").isOne();
+        assertThat(DmtSession.STATE_INVALID).as("Asserting STATE_INVALID value").isEqualTo(2);
     }   
     
 

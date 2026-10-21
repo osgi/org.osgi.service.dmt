@@ -28,8 +28,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.AlertItem;
 
-import org.osgi.service.dmt.DmtData;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.DmtData;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -49,18 +51,15 @@ public class AlertItem extends DmtTestControl {
 	 * 
 	 * @spec AlertItem.AlertItem(String,String,String,DmtData)
 	 */
+	@Test
 	public void testAlertItem001() {
 		try {		
-			log("#testAlertItem001");
+			System.out.println("#testAlertItem001");
 			org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(DmtConstants.OSGi_LOG,DmtConstants.MIMETYPE,mark,data);
-			assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertEquals("Asserts that the expected source is returned",
-					DmtConstants.OSGi_LOG, alert.getSource());
+			assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(DmtConstants.OSGi_LOG);
 		} catch(Exception e) {
 			failUnexpectedException(e);
 		}
@@ -72,18 +71,16 @@ public class AlertItem extends DmtTestControl {
 	 * 
 	 * @spec AlertItem.AlertItem(String,String,String,DmtData)
 	 */
+	@Test
 	public void testAlertItem002() {
 		try {		
-			log("#testAlertItem002");
+			System.out.println("#testAlertItem002");
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem((String)null,DmtConstants.MIMETYPE,mark,data);
-            assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertNull("Asserts that the expected source is returned", alert
-					.getSource());
+            assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert
+					.getSource()).as("Asserts that the expected source is returned").isNull();
             
 			
 		} catch(Exception e) {
@@ -97,18 +94,16 @@ public class AlertItem extends DmtTestControl {
      * 
      * @spec AlertItem.AlertItem(String,String,String,DmtData)
      */
+    @Test
     public void testAlertItem003() {
         try {       
-            log("#testAlertItem003");
+            System.out.println("#testAlertItem003");
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(DmtConstants.OSGi_LOG,null,mark,data);
-            assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertNull("Asserts that the expected type is returned", alert
-					.getType());
-			assertEquals("Asserts that the expected source is returned",
-					DmtConstants.OSGi_LOG, alert.getSource());
+            assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert
+					.getType()).as("Asserts that the expected type is returned").isNull();
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(DmtConstants.OSGi_LOG);
             
             
         } catch(Exception e) {
@@ -122,18 +117,16 @@ public class AlertItem extends DmtTestControl {
      * 
      * @spec AlertItem.AlertItem(String,String,String,DmtData)
      */
+    @Test
     public void testAlertItem004() {
         try {       
-            log("#testAlertItem004");
+            System.out.println("#testAlertItem004");
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(DmtConstants.OSGi_LOG,DmtConstants.MIMETYPE,null,data);
-            assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertNull("Asserts that the expected mark is returned", alert
-					.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertEquals("Asserts that the expected source is returned",
-					DmtConstants.OSGi_LOG, alert.getSource());
+            assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert
+					.getMark()).as("Asserts that the expected mark is returned").isNull();
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(DmtConstants.OSGi_LOG);
             
             
         } catch(Exception e) {
@@ -147,18 +140,16 @@ public class AlertItem extends DmtTestControl {
      * 
      * @spec AlertItem.AlertItem(String,String,String,DmtData)
      */
+    @Test
     public void testAlertItem005() {
         try {       
-            log("#testAlertItem005");
+            System.out.println("#testAlertItem005");
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(DmtConstants.OSGi_LOG,DmtConstants.MIMETYPE,mark,null);
-            assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertEquals("Asserts that the expected source is returned",
-					DmtConstants.OSGi_LOG, alert.getSource());
-			assertNull("Asserts that the expected data is returned", alert
-					.getData());
+            assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(DmtConstants.OSGi_LOG);
+			assertThat(alert
+					.getData()).as("Asserts that the expected data is returned").isNull();
             
         } catch(Exception e) {
         	failUnexpectedException(e);
@@ -171,18 +162,15 @@ public class AlertItem extends DmtTestControl {
 	 * 
 	 * @spec AlertItem.AlertItem(String[],String,String,DmtData)
 	 */
-	public void testAlertItem006() {
+	@Test
+    public void testAlertItem006() {
 		try {		
-			log("#testAlertItem006");
+			System.out.println("#testAlertItem006");
 			org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(nodeUri,DmtConstants.MIMETYPE,mark,data);
-			assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertEquals("Asserts that the expected source is returned",
-					nodeUriMangled, alert.getSource());
+			assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(nodeUriMangled);
 		} catch(Exception e) {
 			failUnexpectedException(e);
 		}
@@ -194,18 +182,16 @@ public class AlertItem extends DmtTestControl {
 	 * 
 	 * @spec AlertItem.AlertItem(String[],String,String,DmtData)
 	 */
+	@Test
 	public void testAlertItem007() {
 		try {		
-			log("#testAlertItem007");
+			System.out.println("#testAlertItem007");
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem((String[])null,DmtConstants.MIMETYPE,mark,data);
-            assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertNull("Asserts that the expected source is returned", alert
-					.getSource());
+            assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert
+					.getSource()).as("Asserts that the expected source is returned").isNull();
             
 			
 		} catch(Exception e) {
@@ -219,19 +205,17 @@ public class AlertItem extends DmtTestControl {
      * 
      * @spec AlertItem.AlertItem(String[],String,String,DmtData)
      */
+    @Test
     public void testAlertItem008() {
         try {       
-            log("#testAlertItem008");
+            System.out.println("#testAlertItem008");
 
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(nodeUri,null,mark,data);
-            assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertNull("Asserts that the expected type is returned", alert
-					.getType());
-			assertEquals("Asserts that the expected source is returned",
-					nodeUriMangled, alert.getSource());
+            assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert
+					.getType()).as("Asserts that the expected type is returned").isNull();
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(nodeUriMangled);
             
             
         } catch(Exception e) {
@@ -245,18 +229,16 @@ public class AlertItem extends DmtTestControl {
      * 
      * @spec AlertItem.AlertItem(String[],String,String,DmtData)
      */
+    @Test
     public void testAlertItem009() {
         try {       
-            log("#testAlertItem009");
+            System.out.println("#testAlertItem009");
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(nodeUri,DmtConstants.MIMETYPE,null,data);
-            assertEquals("Asserts that the expected data is returned", data,
-					alert.getData());
-			assertNull("Asserts that the expected mark is returned", alert
-					.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertEquals("Asserts that the expected source is returned",
-					nodeUriMangled, alert.getSource());
+            assertThat(alert.getData()).as("Asserts that the expected data is returned").isEqualTo(data);
+			assertThat(alert
+					.getMark()).as("Asserts that the expected mark is returned").isNull();
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(nodeUriMangled);
             
             
         } catch(Exception e) {
@@ -270,18 +252,16 @@ public class AlertItem extends DmtTestControl {
      * 
      * @spec AlertItem.AlertItem(String[],String,String,DmtData)
      */
+    @Test
     public void testAlertItem010() {
         try {       
-            log("#testAlertItem010");
+            System.out.println("#testAlertItem010");
             org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(nodeUri,DmtConstants.MIMETYPE,mark,null);
-            assertEquals("Asserts that the expected mark is returned", mark,
-					alert.getMark());
-			assertEquals("Asserts that the expected type is returned",
-					DmtConstants.MIMETYPE, alert.getType());
-			assertEquals("Asserts that the expected source is returned",
-					nodeUriMangled, alert.getSource());
-			assertNull("Asserts that the expected data is returned", alert
-					.getData());
+            assertThat(alert.getMark()).as("Asserts that the expected mark is returned").isEqualTo(mark);
+			assertThat(alert.getType()).as("Asserts that the expected type is returned").isEqualTo(DmtConstants.MIMETYPE);
+			assertThat(alert.getSource()).as("Asserts that the expected source is returned").isEqualTo(nodeUriMangled);
+			assertThat(alert
+					.getData()).as("Asserts that the expected data is returned").isNull();
             
         } catch(Exception e) {
         	failUnexpectedException(e);

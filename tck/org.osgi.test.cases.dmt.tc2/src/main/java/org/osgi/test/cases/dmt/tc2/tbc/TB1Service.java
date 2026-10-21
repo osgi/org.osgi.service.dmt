@@ -29,8 +29,6 @@
 
 package org.osgi.test.cases.dmt.tc2.tbc;
 
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
-
 public interface TB1Service {
-	public TestInterface[] getTestClasses(DefaultTestBundleControl tbc);
+	public TestInterface[] getTestClasses(DmtTestControl tbc);
 }

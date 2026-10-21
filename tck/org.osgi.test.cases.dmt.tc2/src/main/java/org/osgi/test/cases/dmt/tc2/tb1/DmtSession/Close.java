@@ -34,19 +34,18 @@
  */
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
-
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ReadOnly.TestReadOnlyPlugin;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ReadOnly.TestReadOnlyPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>close</code> method of DmtSession, 
@@ -81,10 +80,10 @@ public class Close implements TestInterface  {
 	private void testClose001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testClose001");
+			System.out.println("#testClose001");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG, DmtSession.LOCK_TYPE_ATOMIC);
 			session.close();
-			TestCase.assertEquals("Asserting if the state after a close is really STATE_CLOSED.", DmtSession.STATE_CLOSED, session.getState());
+			assertThat(session.getState()).as("Asserting if the state after a close is really STATE_CLOSED.").isEqualTo(DmtSession.STATE_CLOSED);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -101,13 +100,13 @@ public class Close implements TestInterface  {
     private void testClose002() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testClose002");
+            System.out.println("#testClose002");
             session = tbc.getDmtAdmin().getSession(TestReadOnlyPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
             TestReadOnlyPlugin.setExceptionAtClose(true);
             session.close();
-            DefaultTestBundleControl.failException("",DmtException.class);
+            DmtTestControl.failException("",DmtException.class);
         } catch (DmtException e) {
-            TestCase.assertEquals("Asserts that the session becomes STATE_INVALID if the close operation completed unsuccessfully", DmtSession.STATE_INVALID, session.getState());
+            assertThat(session.getState()).as("Asserts that the session becomes STATE_INVALID if the close operation completed unsuccessfully").isEqualTo(DmtSession.STATE_INVALID);
         } catch (Exception e) {
         	tbc.failExpectedOtherException(DmtException.class, e);
         } finally {

@@ -30,8 +30,11 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtData;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
 /**
@@ -45,25 +48,23 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(byte[],boolean)
 	 */
+	@Test
 	public void testDmtData001() {
 		try {		
-			log("#testDmtData001");
+			System.out.println("#testDmtData001");
 			byte[] value = new byte[] { 1, 10, 127 };
 			String expectedValue= "01 0A 7F";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value,true);
-			assertEquals("Asserting DmtData.FORMAT_BASE64",
-					org.osgi.service.dmt.DmtData.FORMAT_BASE64, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_BASE64").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_BASE64);
 			
-			assertTrue("Asserting the value", Arrays.equals(value, data
-					.getBase64()));
+			assertThat(Arrays.equals(value, data
+					.getBase64())).as("Asserting the value").isTrue();
 			
-			assertEquals("Asserting the size", value.length, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length);
 			
-			assertEquals(
-					"Asserts that two-digit hexadecimal numbers for each byte separated by spaces is "
+			assertThat(data.toString()).as("Asserts that two-digit hexadecimal numbers for each byte separated by spaces is "
 							+
-					"returned in case of FORMAT_BASE64",
-					expectedValue, data.toString());
+					"returned in case of FORMAT_BASE64").isEqualTo(expectedValue);
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -79,25 +80,23 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(byte[])
 	 */
+	@Test
 	public void testDmtData002() {
 		try {		
-			log("#testDmtData002");
+			System.out.println("#testDmtData002");
 			byte[] value = new byte[] { 3, 55, 100 };
 			String expectedValue= "03 37 64";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value);
-			assertEquals("Asserting DmtData.FORMAT_BINARY",
-					org.osgi.service.dmt.DmtData.FORMAT_BINARY, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_BINARY").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_BINARY);
 			
-			assertTrue("Asserting the value", Arrays.equals(value, data
-					.getBinary()));
+			assertThat(Arrays.equals(value, data
+					.getBinary())).as("Asserting the value").isTrue();
 			
-			assertEquals("Asserting the size", value.length, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length);
 			
-			assertEquals(
-					"Asserts that two-digit hexadecimal numbers for each byte separated by "
+			assertThat(data.toString()).as("Asserts that two-digit hexadecimal numbers for each byte separated by "
 							+
-					"spaces is returned in case of FORMAT_BINARY",
-					expectedValue, data.toString());
+					"spaces is returned in case of FORMAT_BINARY").isEqualTo(expectedValue);
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -113,18 +112,17 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(boolean)
 	 */
+	@Test
 	public void testDmtData003() {
 		try {		
-			log("#testDmtData003");
+			System.out.println("#testDmtData003");
 			boolean value = false;
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value);
-			assertEquals("Asserting DmtData.FORMAT_BOOLEAN",
-					org.osgi.service.dmt.DmtData.FORMAT_BOOLEAN, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_BOOLEAN").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_BOOLEAN);
 			
-			assertEquals("Asserting the value", value, data.getBoolean());
-			assertEquals("Asserting the size", 1, data.getSize());
-			assertEquals("Asserting the string returned",
-					String.valueOf(value), data.toString());
+			assertThat(data.getBoolean()).as("Asserting the value").isEqualTo(value);
+			assertThat(data.getSize()).as("Asserting the size").isOne();
+			assertThat(data.toString()).as("Asserting the string returned").isEqualTo(String.valueOf(value));
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -140,21 +138,21 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtData004() {
 		try {		
-			log("#testDmtData004");
+			System.out.println("#testDmtData004");
 			String value = "20051001";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value,org.osgi.service.dmt.DmtData.FORMAT_DATE);
-			assertEquals("Asserting DmtData.FORMAT_DATE",
-					org.osgi.service.dmt.DmtData.FORMAT_DATE, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_DATE").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_DATE);
 			
-			assertEquals("Asserting the value", value, data.getDate());
+			assertThat(data.getDate()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the string returned", value, data
-					.toString());
+			assertThat(data
+					.toString()).as("Asserting the string returned").isEqualTo(value);
 			
-			assertEquals("Asserting the size", data.toString().length(), data
-					.getSize());
+			assertThat(data
+					.getSize()).as("Asserting the size").isEqualTo(data.toString().length());
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -170,20 +168,19 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(float)
 	 */
+	@Test
 	public void testDmtData005() {
 		try {		
-			log("#testDmtData005");
+			System.out.println("#testDmtData005");
 			float value = 2.4F;
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value);
-			assertEquals("Asserting DmtData.FORMAT_FLOAT",
-					org.osgi.service.dmt.DmtData.FORMAT_FLOAT, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_FLOAT").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_FLOAT);
 			
-			assertTrue("Asserting the value", value == data.getFloat());
+			assertThat(value == data.getFloat()).as("Asserting the value").isTrue();
 			
-			assertEquals("Asserting the size", 4, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(4);
 			
-			assertEquals("Asserting the string returned",
-					String.valueOf(value), data.toString());
+			assertThat(data.toString()).as("Asserting the string returned").isEqualTo(String.valueOf(value));
 		} catch(Exception e) {
 			failUnexpectedException(e);
 
@@ -197,20 +194,19 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(int)
 	 */
+	@Test
 	public void testDmtData006() {
 		try {		
-			log("#testDmtData006");
+			System.out.println("#testDmtData006");
 			int value = 2;
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value);
-			assertEquals("Asserting DmtData.FORMAT_INTEGER",
-					org.osgi.service.dmt.DmtData.FORMAT_INTEGER, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_INTEGER").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_INTEGER);
 			
-			assertEquals("Asserting the value", value, data.getInt());
+			assertThat(data.getInt()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the size", 4, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(4);
 			
-			assertEquals("Asserting the string returned",
-					String.valueOf(value), data.toString());
+			assertThat(data.toString()).as("Asserting the string returned").isEqualTo(String.valueOf(value));
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -224,17 +220,17 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.NULL_VALUE
 	 */
+	@Test
 	public void testDmtData007() {
 		try {		
-			log("#testDmtData007");
+			System.out.println("#testDmtData007");
 			org.osgi.service.dmt.DmtData data  = org.osgi.service.dmt.DmtData.NULL_VALUE;
-			assertEquals("Asserting DmtData.FORMAT_NULL",
-					org.osgi.service.dmt.DmtData.FORMAT_NULL, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_NULL").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_NULL);
 			
-			assertEquals("Asserting the size", 0, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isZero();
 			
-			assertEquals("Asserting the string returned", "null", data
-					.toString());
+			assertThat(data
+					.toString()).as("Asserting the string returned").isEqualTo("null");
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -249,20 +245,20 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String)
 	 */
+	@Test
 	public void testDmtData008() {
 		try {		
-			log("#testDmtData008");
+			System.out.println("#testDmtData008");
 			String value = "TestString";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value);
-			assertEquals("Asserting DmtData.FORMAT_STRING",
-					org.osgi.service.dmt.DmtData.FORMAT_STRING, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_STRING").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_STRING);
 			
-			assertEquals("Asserting the value", value, data.getString());
+			assertThat(data.getString()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the size", value.length(), data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length());
 			
-			assertEquals("Asserting the string returned", value, data
-					.toString());
+			assertThat(data
+					.toString()).as("Asserting the string returned").isEqualTo(value);
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -277,21 +273,21 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtData009() {
 		try {		
-			log("#testDmtData009");
+			System.out.println("#testDmtData009");
 			String value = "120000";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value,org.osgi.service.dmt.DmtData.FORMAT_TIME);
-			assertEquals("Asserting DmtData.FORMAT_TIME",
-					org.osgi.service.dmt.DmtData.FORMAT_TIME, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_TIME").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_TIME);
 			
-			assertEquals("Asserting the value", value, data.getTime());
+			assertThat(data.getTime()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the string returned", value, data
-					.toString());
+			assertThat(data
+					.toString()).as("Asserting the string returned").isEqualTo(value);
 			
-			assertEquals("Asserting the size", data.toString().length(), data
-					.getSize());
+			assertThat(data
+					.getSize()).as("Asserting the size").isEqualTo(data.toString().length());
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -305,18 +301,18 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtData010() {
 		try {		
-			log("#testDmtData010");
+			System.out.println("#testDmtData010");
 			String value = "120000Z";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value,org.osgi.service.dmt.DmtData.FORMAT_TIME);
-			assertEquals("Asserting DmtData.FORMAT_TIME",
-					org.osgi.service.dmt.DmtData.FORMAT_TIME, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_TIME").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_TIME);
 			
-			assertEquals("Asserting the value", value, data.getTime());
+			assertThat(data.getTime()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the string returned", value, data
-					.toString());
+			assertThat(data
+					.toString()).as("Asserting the string returned").isEqualTo(value);
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -330,20 +326,20 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtData011() {
 		try {		
-			log("#testDmtData011");
+			System.out.println("#testDmtData011");
 			String value = "testXml";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value,org.osgi.service.dmt.DmtData.FORMAT_XML);
-			assertEquals("Asserting DmtData.FORMAT_XML",
-					org.osgi.service.dmt.DmtData.FORMAT_XML, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_XML").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_XML);
 			
-			assertEquals("Asserting the value", value, data.getXml());
+			assertThat(data.getXml()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the size", value.length(), data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length());
 			
-			assertEquals("Asserting the string returned", value, data
-					.toString());
+			assertThat(data
+					.toString()).as("Asserting the string returned").isEqualTo(value);
 			
 			
 		} catch(Exception e) {
@@ -359,21 +355,21 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtData012() {
 		try {		
-			log("#testDmtData012");
+			System.out.println("#testDmtData012");
 			String value = "TestString2";
 			
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value,org.osgi.service.dmt.DmtData.FORMAT_STRING);
-			assertEquals("Asserting DmtData.FORMAT_STRING",
-					org.osgi.service.dmt.DmtData.FORMAT_STRING, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_STRING").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_STRING);
 			
-			assertEquals("Asserting the value", value, data.getString());
+			assertThat(data.getString()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the size", value.length(), data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length());
 			
-			assertEquals("Asserting the string returned", value, data
-					.toString());
+			assertThat(data
+					.toString()).as("Asserting the string returned").isEqualTo(value);
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -387,25 +383,23 @@ public class DmtData extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(byte[],boolean)
      */
+    @Test
     public void testDmtData013() {
         try {       
-            log("#testDmtData013");
+            System.out.println("#testDmtData013");
             byte[] value = new byte[] { 1, 10, 127 };
             String expectedValue= "01 0A 7F";
             org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(value,false);
-            assertEquals("Asserting DmtData.FORMAT_BINARY",
-                    org.osgi.service.dmt.DmtData.FORMAT_BINARY, data.getFormat());
+            assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_BINARY").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_BINARY);
             
-            assertTrue("Asserting the value", Arrays.equals(value, data
-					.getBinary()));
+            assertThat(Arrays.equals(value, data
+					.getBinary())).as("Asserting the value").isTrue();
             
-            assertEquals("Asserting the size", value.length, data.getSize());
+            assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length);
             
-            assertEquals(
-					"Asserts that two-digit hexadecimal numbers for each byte separated by spaces is "
+            assertThat(data.toString()).as("Asserts that two-digit hexadecimal numbers for each byte separated by spaces is "
 							+
-                    "returned in case of FORMAT_BINARY",
-                    expectedValue, data.toString());
+                    "returned in case of FORMAT_BINARY").isEqualTo(expectedValue);
             
         } catch(Exception e) {
         	failUnexpectedException(e);
@@ -419,18 +413,18 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String)
 	 */
+	@Test
 	public void testDmtData014() {
 		try {		
-			log("#testDmtData014");
+			System.out.println("#testDmtData014");
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData((String)null);
-			assertEquals("Asserting DmtData.FORMAT_STRING",
-					org.osgi.service.dmt.DmtData.FORMAT_STRING, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_STRING").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_STRING);
 			
-			assertNull("Asserting the value", data.getString());
+			assertThat(data.getString()).as("Asserting the value").isNull();
 
-			assertEquals("Asserting the size", 0, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isZero();
 			
-			assertEquals("Asserting the string returned", "", data.toString());
+			assertThat(data.toString()).as("Asserting the string returned").isEmpty();
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -444,18 +438,18 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtData015() {
 		try {		
-			log("#testDmtData015");
+			System.out.println("#testDmtData015");
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData((String) null,org.osgi.service.dmt.DmtData.FORMAT_STRING);
-			assertEquals("Asserting DmtData.FORMAT_STRING",
-					org.osgi.service.dmt.DmtData.FORMAT_STRING, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_STRING").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_STRING);
 			
-			assertNull("Asserting the value", data.getString());
+			assertThat(data.getString()).as("Asserting the value").isNull();
 
-			assertEquals("Asserting the size", 0, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isZero();
 			
-			assertEquals("Asserting the string returned", "", data.toString());
+			assertThat(data.toString()).as("Asserting the string returned").isEmpty();
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -469,18 +463,18 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtData016() {
 		try {		
-			log("#testDmtData016");
+			System.out.println("#testDmtData016");
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData((String)null,org.osgi.service.dmt.DmtData.FORMAT_XML);
-			assertEquals("Asserting DmtData.FORMAT_XML",
-					org.osgi.service.dmt.DmtData.FORMAT_XML, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_XML").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_XML);
 			
-			assertNull("Asserting the value", data.getXml());
+			assertThat(data.getXml()).as("Asserting the value").isNull();
 
-			assertEquals("Asserting the size", 0, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isZero();
 			
-			assertEquals("Asserting the string returned", "", data.toString());
+			assertThat(data.toString()).as("Asserting the string returned").isEmpty();
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -494,18 +488,18 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,String)
 	 */
+	@Test
 	public void testDmtData017() {
 		try {		
-			log("#testDmtData017");
+			System.out.println("#testDmtData017");
 			String format = "format";
 			String value = "data";
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(format,value);
-			assertEquals("Asserting DmtData.FORMAT_RAW_STRING",
-					org.osgi.service.dmt.DmtData.FORMAT_RAW_STRING, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_RAW_STRING").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_RAW_STRING);
 			
-			assertEquals("Asserting the value", value, data.getRawString());
+			assertThat(data.getRawString()).as("Asserting the value").isEqualTo(value);
 			
-			assertEquals("Asserting the size", value.length(), data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length());
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -519,19 +513,19 @@ public class DmtData extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,byte[])
 	 */
+	@Test
 	public void testDmtData018() {
 		try {		
-			log("#testDmtData018");
+			System.out.println("#testDmtData018");
 			String format = "format";
 			byte[] value = new byte[] {1};
 			org.osgi.service.dmt.DmtData data  = new org.osgi.service.dmt.DmtData(format,value);
-			assertEquals("Asserting DmtData.FORMAT_RAW_BINARY",
-					org.osgi.service.dmt.DmtData.FORMAT_RAW_BINARY, data.getFormat());
+			assertThat(data.getFormat()).as("Asserting DmtData.FORMAT_RAW_BINARY").isEqualTo(org.osgi.service.dmt.DmtData.FORMAT_RAW_BINARY);
 			
-			assertTrue("Asserting the value", Arrays.equals(value, data
-					.getRawBinary()));
+			assertThat(Arrays.equals(value, data
+					.getRawBinary())).as("Asserting the value").isTrue();
 			
-			assertEquals("Asserting the size", value.length, data.getSize());
+			assertThat(data.getSize()).as("Asserting the size").isEqualTo(value.length);
 			
 		} catch(Exception e) {
 			failUnexpectedException(e);

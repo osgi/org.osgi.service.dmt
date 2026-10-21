@@ -24,7 +24,6 @@ import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc4.tb1.intf.BaseMetaNode;
 import org.osgi.test.cases.dmt.tc4.tb1.intf.LeafNode;
 import org.osgi.test.cases.dmt.tc4.tb1.intf.Node;
-import org.osgi.test.support.tracker.Tracker;
 import org.osgi.util.tracker.ServiceTracker;
 
 @SuppressWarnings("deprecation")
@@ -43,7 +42,7 @@ public class InitialBundleStartLevel extends LeafNode {
 		tracker.open();
 
 		try {
-			Tracker.waitForService(tracker, Node.SERVICE_TIMER);
+			tracker.waitForService(Node.SERVICE_TIMER);
 		} catch (InterruptedException e) {
 			// Interrupted... do nothing
 		}

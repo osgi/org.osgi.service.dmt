@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
@@ -40,11 +42,9 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -84,17 +84,15 @@ public class GetNodeVersion implements TestInterface {
 	private void testGetNodeVersion001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeVersion001");
+			System.out.println("#testGetNodeVersion001");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.getNodeVersion(TestExecPluginActivator.INEXISTENT_NODE);
 
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException's code is NODE_NOT_FOUND",
-					DmtException.NODE_NOT_FOUND, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException's code is NODE_NOT_FOUND").isEqualTo(DmtException.NODE_NOT_FOUND);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -112,7 +110,7 @@ public class GetNodeVersion implements TestInterface {
 	private void testGetNodeVersion002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeVersion002");
+			System.out.println("#testGetNodeVersion002");
 
             tbc.openSessionAndSetNodeAcl(TestExecPluginActivator.LEAF_NODE, DmtConstants.PRINCIPAL, Acl.GET );
 
@@ -122,7 +120,7 @@ public class GetNodeVersion implements TestInterface {
 
 			session.getNodeVersion(TestExecPluginActivator.LEAF_NODE);
 			
-			DefaultTestBundleControl.pass("getNodeVersion correctly executed");
+			System.out.println("getNodeVersion correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -141,7 +139,7 @@ public class GetNodeVersion implements TestInterface {
 	private void testGetNodeVersion003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeVersion003");
+			System.out.println("#testGetNodeVersion003");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
@@ -151,7 +149,7 @@ public class GetNodeVersion implements TestInterface {
 			
 			session.getNodeVersion(TestExecPluginActivator.LEAF_NODE);
 			
-			DefaultTestBundleControl.pass("getNodeVersion correctly executed");
+			System.out.println("getNodeVersion correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -169,14 +167,14 @@ public class GetNodeVersion implements TestInterface {
 	private void testGetNodeVersion004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeVersion004");
+			System.out.println("#testGetNodeVersion004");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.getNodeVersion(TestExecPluginActivator.LEAF_RELATIVE);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with getNodeVersion.");
+			System.out.println("A relative URI can be used with getNodeVersion.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -193,14 +191,14 @@ public class GetNodeVersion implements TestInterface {
 	private void testGetNodeVersion005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeVersion005");
+			System.out.println("#testGetNodeVersion005");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.LEAF_NODE, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.getNodeVersion("");
 
-			DefaultTestBundleControl.pass("Asserts that an empty string as relative URI means the root " +
+			System.out.println("Asserts that an empty string as relative URI means the root " +
 				"URI the session was opened with");
 			
 		} catch (Exception e) {
@@ -218,17 +216,15 @@ public class GetNodeVersion implements TestInterface {
     private void testGetNodeVersionFeatureNotSupported001() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testGetNodeVersionFeatureNotSupported001");
+            System.out.println("#testGetNodeVersionFeatureNotSupported001");
 
             session = tbc.getDmtAdmin().getSession(".",
                     DmtSession.LOCK_TYPE_EXCLUSIVE);
             session.getNodeVersion(TestExecPluginActivator.INTERIOR_NODE);
 
-            DefaultTestBundleControl.failException("", DmtException.class);
+            DmtTestControl.failException("", DmtException.class);
         } catch (DmtException e) {
-            TestCase.assertEquals(
-                    "Asserting that DmtException's code is FEATURE_NOT_SUPPORTED",
-                    DmtException.FEATURE_NOT_SUPPORTED, e.getCode());
+            assertThat(e.getCode()).as("Asserting that DmtException's code is FEATURE_NOT_SUPPORTED").isEqualTo(DmtException.FEATURE_NOT_SUPPORTED);
         } catch (Exception e) {
         	tbc.failExpectedOtherException(DmtException.class, e);
         } finally {

@@ -29,13 +29,12 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtEvent;
 
-import org.osgi.service.dmt.DmtEvent;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.osgi.service.dmt.DmtEvent;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 
 
@@ -65,14 +64,14 @@ public class DmtEventConstants implements TestInterface {
 	private void testDmtEventConstants001() {
 
 		try {
-			DefaultTestBundleControl.log("#testDmtEventConstants001");
-			TestCase.assertEquals("Asserting DmtEvent.ADDED constant value", 1, DmtEvent.ADDED);
-			TestCase.assertEquals("Asserting DmtEvent.COPIED constant value", 2, DmtEvent.COPIED);
-			TestCase.assertEquals("Asserting DmtEvent.DELETED constant value", 4, DmtEvent.DELETED);
-			TestCase.assertEquals("Asserting DmtEvent.RENAMED constant value", 8, DmtEvent.RENAMED);
-			TestCase.assertEquals("Asserting DmtEvent.REPLACED constant value", 16, DmtEvent.REPLACED);
-			TestCase.assertEquals("Asserting DmtEvent.SESSION_OPENED constant value", 32, DmtEvent.SESSION_OPENED);
-			TestCase.assertEquals("Asserting DmtEvent.SESSION_CLOSED constant value", 64, DmtEvent.SESSION_CLOSED);
+			System.out.println("#testDmtEventConstants001");
+			assertThat(DmtEvent.ADDED).as("Asserting DmtEvent.ADDED constant value").isOne();
+			assertThat(DmtEvent.COPIED).as("Asserting DmtEvent.COPIED constant value").isEqualTo(2);
+			assertThat(DmtEvent.DELETED).as("Asserting DmtEvent.DELETED constant value").isEqualTo(4);
+			assertThat(DmtEvent.RENAMED).as("Asserting DmtEvent.RENAMED constant value").isEqualTo(8);
+			assertThat(DmtEvent.REPLACED).as("Asserting DmtEvent.REPLACED constant value").isEqualTo(16);
+			assertThat(DmtEvent.SESSION_OPENED).as("Asserting DmtEvent.SESSION_OPENED constant value").isEqualTo(32);
+			assertThat(DmtEvent.SESSION_CLOSED).as("Asserting DmtEvent.SESSION_CLOSED constant value").isEqualTo(64);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		}

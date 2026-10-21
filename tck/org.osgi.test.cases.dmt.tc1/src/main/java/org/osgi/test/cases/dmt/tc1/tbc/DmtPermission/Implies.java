@@ -29,9 +29,11 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPermission;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.security.AlertPermission;
 import org.osgi.service.dmt.security.DmtPermission;
-
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -45,16 +47,15 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies001() {
 		try {
-			log("#testImplies001");
+			System.out.println("#testImplies001");
 			DmtPermission permission = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtConstants.ACTIONS);
 			DmtPermission permission2 = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtConstants.ACTIONS);
-			assertTrue(
-							"Asserts that an object implies other object using the same uri and actions",
-							permission.implies(permission2));
+			assertThat(permission.implies(permission2)).as("Asserts that an object implies other object using the same uri and actions").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -65,17 +66,16 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies002() {
 		try {
-			log("#testImplies002");
+			System.out.println("#testImplies002");
 			DmtPermission permission = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtPermission.ADD + ","
 							+ DmtPermission.GET);
 			DmtPermission permission2 = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtPermission.ADD);
-			assertTrue(
-							"Asserts that an object implies other object using the same uri and the actions it contains",
-							permission.implies(permission2));
+			assertThat(permission.implies(permission2)).as("Asserts that an object implies other object using the same uri and the actions it contains").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -87,17 +87,16 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies003() {
 		try {
-			log("#testImplies003");
+			System.out.println("#testImplies003");
 			DmtPermission permission = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtPermission.ADD);
 			DmtPermission permission2 = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtPermission.ADD + ","
 							+ DmtPermission.GET);
-			assertTrue(
-							"Asserts that an object doesn't imply other object using the same uri and the actions it doesn't contain",
-							!permission.implies(permission2));
+			assertThat(!permission.implies(permission2)).as("Asserts that an object doesn't imply other object using the same uri and the actions it doesn't contain").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -108,16 +107,15 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies004() {
 		try {
-			log("#testImplies004");
+			System.out.println("#testImplies004");
 			DmtPermission permission = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtPermission.ADD);
 			DmtPermission permission2 = new DmtPermission(
 					DmtConstants.OSGi_CONFIGURATION, DmtPermission.ADD);
-			assertTrue(
-							"Asserts that an object implies other object using the same uri and the same actions",
-							!permission.implies(permission2));
+			assertThat(!permission.implies(permission2)).as("Asserts that an object implies other object using the same uri and the same actions").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -128,18 +126,17 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies005() {
 		try {
-			log("#testImplies005");
+			System.out.println("#testImplies005");
 			DmtPermission permission = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtPermission.ADD + ","
 							+ DmtPermission.REPLACE);
 			DmtPermission permission2 = new DmtPermission(
 					DmtConstants.OSGi_LOG, DmtPermission.REPLACE + ","
 							+ DmtPermission.ADD);
-			assertTrue(
-							"Asserts that an object imply other object using the same uri and actions but in a different order",
-							permission.implies(permission2));
+			assertThat(permission.implies(permission2)).as("Asserts that an object imply other object using the same uri and actions but in a different order").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -150,16 +147,15 @@ public class Implies extends DmtTestControl {
      * 
      * @spec DmtPermission.implies(Permission)
      */
+    @Test
     public void testImplies006() {
         try {
-            log("#testImplies006");
+            System.out.println("#testImplies006");
             DmtPermission permission = new DmtPermission(
             		DmtConstants.OSGi_CONFIGURATION + "/a*", DmtPermission.ADD);
             DmtPermission permission2 = new DmtPermission(
             		DmtConstants.OSGi_CONFIGURATION + "/abc", DmtPermission.ADD);
-            assertTrue(
-                            "Asserts that an object implies other object when using wildcard to match the uri",
-                            permission.implies(permission2));
+            assertThat(permission.implies(permission2)).as("Asserts that an object implies other object when using wildcard to match the uri").isTrue();
         } catch (Exception e) {
             failUnexpectedException(e);
         }
@@ -169,14 +165,13 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies007() {
 		try {
-			log("#testImplies007");
+			System.out.println("#testImplies007");
 			DmtPermission permission = new DmtPermission("./*","*");
 			AlertPermission permission2 = new AlertPermission("./*","*");
-			assertTrue(
-						"Asserts that an object doesn't imply other object if they are from different types",
-						!permission.implies(permission2));
+			assertThat(!permission.implies(permission2)).as("Asserts that an object doesn't imply other object if they are from different types").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -187,14 +182,13 @@ public class Implies extends DmtTestControl {
      * 
      * @spec DmtPermission.implies(Permission)
      */
+    @Test
     public void testImplies008() {
         try {
-            log("#testImplies008");
+            System.out.println("#testImplies008");
             DmtPermission permission = new DmtPermission("*",DmtConstants.ALL_ACTIONS);
             DmtPermission permission2 = new DmtPermission(".", "Get");
-            assertTrue(
-                        "Asserts that the \"*\" implies \".\"",
-                        permission.implies(permission2));
+            assertThat(permission.implies(permission2)).as("Asserts that the \"*\" implies \".\"").isTrue();
         } catch (Exception e) {
             failUnexpectedException(e);
         }

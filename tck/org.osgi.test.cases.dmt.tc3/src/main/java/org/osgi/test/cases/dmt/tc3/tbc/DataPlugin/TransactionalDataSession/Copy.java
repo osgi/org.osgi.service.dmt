@@ -29,15 +29,15 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -67,7 +67,7 @@ public class Copy {
 	public void testCopy001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCopy001");
+			System.out.println("#testCopy001");
 
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
@@ -75,21 +75,17 @@ public class Copy {
 			session.copy(TestDataPluginActivator.INTERIOR_NODE,
 					TestDataPluginActivator.INEXISTENT_NODE, true);
 
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin fowarded "
 					+ TestDataPlugin.COPY
-					+ " to the correct plugin",
-					TestDataPlugin.COPY, DmtConstants.TEMPORARY);
+					+ " to the correct plugin").isEqualTo(TestDataPlugin.COPY);
 
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "
+			assertThat(DmtConstants.PARAMETER_2).as("Asserts that DmtAdmin fowarded "
 					+ TestDataPlugin.COPY
-					+ " to the correct plugin",
-					TestDataPluginActivator.INEXISTENT_NODE,
-					DmtConstants.PARAMETER_2);
+					+ " to the correct plugin").isEqualTo(TestDataPluginActivator.INEXISTENT_NODE);
 
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "
+			assertThat(DmtConstants.PARAMETER_3).as("Asserts that DmtAdmin fowarded "
 					+ TestDataPlugin.COPY
-					+ " to the correct plugin", String.valueOf(true),
-					DmtConstants.PARAMETER_3);
+					+ " to the correct plugin").isEqualTo(String.valueOf(true));
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -105,28 +101,19 @@ public class Copy {
 	public void testCopy002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCopy002");
+			System.out.println("#testCopy002");
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.copy(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION3,
 					TestDataPluginActivator.INEXISTENT_NODE, true);
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ",
-							TestDataPluginActivator.INTERIOR_NODE_EXCEPTION3, e
-									.getURI());
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-							DmtException.URI_TOO_LONG, e.getCode());
-			TestCase
-					.assertTrue(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct message. ",
-							e.getMessage().indexOf(
-									TestDataPlugin.COPY) > -1);
+			assertThat(e
+									.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION3);
+			assertThat(e.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.URI_TOO_LONG);
+			assertThat(e.getMessage().indexOf(
+									TestDataPlugin.COPY) > -1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {

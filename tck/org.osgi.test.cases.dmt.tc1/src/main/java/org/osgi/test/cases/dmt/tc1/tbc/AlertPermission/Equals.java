@@ -28,6 +28,9 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.AlertPermission;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -42,14 +45,13 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals001() {
 		try {		
-			log("#testEquals001");
+			System.out.println("#testEquals001");
 			org.osgi.service.dmt.security.AlertPermission permission = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER);
 			org.osgi.service.dmt.security.AlertPermission permission2 = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER);
-			assertTrue(
-					"Asserts that two AlertPermission instances are equal if they have the same target string",
-					permission.equals(permission2));
+			assertThat(permission.equals(permission2)).as("Asserts that two AlertPermission instances are equal if they have the same target string").isTrue();
 		} catch(Exception e) {
 			failUnexpectedException(e);
 		}
@@ -61,14 +63,13 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals002() {
 		try {		
-			log("#testEquals002");
+			System.out.println("#testEquals002");
 			org.osgi.service.dmt.security.AlertPermission permission = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER);
 			org.osgi.service.dmt.security.AlertPermission permission2 = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER + "a");
-			assertTrue(
-					"Asserts that two AlertPermission instances are different if they have different target strings",
-					!permission.equals(permission2));
+			assertThat(!permission.equals(permission2)).as("Asserts that two AlertPermission instances are different if they have different target strings").isTrue();
 		} catch(Exception e) {
 			failUnexpectedException(e);
 		}

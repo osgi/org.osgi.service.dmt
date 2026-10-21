@@ -28,9 +28,11 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtData;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtIllegalStateException;
-
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -52,13 +54,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(String,int)
      */
+    @Test
     public void testDmtDataExceptions001() {
         try {       
-            log("#testDmtDataExceptions001");
+            System.out.println("#testDmtDataExceptions001");
             new DmtData((String)null,DmtData.FORMAT_DATE);
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a date is constructed and value is null");
+            System.out.println("Asserts that NullPointerException is thrown if a date is constructed and value is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -69,13 +72,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(String,int)
      */
+    @Test
     public void testDmtDataExceptions002() {
         try {       
-            log("#testDmtDataExceptions002");
+            System.out.println("#testDmtDataExceptions002");
             new DmtData((String)null,DmtData.FORMAT_TIME);
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a date is constructed and value is null");
+            System.out.println("Asserts that NullPointerException is thrown if a date is constructed and value is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -86,13 +90,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(byte[])
      */
+    @Test
     public void testDmtDataExceptions003() {
         try {       
-            log("#testDmtDataExceptions003");
+            System.out.println("#testDmtDataExceptions003");
             new DmtData((byte[])null);
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a bin format is constructed and bytes parameter is null");
+            System.out.println("Asserts that NullPointerException is thrown if a bin format is constructed and bytes parameter is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -103,13 +108,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(byte[],boolean)
      */
+    @Test
     public void testDmtDataExceptions004() {
         try {       
-            log("#testDmtDataExceptions004");
+            System.out.println("#testDmtDataExceptions004");
             new DmtData((byte[])null,true);
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a base64 format is constructed and bytes parameter is null");
+            System.out.println("Asserts that NullPointerException is thrown if a base64 format is constructed and bytes parameter is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -122,13 +128,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(String,String)
      */
+    @Test
     public void testDmtDataExceptions005() {
         try {       
-            log("#testDmtDataExceptions005");
+            System.out.println("#testDmtDataExceptions005");
             new DmtData(null,"a");
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a raw string format is constructed and formatName parameter is null");
+            System.out.println("Asserts that NullPointerException is thrown if a raw string format is constructed and formatName parameter is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -139,13 +146,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(String,String)
      */
+    @Test
     public void testDmtDataExceptions006() {
         try {       
-            log("#testDmtDataExceptions006");
+            System.out.println("#testDmtDataExceptions006");
             new DmtData("a",(String)null);
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a raw string format is constructed and data parameter is null");
+            System.out.println("Asserts that NullPointerException is thrown if a raw string format is constructed and data parameter is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -157,13 +165,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(String,String)
      */
+    @Test
     public void testDmtDataExceptions007() {
         try {       
-            log("#testDmtDataExceptions007");
+            System.out.println("#testDmtDataExceptions007");
             new DmtData(null,new byte[0]);
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a raw string format is constructed and formatName parameter is null");
+            System.out.println("Asserts that NullPointerException is thrown if a raw string format is constructed and formatName parameter is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -174,13 +183,14 @@ public class TestDmtDataExceptions extends DmtTestControl {
      * 
      * @spec DmtData.DmtData(String,String)
      */
+    @Test
     public void testDmtDataExceptions008() {
         try {       
-            log("#testDmtDataExceptions008");
+            System.out.println("#testDmtDataExceptions008");
             new DmtData("a",(byte[])null);
             failException("", NullPointerException.class);
         } catch (NullPointerException e) {
-            pass("Asserts that NullPointerException is thrown if a raw binary format is constructed and data parameter is null");
+            System.out.println("Asserts that NullPointerException is thrown if a raw binary format is constructed and data parameter is null");
         } catch (Exception e) {
         	failExpectedOtherException(NullPointerException.class, e);
         }
@@ -190,9 +200,10 @@ public class TestDmtDataExceptions extends DmtTestControl {
 	 * 
 	 * @spec 117.12.5 DmtData
 	 */
+	@Test
 	public void testDmtDataExceptions009() {
 		try {		
-			log("#testDmtDataExceptions009");
+			System.out.println("#testDmtDataExceptions009");
 			//It's from FORMAT_INTEGER [1] to FORMAT_RAW_BINARY[4096]   
 			for (int i=DmtData.FORMAT_INTEGER;i<=DmtData.FORMAT_RAW_BINARY;i=i<<1){
 
@@ -204,11 +215,9 @@ public class TestDmtDataExceptions extends DmtTestControl {
 				    	//Checks only different formats, because equal ones do not throw any exception (it is checked at org.osgi.test.cases.dmt.tc1.tbc.DmtData) 
 				    	//FORMAT_NULL and FORMAT_NODE doesnt have a get associated
 				    	if (i!=j && j!=DmtData.FORMAT_NULL && j!=DmtData.FORMAT_NODE) {
-							assertTrue(
-									"Asserts that DmtIllegalStateException is thrown when "
+							assertThat(invalidGetThrowsException(DmtConstants.getDmtData(i),j)).as("Asserts that DmtIllegalStateException is thrown when "
 											+ 
-									DmtConstants.getExpectedDmtDataMethod(j) +" is called in a DmtData."+ baseName,
-									invalidGetThrowsException(DmtConstants.getDmtData(i),j));
+									DmtConstants.getExpectedDmtDataMethod(j) +" is called in a DmtData."+ baseName).isTrue();
 						}
 					}
 				}
@@ -225,9 +234,10 @@ public class TestDmtDataExceptions extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtDataExceptions010() {
 		try {		
-			log("#testDmtDataExceptions010");
+			System.out.println("#testDmtDataExceptions010");
 			
 			int[] invalidStringFormats =  new int[] {
 					org.osgi.service.dmt.DmtData.FORMAT_BASE64,
@@ -242,12 +252,10 @@ public class TestDmtDataExceptions extends DmtTestControl {
 					};
 			
 			for (int i=0; i<invalidStringFormats.length; i++) {
-				assertTrue(
-						"Asserts that IllegalArgumentException is thrown when an incorrect format ("
+				assertThat(invalidFormatThrowsException(invalidStringFormats[i])).as("Asserts that IllegalArgumentException is thrown when an incorrect format ("
 								+ DmtConstants
 										.getDmtDataCodeText(invalidStringFormats[i])
-								+ ") is passed in DmtData(String value,int format)",
-						invalidFormatThrowsException(invalidStringFormats[i]));
+								+ ") is passed in DmtData(String value,int format)").isTrue();
 			}
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -261,9 +269,10 @@ public class TestDmtDataExceptions extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtDataExceptions011() {
 		try {		
-			log("#testDmtDataExceptions011");
+			System.out.println("#testDmtDataExceptions011");
 			
 			String[] invalidTimes =  new String[] {
 			    	"12000", //Less than 6 digits
@@ -275,11 +284,9 @@ public class TestDmtDataExceptions extends DmtTestControl {
 			};
 			
 			for (int i=0; i<invalidTimes.length; i++) {
-				assertTrue(
-						"Asserts that IllegalArgumentException is thrown when an invalid value (\""
+				assertThat(invalidFormatThrowsException(invalidTimes[i],DmtData.FORMAT_TIME)).as("Asserts that IllegalArgumentException is thrown when an invalid value (\""
 								+ invalidTimes[i]
-								+ "\") is passed in a FORMAT_TIME DmtData.",
-						invalidFormatThrowsException(invalidTimes[i],DmtData.FORMAT_TIME));
+								+ "\") is passed in a FORMAT_TIME DmtData.").isTrue();
 			}
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -293,9 +300,10 @@ public class TestDmtDataExceptions extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtDataExceptions012() {
 		try {		
-			log("#testDmtDataExceptions012");
+			System.out.println("#testDmtDataExceptions012");
 			
 			String[] validTimes =  new String[] {
 			    	"000000",
@@ -307,11 +315,9 @@ public class TestDmtDataExceptions extends DmtTestControl {
 			};
 			
 			for (int i=0; i<validTimes.length; i++) {
-				assertTrue(
-						"Asserts that no exception is thrown when an invalid value (\""
+				assertThat(!invalidFormatThrowsException(validTimes[i],DmtData.FORMAT_TIME)).as("Asserts that no exception is thrown when an invalid value (\""
 								+ validTimes[i]
-								+ "\") is passed in a FORMAT_TIME DmtData.",
-						!invalidFormatThrowsException(validTimes[i],DmtData.FORMAT_TIME));
+								+ "\") is passed in a FORMAT_TIME DmtData.").isTrue();
 			}
 		} catch(Exception e) {
 			failUnexpectedException(e);
@@ -325,9 +331,10 @@ public class TestDmtDataExceptions extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtDataExceptions013() {
 		try {		
-			log("#testDmtDataExceptions013");
+			System.out.println("#testDmtDataExceptions013");
 			
 			String[] invalidDates =  new String[] {
 					"2005010", //Less than 8 digits
@@ -342,11 +349,9 @@ public class TestDmtDataExceptions extends DmtTestControl {
 			};
 			
 			for (int i=0; i<invalidDates.length; i++) {
-				assertTrue(
-						"Asserts that IllegalArgumentException is thrown when an invalid value (\""
+				assertThat(invalidFormatThrowsException(invalidDates[i],DmtData.FORMAT_DATE)).as("Asserts that IllegalArgumentException is thrown when an invalid value (\""
 								+ invalidDates[i]
-								+ "\") is passed in a FORMAT_DATE DmtData.",
-						invalidFormatThrowsException(invalidDates[i],DmtData.FORMAT_DATE));
+								+ "\") is passed in a FORMAT_DATE DmtData.").isTrue();
 			}
 			
 		} catch(Exception e) {
@@ -360,9 +365,10 @@ public class TestDmtDataExceptions extends DmtTestControl {
 	 * 
 	 * @spec DmtData.DmtData(String,int)
 	 */
+	@Test
 	public void testDmtDataExceptions014() {
 		try {		
-			log("#testDmtDataExceptions014");
+			System.out.println("#testDmtDataExceptions014");
 			
 			String[] validDates =  new String[] {
 					"20050131", 
@@ -380,11 +386,9 @@ public class TestDmtDataExceptions extends DmtTestControl {
 					"20051231",
 			};
 			for (int i=0; i<validDates.length; i++) {
-				assertTrue(
-						"Asserts that no exception is thrown when a valid value (\""
+				assertThat(!invalidFormatThrowsException(validDates[i],DmtData.FORMAT_DATE)).as("Asserts that no exception is thrown when a valid value (\""
 								+ validDates[i]
-								+ "\") is passed in a FORMAT_DATE DmtData.",
-						!invalidFormatThrowsException(validDates[i],DmtData.FORMAT_DATE));
+								+ "\") is passed in a FORMAT_DATE DmtData.").isTrue();
 			}
 		} catch(Exception e) {
 			failUnexpectedException(e);

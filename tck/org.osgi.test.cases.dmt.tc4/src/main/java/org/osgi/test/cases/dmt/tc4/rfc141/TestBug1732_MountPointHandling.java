@@ -17,11 +17,17 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.DmtAdmin;
 import org.osgi.service.dmt.DmtException;
@@ -33,26 +39,21 @@ import org.osgi.service.dmt.spi.MountPlugin;
 import org.osgi.service.dmt.spi.MountPoint;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.GenericDataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.Node;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
-import org.osgi.test.support.sleep.Sleep;
 
-public class TestBug1732_MountPointHandling extends
-		DefaultTestBundleControl {
+public class TestBug1732_MountPointHandling extends DmtTestSupport {
 
 	DmtAdmin dmtAdmin;
 	DmtSession session;
 
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 		System.out.println("setting up");
 		dmtAdmin = getService(DmtAdmin.class);
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println("tearing down");
 		closeSession();
 		unregisterAllServices();
@@ -64,6 +65,7 @@ public class TestBug1732_MountPointHandling extends
 	 * registers first a mounting and then a mounted plugin, opens a session and
 	 * checks that the correct plugin was invoked
 	 */
+	@Test
 	public void testMountingPluginFirst() throws Exception {
 
 		// register plugin for ./A with mountpoint ./A/B
@@ -87,6 +89,7 @@ public class TestBug1732_MountPointHandling extends
 	 * registers first a mounted and then a mounting plugin, opens a session and
 	 * checks that the correct plugin was invoked
 	 */
+	@Test
 	public void testMountedPluginFirst() throws Exception {
 
 		// register plugin for ./A/B with no mountPoints
@@ -109,6 +112,7 @@ public class TestBug1732_MountPointHandling extends
 	/**
 	 * checks that the callbacks are correctly invoked if a DataPlugin is registered also as MountPlugin
 	 */
+	@Test
 	public void testDataPluginCallback() throws Exception {
 
 		assertCallbackInvocation( false );
@@ -117,6 +121,7 @@ public class TestBug1732_MountPointHandling extends
 	/**
 	 * checks that the callbacks are correctly invoked if an ExecPlugin is registered also as MountPlugin
 	 */
+	@Test
 	public void testExecPluginCallback() throws Exception {
 
 		assertCallbackInvocation( true );
@@ -140,12 +145,12 @@ public class TestBug1732_MountPointHandling extends
 			classes = new String[] {DataPlugin.class.getName(), MountPlugin.class.getName()};
 		}
 
-		ServiceRegistration< ? > reg = getContext().registerService(classes,
+		ServiceRegistration< ? > reg = context.registerService(classes,
 				plugin, props);
 
 		try {
-			assertNotNull(plugin.lastAddedMountPoints);
-			assertEquals(2, plugin.lastAddedMountPoints.size());
+			assertThat(plugin.lastAddedMountPoints).isNotNull();
+			assertThat(plugin.lastAddedMountPoints).hasSize(2);
 			checkMountPointInList(mountRoot, plugin.lastAddedMountPoints );
 			checkMountPointInList("./XY", plugin.lastAddedMountPoints );
 		} catch (Exception e) {	}
@@ -153,8 +158,8 @@ public class TestBug1732_MountPointHandling extends
 			reg.unregister();
 		}
 
-		assertNotNull(plugin.lastRemovedMountPoints);
-		assertEquals(2, plugin.lastRemovedMountPoints.size());
+		assertThat(plugin.lastRemovedMountPoints).isNotNull();
+		assertThat(plugin.lastRemovedMountPoints).hasSize(2);
 		checkMountPointInList(mountRoot, plugin.lastRemovedMountPoints );
 		checkMountPointInList("./XY", plugin.lastRemovedMountPoints );
 	}
@@ -167,7 +172,7 @@ public class TestBug1732_MountPointHandling extends
 			if ( uri.equals(Uri.toUri(mountPoints.get(i).getMountPath()) ))
 				found = true;
 		}
-		assertEquals( "Expected path: '" + uri + "' not found in provided mountPoints", true, found );
+		assertThat(found).as("Expected path: '" + uri + "' not found in provided mountPoints").isTrue();
 	}
 
 
@@ -177,6 +182,7 @@ public class TestBug1732_MountPointHandling extends
 	 *
 	 * @throws Exception
 	 */
+	@Test
 	public void testPluginWithMoreDataRootURIs() throws Exception {
 		// register the mounting plugin with an additional dataRootURI
 		String additionalDataRootURI = "./X";
@@ -186,17 +192,17 @@ public class TestBug1732_MountPointHandling extends
 		String uri = mountingPlugin.getRootUri();
 		try {
 			session = dmtAdmin.getSession(uri, DmtSession.LOCK_TYPE_SHARED);
-			fail( "A plugin with MountPoints and more than one DataRootURI must be ignored.");
+			fail("A plugin with MountPoints and more than one DataRootURI must be ignored.");
 		} catch (DmtException e) {
-			pass( "The plugin with MountPoints and more than one DataRootURI is correctly ignored.");
+			System.out.println("The plugin with MountPoints and more than one DataRootURI is correctly ignored.");
 		}
 
 		uri = additionalDataRootURI;
 		try {
 			session = dmtAdmin.getSession(uri, DmtSession.LOCK_TYPE_SHARED);
-			fail( "A plugin with MountPoints and more than one DataRootURI must be ignored.");
+			fail("A plugin with MountPoints and more than one DataRootURI must be ignored.");
 		} catch (DmtException e) {
-			pass( "The plugin with MountPoints and more than one DataRootURI is correctly ignored.");
+			System.out.println("The plugin with MountPoints and more than one DataRootURI is correctly ignored.");
 		}
 	}
 
@@ -312,6 +318,7 @@ public class TestBug1732_MountPointHandling extends
 
 	/**
 	 */
+	@Test
 	public void testExecPluginWithMountingPluginFirst() throws Exception {
 
 		GenericDataPlugin dataPlugin = prepareDataPluginForExecTests();
@@ -328,6 +335,7 @@ public class TestBug1732_MountPointHandling extends
 
 	/**
 	 */
+	@Test
 	public void testExecPluginWithMountedPluginFirst() throws Exception {
 
 		GenericDataPlugin dataPlugin = prepareDataPluginForExecTests();
@@ -346,22 +354,22 @@ public class TestBug1732_MountPointHandling extends
 			GenericDataPlugin mountedPlugin, GenericDataPlugin mountingPlugin)
 			throws DmtException {
 
-		assertNull(mountingPlugin.lastExecPath);
-		assertNull(mountedPlugin.lastExecPath);
+		assertThat(mountingPlugin.lastExecPath).isNull();
+		assertThat(mountedPlugin.lastExecPath).isNull();
 
 		// invoke execute on root of mounting ExecPlugin
 		session.execute("./A", "should be invoked on mounting ExecPlugin" );
-		assertNotNull( mountingPlugin.lastExecPath );
-		assertNull( mountedPlugin.lastExecPath );
-		assertEquals( Arrays.asList(Uri.toPath("./A")), Arrays.asList(mountingPlugin.lastExecPath) );
+		assertThat(mountingPlugin.lastExecPath).isNotNull();
+		assertThat(mountedPlugin.lastExecPath).isNull();
+		assertThat(Arrays.asList(mountingPlugin.lastExecPath)).isEqualTo(Arrays.asList(Uri.toPath("./A")));
 
 		mountedPlugin.resetStatus();
 		mountingPlugin.resetStatus();
 
 		session.execute("./A/B", "should be invoked on mounted ExecPlugin" );
-		assertNotNull( mountedPlugin.lastExecPath );
-		assertNull( mountingPlugin.lastExecPath );
-		assertEquals( Arrays.asList(Uri.toPath("./A/B")), Arrays.asList(mountedPlugin.lastExecPath) );
+		assertThat(mountedPlugin.lastExecPath).isNotNull();
+		assertThat(mountingPlugin.lastExecPath).isNull();
+		assertThat(Arrays.asList(mountedPlugin.lastExecPath)).isEqualTo(Arrays.asList(Uri.toPath("./A/B")));
 	}
 
 
@@ -406,14 +414,13 @@ public class TestBug1732_MountPointHandling extends
 		session = dmtAdmin.getSession(uri, DmtSession.LOCK_TYPE_SHARED);
 
 		// check now that the session has been opened on the correct plugin
-		assertEquals(null, noSessionPlugin.lastOpenedSession);
-		assertEquals(uri, sessionPlugin.lastOpenedSession);
+		assertThat(noSessionPlugin.lastOpenedSession).isNull();
+		assertThat(sessionPlugin.lastOpenedSession).isEqualTo(uri);
 
 		session.isNodeUri(uri);
 
-		assertEquals(GenericDataPlugin.ACTION_IS_NODE_URI,
-				sessionPlugin.lastAction);
-		assertEquals(sessionPlugin.lastUri, uri);
+		assertThat(sessionPlugin.lastAction).isEqualTo(GenericDataPlugin.ACTION_IS_NODE_URI);
+		assertThat(uri).isEqualTo(sessionPlugin.lastUri);
 
 		closeSession();
 	}
@@ -450,7 +457,7 @@ public class TestBug1732_MountPointHandling extends
 			registerService(ExecPlugin.class.getName(), mountingPlugin, props);
 		else
 			registerService(DataPlugin.class.getName(), mountingPlugin, props);
-		Sleep.sleep(500);
+		Thread.sleep(500);
 		return mountingPlugin;
 	}
 

@@ -32,12 +32,12 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.MetaNode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>isZeroOccurrenceAllowed</code> method of MetaNode, 
@@ -64,7 +64,7 @@ public class IsZeroOccurrenceAllowed {
 	public void testIsZeroOccurrenceAllowed001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsZeroOccurrenceAllowed001");
+			System.out.println("#testIsZeroOccurrenceAllowed001");
 			session = tbc.getDmtAdmin().getSession(
 					TestMetaNodeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_SHARED);
@@ -72,8 +72,8 @@ public class IsZeroOccurrenceAllowed {
 			MetaNode metanode = session
 					.getMetaNode(TestMetaNodeDataPluginActivator.ROOT);
 
-			TestCase.assertTrue("Asserts IsZeroOccurrenceAllowed method", !metanode
-					.isZeroOccurrenceAllowed());
+			assertThat(!metanode
+					.isZeroOccurrenceAllowed()).as("Asserts IsZeroOccurrenceAllowed method").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {

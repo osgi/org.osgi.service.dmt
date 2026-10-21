@@ -17,8 +17,13 @@
  *******************************************************************************/
 package org.osgi.test.cases.residentialmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.HashSet;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtConstants;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtException;
@@ -37,8 +42,8 @@ public class FilterStructureTestCase extends RMTTestBase {
 	@SuppressWarnings("unused")
 	private LogService log;
 	
-	@Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		super.setUp();
 		log = getService(LogService.class);
 	}
@@ -47,13 +52,14 @@ public class FilterStructureTestCase extends RMTTestBase {
 	 * asserts that the Filter node has correct children
 	 * @throws DmtException
 	 */
+	@Test
 	public void testFilterStructure() throws DmtException {
 		String[] children;
 		HashSet<String> mandatory = new HashSet<String>();
 		HashSet<String> unknown = new HashSet<String>();
 
 		session = dmtAdmin.getSession(FILTER_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
-		assertNotNull("Null DMT session for: " + FILTER_ROOT, session);
+		assertThat(session).as("Null DMT session for: " + FILTER_ROOT).isNotNull();
 		// create one exemplary filter to initialize creation of the automatic nodes
 		String relUri = "example";
 		session.createInteriorNode(relUri);
@@ -74,8 +80,8 @@ public class FilterStructureTestCase extends RMTTestBase {
 				unknown.add(child);
 			mandatory.remove(child);
 		}
-		assertEquals("There are children missing in the Filter node:" + mandatory, 0, mandatory.size());
-		assertEquals("There are unknown children in the Filter node:" + unknown, 0, unknown.size());
+		assertThat(mandatory).as("There are children missing in the Filter node:" + mandatory).isEmpty();
+		assertThat(unknown).as("There are unknown children in the Filter node:" + unknown).isEmpty();
 		
 		session.deleteNode(FILTER_ROOT + "/" + relUri);
 		session.commit();
@@ -86,9 +92,10 @@ public class FilterStructureTestCase extends RMTTestBase {
 	 * asserts that the Filter tree provides correct metadata and node types
 	 * @throws Exception
 	 */
+	@Test
 	public void testMetaDataAndTypes() throws Exception {
 		session = dmtAdmin.getSession(FILTER_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
-		assertNotNull("Null DMT session for: " + FILTER_ROOT, session);
+		assertThat(session).as("Null DMT session for: " + FILTER_ROOT).isNotNull();
 		String uri = FILTER_ROOT + "/" + "example";
 
 		assertMetaData( FILTER_ROOT, false, "_G__", "0,1", MetaNode.PERMANENT, DmtData.FORMAT_NODE);
@@ -108,8 +115,8 @@ public class FilterStructureTestCase extends RMTTestBase {
 		try {
 			
 
-			assertEquals( "The nodeType of the Filter node must be " + DmtConstants.DDF_MAP, DmtConstants.DDF_MAP, session.getNodeType(FILTER_ROOT));
-			assertEquals( "The nodeType of the ResultUriList node must be " + DmtConstants.DDF_LIST, DmtConstants.DDF_LIST, session.getNodeType(uri + "/" + RESULT_URI_LIST));
+			assertThat(session.getNodeType(FILTER_ROOT)).as("The nodeType of the Filter node must be " + DmtConstants.DDF_MAP).isEqualTo(DmtConstants.DDF_MAP);
+			assertThat(session.getNodeType(uri + "/" + RESULT_URI_LIST)).as("The nodeType of the ResultUriList node must be " + DmtConstants.DDF_LIST).isEqualTo(DmtConstants.DDF_LIST);
 			
 		} catch (DmtException de) {
 			de.printStackTrace();
@@ -125,18 +132,19 @@ public class FilterStructureTestCase extends RMTTestBase {
 	 * asserts that the children of the Filter node have the correct defaults
 	 * @throws DmtException
 	 */
+	@Test
 	public void testDefaults() throws DmtException {
 
 		session = dmtAdmin.getSession(FILTER_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
-		assertNotNull("Null DMT session for: " + FILTER_ROOT, session);
+		assertThat(session).as("Null DMT session for: " + FILTER_ROOT).isNotNull();
 		// create one exemplary filter to initialize creation of the automatic nodes
 		String uri = FILTER_ROOT + "/" + "example";
 		session.createInteriorNode(uri);
 		session.commit(); // TODO: This commit should not be necessary - needs check
 
 		try {
-			assertEquals("The Default value of the Target node must be an empty String", "", session.getNodeValue(uri + "/" + TARGET).getString());
-			assertEquals("The Default value of the Filter node must be \"*\"", "*", session.getNodeValue(uri + "/" + FILTER).getString());
+			assertThat(session.getNodeValue(uri + "/" + TARGET).getString()).as("The Default value of the Target node must be an empty String").isEmpty();
+			assertThat(session.getNodeValue(uri + "/" + FILTER).getString()).as("The Default value of the Filter node must be \"*\"").isEqualTo("*");
 			// Default of Limit is "not set", but cardinality is 1 --> hard to test
 		}
 		finally {

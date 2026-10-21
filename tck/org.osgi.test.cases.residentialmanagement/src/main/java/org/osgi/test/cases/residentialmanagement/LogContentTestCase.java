@@ -17,16 +17,20 @@
  *******************************************************************************/
 package org.osgi.test.cases.residentialmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
-import org.osgi.test.support.sleep.Sleep;
 
 /**
  * This test case checks that the logs are correctly reflected in the Log subtree.
@@ -40,8 +44,8 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 	private final List<LogEntry>	localLogEntries	= new ArrayList<LogEntry>();
 	private volatile boolean	enableLog;
 
-	@Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		super.setUp();
 		log = getService(LogService.class);
 		logReader = getService(LogReaderService.class);
@@ -49,8 +53,8 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 		this.enableLog = false;
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
 		super.tearDown();
 		try {
 			logReader.removeLogListener(this);
@@ -62,23 +66,23 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 	 * tests that the log entries from the RMT are in cronological order with the most recent one first.
 	 * @throws Exception
 	 */
+	@Test
 	public void testLogEntryOrder() throws Exception {
 		int max = 100;
 		resetLocalLogs();
-		assertEquals("Log entries are available!", 0, getLocalLogEntries()
-				.size());
+		assertThat(getLocalLogEntries()).as("Log entries are available!").isEmpty();
 
 		this.enableLog = true;
 		createRandomLogs(max);
 		
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 		// open session exclusively, that must stop the RMT from adding new entries
 		session = dmtAdmin.getSession(LOG_ROOT, DmtSession.LOCK_TYPE_EXCLUSIVE);
 		this.enableLog = false;
 
 		String[] children = session.getChildNodeNames(LOG_ROOT + "/" + LOG_ENTRIES );
-		assertNotNull("No LogEntries found.", children);
-		assertFalse("No LogEntries found.", children.length == 0);
+		assertThat(children).as("No LogEntries found.").isNotNull();
+		assertThat(children.length == 0).as("No LogEntries found.").isFalse();
 
 		// the impl. might only support less than our choosen max.
 		max = Math.min( children.length, max );
@@ -95,7 +99,7 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 			int level = session.getNodeValue(uri + LEVEL).getInt();
 			@SuppressWarnings("unused")
 			String message = session.getNodeValue(uri + MESSAGE).getString();
-			assertTrue( "The log entries are not ordered correctly (most recent to oldest)", time <= oldTime );
+			assertThat(time <= oldTime).as("The log entries are not ordered correctly (most recent to oldest)").isTrue();
 			oldTime = time;
 			index++;
 			if ( index >= max )
@@ -112,23 +116,23 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 	 * This test relies on the correct blocking of new log entries in exclusive sessions.
 	 * @throws Exception
 	 */
+	@Test
 	public void testLogEntries() throws Exception {
 		int max = 100;
 		resetLocalLogs();
-		assertEquals("Log entries are available!", 0, getLocalLogEntries()
-				.size());
+		assertThat(getLocalLogEntries()).as("Log entries are available!").isEmpty();
 
 		this.enableLog = true;
 		createRandomLogs(max);
 		
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 		// opening session exclusively, that must stop the RMT from adding new entries
 		session = dmtAdmin.getSession(LOG_ROOT, DmtSession.LOCK_TYPE_EXCLUSIVE);
 		this.enableLog = false;
 
 		String[] children = session.getChildNodeNames(LOG_ROOT + "/" + LOG_ENTRIES );
-		assertNotNull("No LogEntries found.", children);
-		assertFalse("No LogEntries found.", children.length == 0);
+		assertThat(children).as("No LogEntries found.").isNotNull();
+		assertThat(children.length == 0).as("No LogEntries found.").isFalse();
 
 		// the impl. might only support less than our choosen max.
 		max = Math.min( children.length, max );
@@ -146,20 +150,16 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 			int level = session.getNodeValue(uri + LEVEL).getInt();
 			String message = session.getNodeValue(uri + MESSAGE).getString();
 
-			assertEquals(
-					"This is not the expected logEntry. The log message differs.",
-					localLogEntry.getMessage(), message);
-			assertEquals(
-					"This is not the expected logEntry. The bundle location differs.",
-					localLogEntry.getBundle().getLocation(), bundleLocation);
-			assertEquals("This is not the expected logEntry. The log level differs.",localLogEntry.getLevel(), level);
-			assertEquals("This is not the expected logEntry. The log timestamp differs.",localLogEntry.getTime(), time.getTime());
+			assertThat(message).as("This is not the expected logEntry. The log message differs.").isEqualTo(localLogEntry.getMessage());
+			assertThat(bundleLocation).as("This is not the expected logEntry. The bundle location differs.").isEqualTo(localLogEntry.getBundle().getLocation());
+			assertThat(level).as("This is not the expected logEntry. The log level differs.").isEqualTo(localLogEntry.getLevel());
+			assertThat(time.getTime()).as("This is not the expected logEntry. The log timestamp differs.").isEqualTo(localLogEntry.getTime());
 			if ( session.isNodeUri(uri + EXCEPTION )) {
 				// its not specified that only ERROR logs can have an exception
 				String ex = session.getNodeValue(uri + EXCEPTION).getString();
 				// this string must contain "human readable information about the exception" and optionally a stack trace
 				// --> check that at least the exception message is part of the node value
-				assertTrue("The exception field does not contain the exception message.", ex.indexOf(localLogEntry.getException().getMessage()) >= 0);
+				assertThat(ex.indexOf(localLogEntry.getException().getMessage()) >= 0).as("The exception field does not contain the exception message.").isTrue();
 			}
 			index++;
 			if ( index >= max )
@@ -171,35 +171,36 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 	 * this test checks that new entries are added to the RMT-Log, if there is an open shared session.
 	 * @throws Exception
 	 */
+	@Test
 	public void testLogEntriesInSharedSession() throws Exception {
 		// ensure that there is at least one log entry
-		assertNotNull("Null LogService.", log);
+		assertThat(log).as("Null LogService.").isNotNull();
 		log.log(LogService.LOG_INFO, "Infolog 1");
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		// opening session in shared mode
 		session = dmtAdmin.getSession(LOG_ROOT, DmtSession.LOCK_TYPE_SHARED);
 
 		String uri = LOG_ROOT + "/" + LOG_ENTRIES + "/0/" + TIME;
-		assertTrue("There must be at least one log entry: " + uri, session.isNodeUri(uri));
+		assertThat(session.isNodeUri(uri)).as("There must be at least one log entry: " + uri).isTrue();
 		Date oldTime = session.getNodeValue(uri).getDateTime();
 
 		// wait a while to ensure that the timestamp of a new log entry changes
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 		// write a new log
 		log.log(LogService.LOG_WARNING, "Warninglog 1");
 
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 		Date time = session.getNodeValue(uri).getDateTime();
 
-		assertFalse("The log list must be updated while in a shared session",
-				oldTime.equals(time));
+		assertThat(oldTime.equals(time)).as("The log list must be updated while in a shared session").isFalse();
 	}
 
 	/**
 	 * this test checks that no new entries are added to the RMT-Log, if there is an open exclusive session.
 	 * @throws Exception
 	 */
+	@Test
 	public void testLogEntriesInExclusiveSession() throws Exception {
 		assertNoUpdatesDuringExclusiveSession(DmtSession.LOCK_TYPE_EXCLUSIVE);
 		assertNoUpdatesDuringExclusiveSession(DmtSession.LOCK_TYPE_ATOMIC);
@@ -211,26 +212,26 @@ public class LogContentTestCase extends RMTTestBase implements LogListener {
 	private void assertNoUpdatesDuringExclusiveSession(int sessionType) throws Exception {
 
 		// ensure that there is at least one log entry
-		assertNotNull("Null LogService.", log);
+		assertThat(log).as("Null LogService.").isNotNull();
 		log.log(LogService.LOG_INFO, "Infolog 1");
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		// opening session exclusively, that must stop the RMT from adding new entries
 		session = dmtAdmin.getSession(LOG_ROOT, sessionType);
 
 		String uri = LOG_ROOT + "/" + LOG_ENTRIES + "/0/" + TIME;
-		assertTrue("There must be at least one log entry: " + uri, session.isNodeUri(uri));
+		assertThat(session.isNodeUri(uri)).as("There must be at least one log entry: " + uri).isTrue();
 		Date oldTime = session.getNodeValue(uri).getDateTime();
 
 		// wait a while to ensure that the timestamp of a new log entry changes
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 		// write a new log
 		log.log(LogService.LOG_WARNING, "Warninglog 1");
 
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 		Date time = session.getNodeValue(uri).getDateTime();
 
-		assertEquals("The log list must not be updated while in an exclusive session",oldTime, time);
+		assertThat(time).as("The log list must not be updated while in an exclusive session").isEqualTo(oldTime);
 
 		if ( sessionType == DmtSession.LOCK_TYPE_ATOMIC)
 			session.commit();

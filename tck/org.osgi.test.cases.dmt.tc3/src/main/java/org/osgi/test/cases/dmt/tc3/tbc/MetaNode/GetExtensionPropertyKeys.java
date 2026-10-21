@@ -29,12 +29,12 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.MetaNode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>getExtensionPropertyKeys</code> method of MetaNode, 
@@ -60,7 +60,7 @@ public class GetExtensionPropertyKeys {
 	public void testGetExtensionPropertyKeys001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetExtensionPropertyKeys001");
+			System.out.println("#testGetExtensionPropertyKeys001");
 			session = tbc.getDmtAdmin().getSession(
 					TestMetaNodeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_SHARED);
@@ -68,9 +68,8 @@ public class GetExtensionPropertyKeys {
 			MetaNode metanode = session
 					.getMetaNode(TestMetaNodeDataPluginActivator.ROOT);
 
-			TestCase.assertEquals("Asserts getExtensionPropertyKeys method",
-					TestMetaNode.DEFAULT_EXTENSION_PROPERTY_KEYS, metanode
-							.getExtensionPropertyKeys());
+			assertThat(metanode
+							.getExtensionPropertyKeys()).as("Asserts getExtensionPropertyKeys method").isEqualTo(TestMetaNode.DEFAULT_EXTENSION_PROPERTY_KEYS);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {

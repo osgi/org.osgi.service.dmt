@@ -17,6 +17,8 @@
  *******************************************************************************/
 package org.osgi.test.cases.residentialmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -26,6 +28,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
@@ -38,12 +42,9 @@ import org.osgi.service.log.LogService;
 import org.osgi.service.log.Logger;
 import org.osgi.service.log.admin.LoggerAdmin;
 import org.osgi.service.log.admin.LoggerContext;
-import org.osgi.test.support.OSGiTestCaseProperties;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
-import org.osgi.test.support.sleep.Sleep;
 
 @SuppressWarnings("deprecation")
-public abstract class RMTTestBase extends DefaultTestBundleControl implements
+public abstract class RMTTestBase extends RMTTestSupport implements
 		RMTConstants {
 
 	static final int DELAY; 
@@ -75,7 +76,7 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 		
 		int delay = 500;
 		try {
-			delay = Integer.parseInt(OSGiTestCaseProperties
+			delay = Integer.parseInt(RMTTestProperties
 					.getProperty("org.osgi.test.cases.rmt.delay"));
 		} catch (Exception e) {
 			System.out.println("System property 'org.osgi.test.cases.rmt.delay' not set or invalid.");
@@ -83,13 +84,12 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 		DELAY = delay;
 	}
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		loggerAdminReference = getContext()
+	@BeforeEach
+	public void setUp() throws Exception {
+		loggerAdminReference = context
 				.getServiceReference(LoggerAdmin.class);
 		if (loggerAdminReference != null) {
-			loggerAdmin = getContext().getService(loggerAdminReference);
+			loggerAdmin = context.getService(loggerAdminReference);
 
 			// save off original log levels
 			rootContext = loggerAdmin.getLoggerContext(null);
@@ -103,9 +103,8 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 	}
 
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println("tearing down");
 		if (this.testBundle1 != null
 				&& testBundle1.getState() != Bundle.UNINSTALLED)
@@ -146,9 +145,9 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 	// -----Utilities-----
 	Bundle installAndStartBundle(String location) throws IOException,
 			BundleException {
-		URL url = getContext().getBundle().getResource(location);
+		URL url = context.getBundle().getResource(location);
 		InputStream is = url.openStream();
-		Bundle bundle = getContext().installBundle(location, is);
+		Bundle bundle = context.installBundle(location, is);
 		bundle.start();
 		is.close();
 		return bundle;
@@ -164,14 +163,14 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 	 */
 	void assertMetaData( String uri, boolean isLeaf, String canStr, String cardinality, int scope, int format) throws Exception {
 		MetaNode metaNode = session.getMetaNode(uri);
-		assertNotNull("The metadata for " + uri + " must not be null!", metaNode);
+		assertThat(metaNode).as("The metadata for " + uri + " must not be null!").isNotNull();
 		
-		assertEquals( uri + " must " + (isLeaf ? "":" not ") + " be a leaf node", isLeaf, metaNode.isLeaf() );
+		assertThat(metaNode.isLeaf()).as(uri + " must " + (isLeaf ? "":" not ") + " be a leaf node").isEqualTo(isLeaf);
 		assertOperations(uri, metaNode, canStr);
 		assertCardinality(uri, metaNode, cardinality);
 
-		assertEquals( uri + " must have scope: " + scope, scope, metaNode.getScope() );
-		assertEquals( "The MetaData of " + uri + " has a wrong data format.", format, metaNode.getFormat() );
+		assertThat(metaNode.getScope()).as(uri + " must have scope: " + scope).isEqualTo(scope);
+		assertThat(metaNode.getFormat()).as("The MetaData of " + uri + " has a wrong data format.").isEqualTo(format);
 	}
 	
 	
@@ -228,7 +227,7 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 						new RuntimeException("Log-Test Exception: " + i));
 			else 
 				log.log(level, LOG_TEST_MESSAGE_PREFIX + i);
-			Sleep.sleep(10);
+			Thread.sleep(10);
 		}
 	}
 
@@ -306,16 +305,16 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 			// TODO: what about EXECUTE ?
 			switch (i) {
 			case 0:
-				assertEquals( uri + " must " + (should ? "":" not ") + " support ADD operation!", should, metaNode.can( MetaNode.CMD_ADD ) );
+				assertThat(metaNode.can( MetaNode.CMD_ADD )).as(uri + " must " + (should ? "":" not ") + " support ADD operation!").isEqualTo(should);
 				break;
 			case 1:
-				assertEquals( uri + " must " + (should ? "":" not ") + " support GET operation!", should, metaNode.can( MetaNode.CMD_GET ) );
+				assertThat(metaNode.can( MetaNode.CMD_GET )).as(uri + " must " + (should ? "":" not ") + " support GET operation!").isEqualTo(should);
 				break;
 			case 2:
-				assertEquals( uri + " must " + (should ? "":" not ") + " support REPLACE operation!", should, metaNode.can( MetaNode.CMD_REPLACE ) );
+				assertThat(metaNode.can( MetaNode.CMD_REPLACE )).as(uri + " must " + (should ? "":" not ") + " support REPLACE operation!").isEqualTo(should);
 				break;
 			case 3:
-				assertEquals( uri + " must " + (should ? "":" not ") + " support DELETE operation!", should, metaNode.can( MetaNode.CMD_DELETE ) );
+				assertThat(metaNode.can( MetaNode.CMD_DELETE )).as(uri + " must " + (should ? "":" not ") + " support DELETE operation!").isEqualTo(should);
 				break;
 	
 			default:
@@ -335,8 +334,8 @@ public abstract class RMTTestBase extends DefaultTestBundleControl implements
 		boolean zeroAllowed = "0".equals(cardinality.substring(0,1));
 		// check last character
 		long max = "*".equals(cardinality.substring(cardinality.length()-1,cardinality.length())) ? Integer.MAX_VALUE : 1;
-		assertEquals( "The MetaData of " + uri + " provides wrong value for 'zero occurrence allowed'!", zeroAllowed, metaNode.isZeroOccurrenceAllowed() );
-		assertTrue( "The MetaData of " + uri + " provides wrong value for max occurence.", metaNode.getMaxOccurrence() > 0 && metaNode.getMaxOccurrence() <= max );
+		assertThat(metaNode.isZeroOccurrenceAllowed()).as("The MetaData of " + uri + " provides wrong value for 'zero occurrence allowed'!").isEqualTo(zeroAllowed);
+		assertThat(metaNode.getMaxOccurrence() > 0 && metaNode.getMaxOccurrence() <= max).as("The MetaData of " + uri + " provides wrong value for max occurence.").isTrue();
 	}
 
 

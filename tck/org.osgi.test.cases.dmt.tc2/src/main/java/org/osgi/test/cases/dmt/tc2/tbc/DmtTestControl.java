@@ -41,6 +41,9 @@
 
 package org.osgi.test.cases.dmt.tc2.tbc;
 
+import static org.assertj.core.api.Assertions.fail;
+
+import java.net.URL;
 import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.PrivilegedAction;
@@ -49,7 +52,11 @@ import java.util.PropertyPermission;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.AdminPermission;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.PackagePermission;
 import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceReference;
@@ -72,9 +79,12 @@ import org.osgi.test.cases.dmt.tc2.tbc.Uri.IsAbsoluteUri;
 import org.osgi.test.cases.dmt.tc2.tbc.Uri.IsValidUri;
 import org.osgi.test.cases.dmt.tc2.tbc.Uri.ToPath;
 import org.osgi.test.cases.dmt.tc2.tbc.Uri.ToUri;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.common.annotation.InjectBundleContext;
 
-public class DmtTestControl extends DefaultTestBundleControl {
+public class DmtTestControl {
+
+	@InjectBundleContext
+	BundleContext		context;
 
 	private static boolean inited = false;
 	private static TestExecPluginActivator		testExecPluginActivator;
@@ -130,7 +140,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 			TestExecPluginActivator.INTERIOR_NODE + "/../"
 					+ TestExecPluginActivator.INTERIOR_NODE_NAME};
 
-	@Override
+	@BeforeEach
 	public void setUp() {
 		if (!inited) {
 			inited = true;
@@ -140,7 +150,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 								DmtAdmin.class));
 			}
 			catch (NullPointerException e) {
-				log("There is no DmtAdmin service in the service registry, tests will not be executed correctly");
+				System.out.println("There is no DmtAdmin service in the service registry, tests will not be executed correctly");
 			}
 
 			try {
@@ -149,7 +159,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 								PermissionAdmin.class));
 			}
 			catch (NullPointerException e) {
-				log("There is no PermissionAdmin service in the service registry, tests will not be executed correctly");
+				System.out.println("There is no PermissionAdmin service in the service registry, tests will not be executed correctly");
 			}
 
 			installBundle();
@@ -165,7 +175,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 			remoteAlertSenderActivator.start(getContext());
 		}
 		catch (Exception e) {
-			log("TestControl: Failed starting the remote alert sender");
+			System.out.println("TestControl: Failed starting the remote alert sender");
 		}
 	}
 
@@ -174,7 +184,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 			installBundle("tb1.jar");
 		}
 		catch (Exception e) {
-			log("TestControl: Failed installing tb1 bundle");
+			System.out.println("TestControl: Failed installing tb1 bundle");
 		}
 		ServiceReference<TB1Service> tb1SvrReference = getContext()
 				.getServiceReference(TB1Service.class);
@@ -200,7 +210,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 			logPluginActivator.start(getContext());
 		}
 		catch (Exception e) {
-			log("#TestControl: Failed starting plugins");
+			System.out.println("#TestControl: Failed starting plugins");
 		}
 	}
 
@@ -268,6 +278,38 @@ public class DmtTestControl extends DefaultTestBundleControl {
 		}
 	}
 
+	/**
+	 * The real BundleContext of the test bundle, as getContext() of
+	 * DefaultTestBundleControl: the plugins, the event handler and tb1 are
+	 * registered and installed once for all tests and the test classes of tb1
+	 * keep the first test instance, so nothing may go with the end of a test as
+	 * with the osgi-test context.
+	 */
+	public BundleContext getContext() {
+		return context.getBundle().getBundleContext();
+	}
+
+	/**
+	 * As DefaultTestBundleControl: installed from the bundle entry URL through
+	 * the real BundleContext and started.
+	 */
+	public Bundle installBundle(String bundleName) throws Exception {
+		URL entry = context.getBundle().getEntry(bundleName);
+		Bundle b = getContext().installBundle(entry.toExternalForm(),
+				entry.openStream());
+		b.start();
+		return b;
+	}
+
+	/**
+	 * From DefaultTestBundleControl, unchanged.
+	 */
+	public static void failException(String message,
+			Class< ? > expectedExceptionClass) {
+		fail(message + " expected:[" + expectedExceptionClass.getName()
+				+ "] and got nothing");
+	}
+
 	public PermissionAdmin getPermissionAdmin() {
 		return permissionAdmin;
 	}
@@ -291,6 +333,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 		return temp.toString();
 	}
 
+	@Test
 	public void testEvents() {
 		testClasses[32].run();
 	}
@@ -298,124 +341,153 @@ public class DmtTestControl extends DefaultTestBundleControl {
 	// DmtSession test cases
 
 	// Tests common DmtSession exceptions
+	@Test
 	public void testDmtSessionExceptions() {
 		testClasses[31].run();
 	}
 
+	@Test
 	public void testDmtSessionConstants() {
 		testClasses[21].run();
 	}
 
+	@Test
 	public void testDmtSessionClose() {
 		testClasses[0].run();
 
 	}
 
+	@Test
 	public void testDmtSessionCommit() {
 		testClasses[1].run();
 
 	}
 
+	@Test
 	public void testDmtSessionCopy() {
 		testClasses[2].run();
 
 	}
 
+	@Test
 	public void testDmtSessionCreateInteriorNode() {
 		testClasses[3].run();
 	}
 
+	@Test
 	public void testDmtSessionCreateLeafNode() {
 		testClasses[4].run();
 	}
 
+	@Test
 	public void testDmtSessionDeleteNode() {
 		testClasses[5].run();
 	}
 
+	@Test
 	public void testDmtSessionExecute() {
 		testClasses[17].run();
 	}
 
+	@Test
 	public void testDmtSessionGetChildNodeNames() {
 		testClasses[6].run();
 	}
 
+	@Test
 	public void testDmtSessionGetLockType() {
 		testClasses[22].run();
 	}
 
+	@Test
 	public void testDmtSessionGetEffectiveNodeAcl() {
 		testClasses[18].run();
 	}
 
+	@Test
 	public void testDmtSessionGetMetaNode() {
 		testClasses[7].run();
 
 	}
 
+	@Test
 	public void testDmtSessionGetSetNodeAcl() {
 		testClasses[19].run();
 	}
 
+	@Test
 	public void testDmtSessionGetNodeSize() {
 		testClasses[8].run();
 	}
 
+	@Test
 	public void testDmtSessionGetNodeTimestamp() {
 		testClasses[9].run();
 
 	}
 
+	@Test
 	public void testDmtSessionGetNodeVersion() {
 		testClasses[10].run();
 	}
 
+	@Test
 	public void testDmtSessionGetPrincipal() {
 		testClasses[23].run();
 	}
 
+	@Test
 	public void testDmtSessionGetRootUri() {
 		testClasses[24].run();
 	}
 
+	@Test
 	public void testDmtSessionGetSessionId() {
 		testClasses[25].run();
 	}
 
+	@Test
 	public void testDmtSessionGetSetNodeTitle() {
 		testClasses[11].run();
 
 	}
 
+	@Test
 	public void testDmtSessionGetSetNodeType() {
 		testClasses[12].run();
 	}
 
+	@Test
 	public void testDmtSessionGetSetNodeValue() {
 		testClasses[13].run();
 	}
 
+	@Test
 	public void testDmtSessionGetState() {
 		testClasses[26].run();
 	}
 
+	@Test
 	public void testDmtSessionIsLeafNode() {
 		testClasses[16].run();
 	}
 
+	@Test
 	public void testDmtSessionIsNodeUri() {
 		testClasses[27].run();
 	}
 
+	@Test
 	public void testDmtSessionRenameNode() {
 		testClasses[14].run();
 	}
 
+	@Test
 	public void testDmtSessionRollback() {
 		testClasses[15].run();
 	}
 
+	@Test
 	public void testDmtSessionSetDefaultNodeValue() {
 		testClasses[29].run();
 	}
@@ -424,15 +496,18 @@ public class DmtTestControl extends DefaultTestBundleControl {
 	// (it is not at org.osgi.test.cases.dmt.tc1 because it uses the DmtAdmin
 	// and there we cannot get any services)
 
+	@Test
 	public void testAclConstraints() {
 		new AclConstraints(this).run();
 	}
 
 	// DmtAdmin Test cases
+	@Test
 	public void testDmtAdminGetSession() {
 		testClasses[20].run();
 	}
 
+	@Test
 	public void testDmtAdminDmtAdressingUri() {
 		testClasses[30].run();
 	}
@@ -447,37 +522,45 @@ public class DmtTestControl extends DefaultTestBundleControl {
 //	}
 
 	// NotificationService
+	@Test
 	public void testNotificationServiceSendNotification() {
 		testClasses[28].run();
 	}
 
 	// DmtEvent Test cases
+	@Test
 	public void testDmtEvent() {
 		testClasses[35].run();
 	}
 
+	@Test
 	public void testDmtEventConstants() {
 		testClasses[36].run();
 	}
 
 	// Uri
+	@Test
 	public void testUriIsAbsoluteUri() {
 		new IsAbsoluteUri(this).run();
 	}
 
+	@Test
 	public void testUriIsValidUri() {
 		new IsValidUri(this).run();
 	}
 
+	@Test
 	public void testUriMangle() {
-		log("#Test of URI mangling was disabled because Uri.mangle() has been removed in DmtAdmin spec. 2.0 !!!");
+		System.out.println("#Test of URI mangling was disabled because Uri.mangle() has been removed in DmtAdmin spec. 2.0 !!!");
 //		new Mangle(this).run();
 	}
 
+	@Test
 	public void testUriToUri() {
 		new ToUri(this).run();
 	}
 
+	@Test
 	public void testUriToPath() {
 		new ToPath(this).run();
 	}
@@ -505,7 +588,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 			testDmtHandlerActivator.start(this.getContext());
 		}
 		catch (Exception e) {
-			log("#Fail when starting the Handler");
+			System.out.println("#Fail when starting the Handler");
 		}
 	}
 
@@ -515,7 +598,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 				testDmtHandlerActivator.stop(this.getContext());
 			}
 			catch (Exception e) {
-				log("#Fail when stopping the Handler");
+				System.out.println("#Fail when stopping the Handler");
 			}
 		}
 	}
@@ -532,7 +615,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 			TestExecPlugin.setAllUriIsExistent(false);
 		}
 		catch (Exception e) {
-			log("#Exception cleaning the acl from " + nodeUri + " : "
+			System.out.println("#Exception cleaning the acl from " + nodeUri + " : "
 					+ e.getClass().getName() + "Message: [" + e.getMessage()
 					+ "]");
 		}
@@ -549,7 +632,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 					session.close();
 				}
 				catch (DmtException e) {
-					log("#Exception closing the session: "
+					System.out.println("#Exception closing the session: "
 							+ e.getClass().getName() + "Message: ["
 							+ e.getMessage() + "]");
 				}

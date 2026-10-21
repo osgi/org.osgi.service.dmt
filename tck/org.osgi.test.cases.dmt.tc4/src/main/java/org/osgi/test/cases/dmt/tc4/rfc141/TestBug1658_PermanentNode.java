@@ -17,9 +17,15 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtAdmin;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtException;
@@ -28,17 +34,15 @@ import org.osgi.service.dmt.spi.DataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.GenericDataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.MetaNode;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.Node;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-public class TestBug1658_PermanentNode extends DefaultTestBundleControl{
+public class TestBug1658_PermanentNode extends DmtTestSupport {
 	
 	DmtAdmin dmtAdmin;
 	DmtSession session;
 	GenericDataPlugin dataPlugin;
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 		System.out.println("setting up");
 		dmtAdmin = getService(DmtAdmin.class);
 	}
@@ -46,9 +50,8 @@ public class TestBug1658_PermanentNode extends DefaultTestBundleControl{
 
 	
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println( "tearing down");
 		if ( session != null && session.getState() == DmtSession.STATE_OPEN )
 			session.close();
@@ -58,6 +61,7 @@ public class TestBug1658_PermanentNode extends DefaultTestBundleControl{
 	
 	/**
 	 */
+	@Test
 	public void testSetValueOnNodeWithoutMetaData() throws Exception {
 
 		// prepare the plugin and nodes without any attached meta data
@@ -69,6 +73,7 @@ public class TestBug1658_PermanentNode extends DefaultTestBundleControl{
 	
 	/**
 	 */
+	@Test
 	public void testSetValueOnPermanentNode() throws Exception {
 		
 		// prepare the plugin and nodes wit meta data for node "./A/B", indicating 
@@ -77,9 +82,9 @@ public class TestBug1658_PermanentNode extends DefaultTestBundleControl{
 		
 		try {
 			setNodeValue();
-			pass("Setting a value on permanent node is correctly permitted." );
+			System.out.println("Setting a value on permanent node is correctly permitted.");
 		} catch (DmtException e) {
-			assertEquals("an unexpected exeption occured while performing setNodeValue: " + e.getMessage(),  DmtException.METADATA_MISMATCH, e.getCode() );
+			assertThat(e.getCode()).as("an unexpected exeption occured while performing setNodeValue: " + e.getMessage()).isEqualTo(DmtException.METADATA_MISMATCH);
 			fail("Setting a value on a permanent node must be permitted.");
 		}
 	}
@@ -93,8 +98,8 @@ public class TestBug1658_PermanentNode extends DefaultTestBundleControl{
 		
 		DmtData dmtData = new DmtData( newValue );
 		session.setNodeValue(uri, dmtData );
-		assertEquals( GenericDataPlugin.ACTION_SET_NODE_VALUE, dataPlugin.lastAction );
-		assertEquals( newValue, dataPlugin.lastValue.toString() );
+		assertThat(dataPlugin.lastAction).isEqualTo(GenericDataPlugin.ACTION_SET_NODE_VALUE);
+		assertThat(dataPlugin.lastValue).hasToString(newValue);
 	}
 	
 

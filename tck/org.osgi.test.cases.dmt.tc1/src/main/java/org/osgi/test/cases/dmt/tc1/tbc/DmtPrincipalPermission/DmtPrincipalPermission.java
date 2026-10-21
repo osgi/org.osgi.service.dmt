@@ -35,6 +35,9 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPrincipalPermission;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -51,17 +54,15 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission001() {
 		try {
-			log("#testDmtPrincipalPermission001");
+			System.out.println("#testDmtPrincipalPermission001");
 			org.osgi.service.dmt.security.DmtPrincipalPermission dmtPrincipalPermission = new org.osgi.service.dmt.security.DmtPrincipalPermission(
 					DmtConstants.PRINCIPAL);
-			assertEquals(
-							"Asserts that the principal passed as parameter is equal to the returned value",
-							DmtConstants.PRINCIPAL, dmtPrincipalPermission
-									.getName());
-			assertEquals("Asserts that the actions returned is '*'", "*",
-					dmtPrincipalPermission.getActions());
+			assertThat(dmtPrincipalPermission
+									.getName()).as("Asserts that the principal passed as parameter is equal to the returned value").isEqualTo(DmtConstants.PRINCIPAL);
+			assertThat(dmtPrincipalPermission.getActions()).as("Asserts that the actions returned is '*'").isEqualTo("*");
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -72,16 +73,14 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission002() {
 		try {
-			log("#testDmtPrincipalPermission002");
+			System.out.println("#testDmtPrincipalPermission002");
 			org.osgi.service.dmt.security.DmtPrincipalPermission dmtPrincipalPermission = new org.osgi.service.dmt.security.DmtPrincipalPermission(
 					"*");
-			assertEquals(
-							"Asserts that the principal passed as parameter is equal to the returned value.",
-							"*", dmtPrincipalPermission.getName());
-			assertEquals("Asserts that the actions returned is '*'.", "*",
-					dmtPrincipalPermission.getActions());
+			assertThat(dmtPrincipalPermission.getName()).as("Asserts that the principal passed as parameter is equal to the returned value.").isEqualTo("*");
+			assertThat(dmtPrincipalPermission.getActions()).as("Asserts that the actions returned is '*'.").isEqualTo("*");
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -93,18 +92,15 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String,String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission003() {
 		try {
-			log("#testDmtPrincipalPermission003");
+			System.out.println("#testDmtPrincipalPermission003");
 			org.osgi.service.dmt.security.DmtPrincipalPermission dmtPrincipalPermission = new org.osgi.service.dmt.security.DmtPrincipalPermission(
 					DmtConstants.PRINCIPAL, "*");
-			assertEquals(
-							"Asserts that the principal passed as parameter is equal to the returned value",
-							DmtConstants.PRINCIPAL, dmtPrincipalPermission
-									.getName());
-			assertEquals(
-							"Asserts that the actions passed as parameter is equal to the returned value",
-							"*", dmtPrincipalPermission.getActions());
+			assertThat(dmtPrincipalPermission
+									.getName()).as("Asserts that the principal passed as parameter is equal to the returned value").isEqualTo(DmtConstants.PRINCIPAL);
+			assertThat(dmtPrincipalPermission.getActions()).as("Asserts that the actions passed as parameter is equal to the returned value").isEqualTo("*");
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -115,13 +111,14 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission004() {
 		try {
-			log("#testDmtPrincipalPermission004");
+			System.out.println("#testDmtPrincipalPermission004");
 			new org.osgi.service.dmt.security.DmtPrincipalPermission(null);
 			failException("#", NullPointerException.class);
 		} catch (NullPointerException e) {
-			pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -132,13 +129,14 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission005() {
 		try {
-			log("#testDmtPrincipalPermission005");
+			System.out.println("#testDmtPrincipalPermission005");
 			new org.osgi.service.dmt.security.DmtPrincipalPermission("");
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -149,13 +147,14 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String,String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission006() {
 		try {
-			log("#testDmtPrincipalPermission006");
+			System.out.println("#testDmtPrincipalPermission006");
 			new org.osgi.service.dmt.security.DmtPrincipalPermission(null, "*");
 			failException("#", NullPointerException.class);
 		} catch (NullPointerException e) {
-			pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -166,13 +165,14 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String,String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission007() {
 		try {
-			log("#testDmtPrincipalPermission007");
+			System.out.println("#testDmtPrincipalPermission007");
 			new org.osgi.service.dmt.security.DmtPrincipalPermission("", "*");
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -183,14 +183,15 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String,String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission008() {
 		try {
-			log("#testDmtPrincipalPermission008");
+			System.out.println("#testDmtPrincipalPermission008");
 			new org.osgi.service.dmt.security.DmtPrincipalPermission(
 					DmtConstants.PRINCIPAL, null);
 			failException("#", NullPointerException.class);
 		} catch (NullPointerException e) {
-			pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -201,14 +202,15 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String,String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission009() {
 		try {
-			log("#testDmtPrincipalPermission009");
+			System.out.println("#testDmtPrincipalPermission009");
 			new org.osgi.service.dmt.security.DmtPrincipalPermission(
 					DmtConstants.PRINCIPAL, "");
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -220,17 +222,15 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission010() {
 		try {
-			log("#testDmtPrincipalPermission010");
+			System.out.println("#testDmtPrincipalPermission010");
 			String principal = "www.cesar*";
 			org.osgi.service.dmt.security.DmtPrincipalPermission dmtPrincipalPermission = new org.osgi.service.dmt.security.DmtPrincipalPermission(
 					principal);
-			assertEquals(
-							"Asserts that the principal passed as parameter is equal to the returned value",
-							principal, dmtPrincipalPermission.getName());
-			assertEquals("Asserts that the actions returned is '*'", "*",
-					dmtPrincipalPermission.getActions());
+			assertThat(dmtPrincipalPermission.getName()).as("Asserts that the principal passed as parameter is equal to the returned value").isEqualTo(principal);
+			assertThat(dmtPrincipalPermission.getActions()).as("Asserts that the actions returned is '*'").isEqualTo("*");
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -242,17 +242,15 @@ public class DmtPrincipalPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.DmtPrincipalPermission(String,String)
 	 */
+	@Test
 	public void testDmtPrincipalPermission011() {
 		try {
-			log("#testDmtPrincipalPermission011");
+			System.out.println("#testDmtPrincipalPermission011");
 			String principal = "www.cesar*";
 			org.osgi.service.dmt.security.DmtPrincipalPermission dmtPrincipalPermission = new org.osgi.service.dmt.security.DmtPrincipalPermission(
 					principal, "*");
-			assertEquals(
-							"Asserts that the principal passed as parameter is equal to the returned value",
-							principal, dmtPrincipalPermission.getName());
-			assertEquals("Asserts that the actions returned is '*'", "*",
-					dmtPrincipalPermission.getActions());
+			assertThat(dmtPrincipalPermission.getName()).as("Asserts that the principal passed as parameter is equal to the returned value").isEqualTo(principal);
+			assertThat(dmtPrincipalPermission.getActions()).as("Asserts that the actions returned is '*'").isEqualTo("*");
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}

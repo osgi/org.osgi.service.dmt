@@ -17,6 +17,10 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
@@ -34,6 +38,7 @@ public class TestScaffoldOperations extends ScaffoldNodeHelper {
 	 * Checks metadata of a Scaffold node as described in RFC141
 	 * (RFC141, section 6.3.1)
 	 */
+	@Test
 	public void testScaffoldNodeOperations() throws Exception {
 
 		prepareScaffoldPlugin();
@@ -57,6 +62,7 @@ public class TestScaffoldOperations extends ScaffoldNodeHelper {
 	/**
 	 * checks that the DmtAdmin throws a DmtExeption of type COMMAND_NOT_ALLOWED, if execute is invoked on a scaffold node
 	 */
+	@Test
 	public void testScaffoldNodeExecution() throws Exception {
 
 		prepareScaffoldPlugin();
@@ -66,9 +72,9 @@ public class TestScaffoldOperations extends ScaffoldNodeHelper {
 		
 		try {
 			session.execute( uri, null );
-			fail( "The DmtAdmin must throw a DmtException of type COMMAND_NOT_ALLOWED for execute() on Scaffold nodes." );
+			fail("The DmtAdmin must throw a DmtException of type COMMAND_NOT_ALLOWED for execute() on Scaffold nodes.");
 		} catch (DmtException e) {
-			pass( "The DmtAdmin correctly throws a DmtException of type COMMAND_NOT_ALLOWED for execute() on Scaffold nodes." );
+			System.out.println("The DmtAdmin correctly throws a DmtException of type COMMAND_NOT_ALLOWED for execute() on Scaffold nodes.");
 		} 
 	}
 	
@@ -94,7 +100,7 @@ public class TestScaffoldOperations extends ScaffoldNodeHelper {
 	 */
 	private void getMetaNodeOperation( DmtSession session, String uri ) throws Exception {
 		MetaNode metaNode = session.getMetaNode(uri);
-		assertNotNull("The DmtAdmin must provide a MetaNode for scaffold nodes!", metaNode);
+		assertThat(metaNode).as("The DmtAdmin must provide a MetaNode for scaffold nodes!").isNotNull();
 	}
 
 	/**
@@ -106,9 +112,9 @@ public class TestScaffoldOperations extends ScaffoldNodeHelper {
 	private void getNodeSizeOperation( DmtSession session, String uri ) throws Exception {
 		try {
 			session.getNodeSize(uri);
-			fail( "The DmtAdmin must throw a DmtException of type COMMAND_NOT_ALLOWED for getNodeSize() on Scaffold nodes." );
+			fail("The DmtAdmin must throw a DmtException of type COMMAND_NOT_ALLOWED for getNodeSize() on Scaffold nodes.");
 		} catch (DmtException e) {
-			pass( "The DmtAdmin correctly throws a DmtException of type COMMAND_NOT_ALLOWED for getNodeSize() on Scaffold nodes." );
+			System.out.println("The DmtAdmin correctly throws a DmtException of type COMMAND_NOT_ALLOWED for getNodeSize() on Scaffold nodes.");
 		} 
 	}
 
@@ -120,9 +126,9 @@ public class TestScaffoldOperations extends ScaffoldNodeHelper {
 	 */
 	private void getNodeTimeStampOperation( DmtSession session, String uri ) throws Exception {
 		try {
-			assertNotNull(session.getNodeTimestamp(uri));
+			assertThat(session.getNodeTimestamp(uri)).isNotNull();
 		} catch (DmtException e) {
-			fail( "The DmtAdmin must not throw a DmtException for getNodeTimestamp() on Scaffold nodes." );
+			fail("The DmtAdmin must not throw a DmtException for getNodeTimestamp() on Scaffold nodes.");
 		} 
 	}
 }

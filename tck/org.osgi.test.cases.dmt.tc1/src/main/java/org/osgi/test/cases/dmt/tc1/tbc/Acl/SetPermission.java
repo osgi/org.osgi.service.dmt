@@ -35,8 +35,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
-import org.osgi.service.dmt.Acl;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.Acl;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 /**
@@ -55,16 +57,16 @@ public class SetPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.setPermission(String,int)
 	 */
+	@Test
 	public void testSetPermission001() {
 		try {		
-			log("#testSetPermission001");
+			System.out.println("#testSetPermission001");
 			Acl acl = new Acl(ACL_DEFAULT);
 	
 			acl = acl.setPermission(DmtConstants.PRINCIPAL, Acl.ADD
 					| Acl.EXEC);
 	
-			assertEquals("Asserting Get Permission", Acl.ADD | Acl.EXEC,
-					acl.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL)).as("Asserting Get Permission").isEqualTo(Acl.ADD | Acl.EXEC);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -76,16 +78,17 @@ public class SetPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.setPermission(String,int)
 	 */
+	@Test
 	public void testSetPermission002() {
 		try {
-			log("#testSetPermission002");
+			System.out.println("#testSetPermission002");
 			Acl acl = new Acl(ACL_DEFAULT);
 			
 			acl = acl.setPermission(DmtConstants.PRINCIPAL,Acl.ADD | 2005);
 
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -97,15 +100,16 @@ public class SetPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.setPermission(String,int)
 	 */
+	@Test
 	public void testSetPermission003() {
 		try {
-			log("#testSetPermission003");
+			System.out.println("#testSetPermission003");
 			Acl acl = new Acl(ACL_DEFAULT);
 			acl = acl.setPermission(DmtConstants.INVALID, Acl.ADD | Acl.REPLACE);
 
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -116,18 +120,17 @@ public class SetPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.setPermission(String,int)
 	 */
+	@Test
 	public void testSetPermission004() {
 		try {
-			log("#testSetPermission004");
+			System.out.println("#testSetPermission004");
 			Acl acl = new Acl(
 					"Add=" + DmtConstants.PRINCIPAL + "&Delete=" + DmtConstants.PRINCIPAL + "&Get=*");
 			
 			acl = acl.setPermission(DmtConstants.PRINCIPAL, 
 					Acl.EXEC | Acl.REPLACE | Acl.GET);
 			
-			assertEquals("Assert " + DmtConstants.PRINCIPAL + " permission.",
-					Acl.REPLACE | Acl.GET | Acl.EXEC, 
-					acl.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL)).as("Assert " + DmtConstants.PRINCIPAL + " permission.").isEqualTo(Acl.REPLACE | Acl.GET | Acl.EXEC);
 			
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -140,9 +143,10 @@ public class SetPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.setPermission(String,int)
 	 */
+	@Test
 	public void testSetPermission005() {
 		try {
-			log("#testSetPermission005");
+			System.out.println("#testSetPermission005");
 			Acl acl = new Acl(
 					"Add=" + DmtConstants.PRINCIPAL + "&Delete=" + DmtConstants.PRINCIPAL + "&Get=*");
 			
@@ -150,7 +154,7 @@ public class SetPermission extends DmtTestControl {
 					| Acl.REPLACE);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -160,17 +164,17 @@ public class SetPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.setPermission(String,int) 
 	 */
+	@Test
 	public void testSetPermission006() {
 		try {
-			log("#testSetPermission006");
+			System.out.println("#testSetPermission006");
 			Acl acl = new Acl(
 					"Add=" + DmtConstants.PRINCIPAL + "&Delete=" + DmtConstants.PRINCIPAL + "&Exec=" + DmtConstants.PRINCIPAL );			
 			acl = acl.setPermission(DmtConstants.PRINCIPAL, 
 					Acl.ADD | Acl.GET | Acl.EXEC | Acl.DELETE | Acl.REPLACE);
 			
-			assertEquals("Assert " + DmtConstants.PRINCIPAL
-					+ " all permissions",
-					Acl.ALL_PERMISSION, acl.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL)).as("Assert " + DmtConstants.PRINCIPAL
+					+ " all permissions").isEqualTo(Acl.ALL_PERMISSION);
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -181,22 +185,19 @@ public class SetPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.setPermission(String,int)
 	 */
+	@Test
 	public void testSetPermission007() {
 		try {
-			log("#testSetPermission007");
+			System.out.println("#testSetPermission007");
 			Acl acl = new Acl(
 					"Add=" + DmtConstants.PRINCIPAL);			
 			acl = acl.setPermission("*", Acl.ADD | Acl.GET | Acl.EXEC | 
 					Acl.DELETE | Acl.REPLACE);
 			
-			assertEquals(
-					"Assert that '*' grants permissions to all principals ["
-							+ DmtConstants.PRINCIPAL + "]",
-					Acl.ALL_PERMISSION, acl.getPermissions(DmtConstants.PRINCIPAL));
-			assertEquals(
-					"Assert that '*' grants permissions to all principals ["
-							+ DmtConstants.PRINCIPAL_2 + "]",
-					Acl.ALL_PERMISSION, acl.getPermissions(DmtConstants.PRINCIPAL_2));
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL)).as("Assert that '*' grants permissions to all principals ["
+							+ DmtConstants.PRINCIPAL + "]").isEqualTo(Acl.ALL_PERMISSION);
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL_2)).as("Assert that '*' grants permissions to all principals ["
+							+ DmtConstants.PRINCIPAL_2 + "]").isEqualTo(Acl.ALL_PERMISSION);
 
 		} catch (Exception e) {
 			failUnexpectedException(e);

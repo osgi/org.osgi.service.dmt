@@ -28,8 +28,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtData;
 
-import org.osgi.service.dmt.DmtData;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.DmtData;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
 /**
@@ -41,25 +43,21 @@ public class DmtDataConstants extends DmtTestControl {
 	 * 
 	 * @spec 117.12.5
 	 */
+	@Test
 	public void testConstants001() {
-		log("#testConstants001");
-		assertEquals("Asserting FORMAT_BASE64 value", 128,
-				DmtData.FORMAT_BASE64);
-		assertEquals("Asserting FORMAT_BINARY value", 64, DmtData.FORMAT_BINARY);
-		assertEquals("Asserting FORMAT_BOOLEAN value", 8,
-				DmtData.FORMAT_BOOLEAN);
-		assertEquals("Asserting FORMAT_DATE value", 16, DmtData.FORMAT_DATE);
-		assertEquals("Asserting FORMAT_FLOAT value", 2, DmtData.FORMAT_FLOAT);
-		assertEquals("Asserting FORMAT_INTEGER value", 1,
-				DmtData.FORMAT_INTEGER);
-		assertEquals("Asserting FORMAT_NODE value", 1024, DmtData.FORMAT_NODE);
-		assertEquals("Asserting FORMAT_NULL value", 512, DmtData.FORMAT_NULL);
-		assertEquals("Asserting FORMAT_STRING value", 4, DmtData.FORMAT_STRING);
-		assertEquals("Asserting FORMAT_XML value", 256, DmtData.FORMAT_XML);
-		assertEquals("Asserting FORMAT_RAW_BINARY value", 4096,
-				DmtData.FORMAT_RAW_BINARY);
-		assertEquals("Asserting FORMAT_RAW_STRING value", 2048,
-				DmtData.FORMAT_RAW_STRING);
+		System.out.println("#testConstants001");
+		assertThat(DmtData.FORMAT_BASE64).as("Asserting FORMAT_BASE64 value").isEqualTo(128);
+		assertThat(DmtData.FORMAT_BINARY).as("Asserting FORMAT_BINARY value").isEqualTo(64);
+		assertThat(DmtData.FORMAT_BOOLEAN).as("Asserting FORMAT_BOOLEAN value").isEqualTo(8);
+		assertThat(DmtData.FORMAT_DATE).as("Asserting FORMAT_DATE value").isEqualTo(16);
+		assertThat(DmtData.FORMAT_FLOAT).as("Asserting FORMAT_FLOAT value").isEqualTo(2);
+		assertThat(DmtData.FORMAT_INTEGER).as("Asserting FORMAT_INTEGER value").isOne();
+		assertThat(DmtData.FORMAT_NODE).as("Asserting FORMAT_NODE value").isEqualTo(1024);
+		assertThat(DmtData.FORMAT_NULL).as("Asserting FORMAT_NULL value").isEqualTo(512);
+		assertThat(DmtData.FORMAT_STRING).as("Asserting FORMAT_STRING value").isEqualTo(4);
+		assertThat(DmtData.FORMAT_XML).as("Asserting FORMAT_XML value").isEqualTo(256);
+		assertThat(DmtData.FORMAT_RAW_BINARY).as("Asserting FORMAT_RAW_BINARY value").isEqualTo(4096);
+		assertThat(DmtData.FORMAT_RAW_STRING).as("Asserting FORMAT_RAW_STRING value").isEqualTo(2048);
 
 	}
 }

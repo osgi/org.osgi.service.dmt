@@ -17,11 +17,15 @@
  *******************************************************************************/
 package org.osgi.test.cases.residentialmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtException;
@@ -30,7 +34,6 @@ import org.osgi.service.dmt.spi.DataPlugin;
 import org.osgi.service.log.LogService;
 import org.osgi.test.cases.residentialmanagement.plugins.MultiRootDataPlugin;
 import org.osgi.test.cases.residentialmanagement.plugins.Node;
-import org.osgi.test.support.sleep.Sleep;
 
 
 /**
@@ -47,10 +50,11 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * DmtException is thrown - otherwise the test fails.
 	 * @throws Exception
 	 */
+	@Test
 	public void testInvalidTargets() throws Exception {
 
 		session = dmtAdmin.getSession(FILTER_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
-		assertNotNull(session);
+		assertThat(session).isNotNull();
 
 		// create filter to initialize creation of the automatic nodes
 		String uri = FILTER_ROOT + "/" + "InvalidTargetsTest";
@@ -72,6 +76,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * Checks behavior for invalid filters.
 	 * @throws Exception
 	 */
+	@Test
 	public void testInvalidFilters() throws Exception {
 		Node root = new Node(null, "", null );
 		Node n2 = new Node(root, "invalidSearch1", null ); // interior
@@ -106,14 +111,14 @@ public class FilterOperationsTestCase extends RMTTestBase {
 			// try to access resultUriList and result --> this should cause an exception
 			resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
 			resultList = session.getChildNodeNames(uri + "/" + RESULT );
-			fail( "An invalid filter expression must not be accepted." );
+			fail("An invalid filter expression must not be accepted.");
 		}
 		catch (DmtException x) {
-			pass( "An invalid filter expression correctly causes a DmtException." );
+			System.out.println("An invalid filter expression correctly causes a DmtException.");
 		}
 		finally {
-			assertNull("The resultUriList must be empty for this search.", resultUriList);
-			assertNull("The result must be empty for this search.", resultList);
+			assertThat(resultUriList).as("The resultUriList must be empty for this search.").isNull();
+			assertThat(resultList).as("The result must be empty for this search.").isNull();
 			cleanupSearch(session, uri);
 		}
 	}
@@ -123,9 +128,10 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * checks that the Result and ResultUriList is empty, if no target it set
 	 * @throws Exception
 	 */
+	@Test
 	public void testEmptyResultIfNoTarget() throws Exception {
 		session = dmtAdmin.getSession(FILTER_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
-		assertNotNull(session);
+		assertThat(session).isNotNull();
 
 		// create filter to initialize creation of the automatic nodes
 		String uri = FILTER_ROOT + "/" + "InvalidTargetsTest";
@@ -135,9 +141,9 @@ public class FilterOperationsTestCase extends RMTTestBase {
 		try {
 			// force a search
 			String[] children = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			assertEquals("The ResultUriList must be empty if no target is set.", 0, children.length);
+			assertThat(children.length).as("The ResultUriList must be empty if no target is set.").isZero();
 			children = session.getChildNodeNames(uri + "/" + RESULT );
-			assertEquals("The Result must be empty if no target is set.", 0, children.length);
+			assertThat(children.length).as("The Result must be empty if no target is set.").isZero();
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -153,10 +159,11 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * The target is set to all LogEntries of the RMT.
 	 * It is expected that the results hold all indexes of the log entries.
 	 */
+	@Test
 	public void testSearchWithoutFilter() throws Exception {
 		// create a number of random logs to ensure that the Log part of the RMT is filled
 		createRandomLogs(100);
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		String uri = FILTER_ROOT + "/" + "SimpleLogSearch";
 		session = dmtAdmin.getSession(RMT_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
@@ -171,26 +178,26 @@ public class FilterOperationsTestCase extends RMTTestBase {
 			// check resultUriList
 			String[] resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
 			String[] realChildren = session.getChildNodeNames(LOG_ROOT + "/" + LOG_ENTRIES );
-			assertEquals("Searching without a filter must return all (unfiltered) results.", realChildren.length, resultUriList.length );
+			assertThat(resultUriList.length).as("Searching without a filter must return all (unfiltered) results.").isEqualTo(realChildren.length);
 			// check that all uris point to interior nodes
 			for (String resultUri : resultUriList) {
 				String rUri = uri + "/" + RESULT_URI_LIST + "/" + resultUri;
 				String value = session.getNodeValue(rUri).getString();
-				assertFalse("The uris in the ResultUriList must point to interior nodes: " + uri + "/" + RESULT + "/" + value, session.isLeafNode(uri + "/" + RESULT + "/" + value));
+				assertThat(session.isLeafNode(uri + "/" + RESULT + "/" + value)).as("The uris in the ResultUriList must point to interior nodes: " + uri + "/" + RESULT + "/" + value).isFalse();
 			}
 
 			// check result tree
 			String[] results = session.getChildNodeNames(uri + "/" + RESULT );
 			// session starts at $/Framework, so the result tree starts at "LOG" and must contain all unfiltered logEntries
 			// session root is $/Framework, so the only result childNode must be "Log"
-			assertEquals( "The result must only have one child for this search.", 1, results.length );
-			assertEquals( "The only child node for this search must be: " + LOG, LOG, results[0]);
+			assertThat(results.length).as("The result must only have one child for this search.").isOne();
+			assertThat(results[0]).as("The only child node for this search must be: " + LOG).isEqualTo(LOG);
 
 			results = session.getChildNodeNames(uri + "/" + RESULT + "/" + LOG );
-			assertEquals( "The result must only have one child for this search.", 1, results.length );
-			assertEquals( "The only child node for " + uri + "/" + RESULT + "/" + LOG + " must be: " + LOG_ENTRIES, LOG_ENTRIES, results[0]);
+			assertThat(results.length).as("The result must only have one child for this search.").isOne();
+			assertThat(results[0]).as("The only child node for " + uri + "/" + RESULT + "/" + LOG + " must be: " + LOG_ENTRIES).isEqualTo(LOG_ENTRIES);
 			results = session.getChildNodeNames(uri + "/" + RESULT + "/" + LOG + "/" + LOG_ENTRIES);
-			assertEquals("Searching without a filter must return all (unfiltered) results.", realChildren.length, results.length );
+			assertThat(results.length).as("Searching without a filter must return all (unfiltered) results.").isEqualTo(realChildren.length);
 
 		}
 		finally {
@@ -205,10 +212,11 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * The results will be read in a new session on "$".
 	 * It is expected that the uris in the ResultUriList are relative to "$".
 	 */
+	@Test
 	public void testResultsAreRelativeToSession() throws Exception {
 		// create a number of random logs to ensure that the Log part of the RMT is filled
 		createRandomLogs(10);
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_ATOMIC);
 		String uri = FILTER_ROOT + "/" + "RelativeUris";
@@ -224,19 +232,19 @@ public class FilterOperationsTestCase extends RMTTestBase {
 			session = dmtAdmin.getSession(RMT_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			String[] resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			assertTrue( "The resultUriList must not be empty for this search.", resultUriList.length > 0 );
+			assertThat(resultUriList.length > 0).as("The resultUriList must not be empty for this search.").isTrue();
 			for (String index : resultUriList) {
 				String value = session.getNodeValue(uri + "/" + RESULT_URI_LIST + "/" + index).getString();
 
 				// session root is $, so the uris must start with "Log/LogEntries"
-				assertTrue( "The result uris must be relative to current session: " + value, value.startsWith(LOG + "/" + LOG_ENTRIES ));
+				assertThat(value).as("The result uris must be relative to current session: " + value).startsWith(LOG + "/" + LOG_ENTRIES);
 			}
 			// the result tree must start at the session root and contain only matching nodes
 			// --> for current search, it must only contain one child of name "Log"
 			String[] results = session.getChildNodeNames(uri + "/" + RESULT );
-			assertEquals( "The result must have exactly one child for this search.", 1, results.length );
+			assertThat(results.length).as("The result must have exactly one child for this search.").isOne();
 			// session root is $, so the only result childNode must be "Log"
-			assertEquals( "The only child node for this search must be: " + LOG, LOG, results[0]);
+			assertThat(results[0]).as("The only child node for this search must be: " + LOG).isEqualTo(LOG);
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -249,10 +257,11 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * Search target is $/* /* /
 	 * It is expected that the ResultUriList and Result contain no uris from the "Filter" subtree.
 	 */
+	@Test
 	public void testFilterTreeExcluded() throws Exception {
 		// create a number of random logs to ensure that the Log part of the RMT is filled
 		createRandomLogs(10);
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		String uri = FILTER_ROOT + "/" + "FilterTreeExcluded";
 		session = dmtAdmin.getSession(RMT_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
@@ -264,20 +273,20 @@ public class FilterOperationsTestCase extends RMTTestBase {
 			session.commit();
 
 			String[] resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			assertTrue( "The resultUriList must not be empty for this search.", resultUriList.length > 0 );
+			assertThat(resultUriList.length > 0).as("The resultUriList must not be empty for this search.").isTrue();
 			for (String index : resultUriList) {
 				String value = session.getNodeValue(uri + "/" + RESULT_URI_LIST + "/" + index).getString();
 
 				// the uris must not start with "Filter"
-				assertFalse( "Matches from the Filter subtree must be excluded: " + value, value.startsWith(FILTER));
+				assertThat(value).as("Matches from the Filter subtree must be excluded: " + value).doesNotStartWith(FILTER);
 			}
 
 			// results are relative to $ --> must not start with "Filter"
 			String[] results = session.getChildNodeNames(uri + "/" + RESULT );
-			assertTrue( "The result tree must not be empty for this search.", results.length > 0 );
+			assertThat(results.length > 0).as("The result tree must not be empty for this search.").isTrue();
 			for (String result : results)
 				// there must be no child of name "Filter"
-				assertFalse( "Matches from the Filter subtree must be excluded: " + result, FILTER.equals(result));
+				assertThat(FILTER.equals(result)).as("Matches from the Filter subtree must be excluded: " + result).isFalse();
 
 		}
 		finally {
@@ -294,6 +303,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * Fails, if any of the attempts is permitted without an exception.
 	 * @throws Exception
 	 */
+	@Test
 	public void testResultsAreReadOnly() throws Exception {
 		Node root = new Node(null, "A", null );
 		Node n2 = new Node(root, "B", null );
@@ -319,7 +329,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 			session.commit();
 
 			String[] resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			assertEquals("The resultUriList must contain 2 entries for this search.", 2, resultUriList.length);
+			assertThat(resultUriList.length).as("The resultUriList must contain 2 entries for this search.").isEqualTo(2);
 
 			// trying to add a new entry to the resultUriList
 			try {
@@ -327,7 +337,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 				fail("It must not be possible to add nodes to ResultUriList.");
 
 			} catch (DmtException e) {
-				pass("Passed: Not allowed to add nodes to ResultUriList --> OK.");
+				System.out.println("Passed: Not allowed to add nodes to ResultUriList --> OK.");
 			}
 
 			// trying to delete entries of the resultUriList
@@ -335,7 +345,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 				session.deleteNode(uri + "/" + RESULT_URI_LIST + "/0");
 				fail("It must not be possible to delete nodes from the ResultUriList.");
 			} catch (DmtException e) {
-				pass("Passed: Not allowed to delete nodes from the ResultUriList --> OK.");
+				System.out.println("Passed: Not allowed to delete nodes from the ResultUriList --> OK.");
 			}
 
 			// trying to modifiy entries of the resultUriList
@@ -351,14 +361,14 @@ public class FilterOperationsTestCase extends RMTTestBase {
 				}
 
 			} catch (DmtException e) {
-				pass("Passed: Not allowed to modify entries of the ResultUriList --> OK.");
+				System.out.println("Passed: Not allowed to modify entries of the ResultUriList --> OK.");
 			}
 
 
 			// ************ do the same tests with the Result tree
 			// results are relative to "."
 			String[] results = session.getChildNodeNames(uri + "/" + RESULT );
-			assertEquals("The result must contain 1 child for this search.", 1, results.length);
+			assertThat(results.length).as("The result must contain 1 child for this search.").isOne();
 
 			// trying to add new children to the result
 			try {
@@ -367,7 +377,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 				fail("It must not be possible to add nodes to Result.");
 
 			} catch (DmtException e) {
-				pass("Passed: Not allowed to add nodes to Result --> OK.");
+				System.out.println("Passed: Not allowed to add nodes to Result --> OK.");
 			}
 
 			// trying to delete children of the result
@@ -375,7 +385,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 				session.deleteNode(uri + "/" + RESULT + "/" + results[0]);
 				fail("It must not be possible to delete nodes from the Result.");
 			} catch (DmtException e) {
-				pass("Passed: Not allowed to delete nodes in the subtree of Result --> OK.");
+				System.out.println("Passed: Not allowed to delete nodes in the subtree of Result --> OK.");
 			}
 
 			// trying to modifiy the Result
@@ -391,7 +401,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 				}
 
 			} catch (DmtException e) {
-				pass("Passed: Not allowed to modify nodes in the subtree of Result --> OK.");
+				System.out.println("Passed: Not allowed to modify nodes in the subtree of Result --> OK.");
 			}
 
 		}
@@ -410,6 +420,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * This test relies on the configuration of the RMT-root on "./Scaffold/RMT".
 	 * @throws Exception
 	 */
+	@Test
 	public void testVisibilityBySession() throws Exception {
 		Node root1 = new Node(null, "", null );
 		Node n2 = new Node(root1, "B", null );
@@ -454,8 +465,8 @@ public class FilterOperationsTestCase extends RMTTestBase {
 					wrong.add(value);
 				expected.remove(value);
 			}
-			assertEquals("The resultUriList contains unexpected entries: " + wrong, 0, wrong.size() );
-			assertEquals("Expected entries are missing in the in the resultUri list: " + expected, 0, expected.size() );
+			assertThat(wrong).as("The resultUriList contains unexpected entries: " + wrong).isEmpty();
+			assertThat(expected).as("Expected entries are missing in the in the resultUri list: " + expected).isEmpty();
 
 			expected = new HashSet<String>();
 			wrong = new HashSet<String>();
@@ -467,8 +478,8 @@ public class FilterOperationsTestCase extends RMTTestBase {
 					wrong.add(result);
 				expected.remove(result);
 			}
-			assertEquals("The result tree contains unexpected nodes: " + wrong, 0, wrong.size() );
-			assertEquals("Expected nodes are missing in the in the result tree: " + expected, 0, expected.size() );
+			assertThat(wrong).as("The result tree contains unexpected nodes: " + wrong).isEmpty();
+			assertThat(expected).as("Expected nodes are missing in the in the result tree: " + expected).isEmpty();
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -485,6 +496,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * (the given principal) has "Get" permission for.
 	 * @throws Exception
 	 */
+	@Test
 	public void testVisibilityByACL() throws Exception {
 		Node root = new Node(null, "", null );
 		Node n2 = new Node(root, "visible", null ); // interior
@@ -523,13 +535,13 @@ public class FilterOperationsTestCase extends RMTTestBase {
 
 			// results must not contain the "invisible" node, because of the ACL restriction
 			String[] resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			assertEquals("The resultUriList must contain 1 entry for this search.", 1, resultUriList.length);
+			assertThat(resultUriList.length).as("The resultUriList must contain 1 entry for this search.").isOne();
 			String value = session.getNodeValue(uri + "/" + RESULT_URI_LIST + "/0").getString();
-			assertEquals( "Only the visible node must be in the resultUri list.", "Test/ACLCheck/visible", value );
+			assertThat(value).as("Only the visible node must be in the resultUri list.").isEqualTo("Test/ACLCheck/visible");
 
 			String[] results = session.getChildNodeNames(uri + "/" + RESULT );
-			assertEquals("The result must contain 1 entry for this search.", 1, results.length);
-			assertEquals( "Only the visible node must be in the resultUri list.", "Test", results[0] );
+			assertThat(results.length).as("The result must contain 1 entry for this search.").isOne();
+			assertThat(results[0]).as("Only the visible node must be in the resultUri list.").isEqualTo("Test");
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -545,6 +557,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * It is expected that only the parts of the plugins subtree are returned that match the filter.
 	 * @throws Exception
 	 */
+	@Test
 	public void testFilterAgainstPrimitiveNodes() throws Exception {
 		Node root = new Node(null, "", null );
 		Node n2 = new Node(root, "visible", null ); // interior
@@ -577,14 +590,14 @@ public class FilterOperationsTestCase extends RMTTestBase {
 
 			// results must not contain the "invisible" node, because of the Filter restriction
 			String[] resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			assertEquals("The resultUriList must contain 1 entry for this search.", 1, resultUriList.length);
+			assertThat(resultUriList.length).as("The resultUriList must contain 1 entry for this search.").isOne();
 			String value = session.getNodeValue(uri + "/" + RESULT_URI_LIST + "/0").getString();
-			assertEquals( "Only the visible node must be in the resultUri list.", "Test/SimpleFilter/visible", value );
+			assertThat(value).as("Only the visible node must be in the resultUri list.").isEqualTo("Test/SimpleFilter/visible");
 
 			String visibleUri = uri + "/" + RESULT + "/Test/SimpleFilter/visible";
 			String invisibleUri = uri + "/" + RESULT + "/Test/SimpleFilter/invisible";
-			assertTrue( "This node must be part of the Result tree: " + visibleUri, session.isNodeUri(visibleUri) );
-			assertFalse( "This node must not be part of the Result tree: " + invisibleUri, session.isNodeUri(invisibleUri) );
+			assertThat(session.isNodeUri(visibleUri)).as("This node must be part of the Result tree: " + visibleUri).isTrue();
+			assertThat(session.isNodeUri(invisibleUri)).as("This node must not be part of the Result tree: " + invisibleUri).isFalse();
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -598,12 +611,13 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * It is expected that only the parts of the plugins subtree are returned that match the filter.
 	 * @throws Exception
 	 */
+	@Test
 	public void testFilterAgainstListNodes() throws Exception {
 		// create a number of random logs to ensure that the Log part of the RMT is filled
 		createRandomLogs(10);
 		// make sure that there is at least one DEBUG log
 		getService(LogService.class).log(LogService.LOG_DEBUG, "a debug message");
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		// create new filter
 		session = dmtAdmin.getSession( RMT_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
@@ -638,20 +652,20 @@ public class FilterOperationsTestCase extends RMTTestBase {
 					wrong.add(value);
 				expectedLogs.remove(value);
 			}
-			assertEquals("The resultUriList contains unexpected entries: " + wrong, 0, wrong.size() );
-			assertEquals("Expected entries are missing in the in the resultUri list: " + expectedLogs, 0, expectedLogs.size() );
+			assertThat(wrong).as("The resultUriList contains unexpected entries: " + wrong).isEmpty();
+			assertThat(expectedLogs).as("Expected entries are missing in the in the resultUri list: " + expectedLogs).isEmpty();
 
 			String[] results = session.getChildNodeNames(uri + "/" + RESULT + "/" + LOG + "/" + LOG_ENTRIES );
-			assertTrue( "The result must have children under: " + uri + "/" + RESULT + "/" + LOG + "/" + LOG_ENTRIES, results.length > 0);
+			assertThat(results.length > 0).as("The result must have children under: " + uri + "/" + RESULT + "/" + LOG + "/" + LOG_ENTRIES).isTrue();
 			wrong.clear();
-			assertEquals("The result must contain " + expectedIndexes.size() + " entries for this search.", expectedIndexes.size(), results.length);
+			assertThat(results.length).as("The result must contain " + expectedIndexes.size() + " entries for this search.").isEqualTo(expectedIndexes.size());
 			for (String result : results) {
 				if ( ! expectedIndexes.contains(result))
 					wrong.add(result);
 				expectedIndexes.remove(result);
 			}
-			assertEquals("The result tree contains unexpected log entries: " + wrong, 0, wrong.size() );
-			assertEquals("Expected entries are missing in the in the result tree: " + expectedIndexes, 0, expectedIndexes.size() );
+			assertThat(wrong).as("The result tree contains unexpected log entries: " + wrong).isEmpty();
+			assertThat(expectedIndexes).as("Expected entries are missing in the in the result tree: " + expectedIndexes).isEmpty();
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -666,11 +680,12 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 *
 	 * @throws Exception
 	 */
+	@Test
 	public void testLimit() throws Exception {
 		int limit = 10;
 		// create a number of random logs to ensure that the Log part of the RMT is filled
 		createRandomLogs(100);
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		String uri = FILTER_ROOT + "/LimitedLogSearch";
 		session = dmtAdmin.getSession(RMT_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
@@ -679,7 +694,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 
 		try {
 			String limitUri = uri + '/' + LIMIT;
-			assertEquals("The limit default value is not correct.", -1, session.getNodeValue(limitUri).getInt());
+			assertThat(session.getNodeValue(limitUri).getInt()).as("The limit default value is not correct.").isEqualTo(-1);
 			// set target to all LogEntries
 			session.setNodeValue(uri + '/' + TARGET, new DmtData(LOG_ROOT + "/LogEntries/*/"));
 			session.setNodeValue(limitUri, new DmtData(limit));
@@ -687,12 +702,12 @@ public class FilterOperationsTestCase extends RMTTestBase {
 
 			// check resultUriList
 			String[] resultUriList = session.getChildNodeNames(uri + '/' + RESULT_URI_LIST);
-			assertEquals( "The resultUriList must have exactly "+ limit +" entries for this limited search.", limit, resultUriList.length );
+			assertThat(resultUriList.length).as("The resultUriList must have exactly "+ limit +" entries for this limited search.").isEqualTo(limit);
 
 			// check results
 			String[] results = session.getChildNodeNames(uri + '/' + RESULT + '/' + LOG + '/' + LOG_ENTRIES);
-			assertTrue("The result must have children under: " + uri + '/' + RESULT + '/' + LOG + '/' + LOG_ENTRIES, results.length > 0);
-			assertEquals( "The result must have exactly "+ limit +" matching entries for this limited search.", limit, results.length );
+			assertThat(results.length > 0).as("The result must have children under: " + uri + '/' + RESULT + '/' + LOG + '/' + LOG_ENTRIES).isTrue();
+			assertThat(results.length).as("The result must have exactly "+ limit +" matching entries for this limited search.").isEqualTo(limit);
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -706,6 +721,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 	 * The test is performed against the LogEntries in the RDMT
 	 * @throws Exception
 	 */
+	@Test
 	public void testLimitWithFilter() throws Exception {
 		int limit = 10;
 		// create a number of random logs to ensure that the Log part of the RMT is filled
@@ -714,7 +730,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 		LogService logger = getService(LogService.class);
 		for (int i = 0; i < limit+1; i++)
 			logger.log(LogService.LOG_DEBUG, "debug message " + i);
-		Sleep.sleep(DELAY);
+		Thread.sleep(DELAY);
 
 		String uri = FILTER_ROOT + "/" + "LimitedLogSearchWitFilter";
 		session = dmtAdmin.getSession(RMT_ROOT, DmtSession.LOCK_TYPE_ATOMIC);
@@ -730,12 +746,12 @@ public class FilterOperationsTestCase extends RMTTestBase {
 
 			// check resultUriList
 			String[] resultUriList = session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			assertEquals( "The resultUriList must have exactly "+ limit +" entries for this limited search.", limit, resultUriList.length );
+			assertThat(resultUriList.length).as("The resultUriList must have exactly "+ limit +" entries for this limited search.").isEqualTo(limit);
 
 			// check results
 			String[] results = session.getChildNodeNames(uri + "/" + RESULT + "/" + LOG + "/" + LOG_ENTRIES );
-			assertTrue( "The result must have children under: " + uri + "/" + RESULT + "/" + LOG + "/" + LOG_ENTRIES, results.length > 0);
-			assertEquals( "The result must have exactly "+ limit +" matching entries for this limited search.", limit, results.length );
+			assertThat(results.length > 0).as("The result must have children under: " + uri + "/" + RESULT + "/" + LOG + "/" + LOG_ENTRIES).isTrue();
+			assertThat(results.length).as("The result must have exactly "+ limit +" matching entries for this limited search.").isEqualTo(limit);
 		}
 		finally {
 			cleanupSearch(session, uri);
@@ -750,9 +766,9 @@ public class FilterOperationsTestCase extends RMTTestBase {
 			session.commit(); // TODO: This commit should not be necessary - needs check
 			// force a search
 			session.getChildNodeNames(uri + "/" + RESULT_URI_LIST );
-			fail( "The target \"" + target + "\" must not be accepted." );
+			fail("The target \"" + target + "\" must not be accepted.");
 		} catch (DmtException e) {
-			pass( "Success: Target \"" + target + "\" was correctly rejected." );
+			System.out.println("Success: Target \"" + target + "\" was correctly rejected.");
 		}
 	}
 
@@ -762,7 +778,7 @@ public class FilterOperationsTestCase extends RMTTestBase {
 			if ( session.getLockType() == DmtSession.LOCK_TYPE_ATOMIC )
 				session.commit();
 		} catch (DmtException e) {
-			log("Error while cleaning up search tree: " + searchUri);
+			System.out.println("Error while cleaning up search tree: " + searchUri);
 		}
 	}
 }

@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
@@ -40,11 +42,9 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -82,10 +82,10 @@ public class IsLeafNode implements TestInterface  {
 	private void testIsLeafNode001() {
 	    DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsLeafNode001");
+			System.out.println("#testIsLeafNode001");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_ROOT,
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
-	        TestCase.assertTrue("Asserting that isLeafNode() returns true when a leaf node is passed.", session.isLeafNode(TestExecPluginActivator.LEAF_NODE));
+	        assertThat(session.isLeafNode(TestExecPluginActivator.LEAF_NODE)).as("Asserting that isLeafNode() returns true when a leaf node is passed.").isTrue();
 	    } catch (Exception e) {
 	    	tbc.failUnexpectedException(e);       
 	    } finally {
@@ -101,11 +101,10 @@ public class IsLeafNode implements TestInterface  {
 	private void testIsLeafNode002() {
 	    DmtSession session = null;
         try {
-			DefaultTestBundleControl.log("#testIsLeafNode002");
+			System.out.println("#testIsLeafNode002");
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
-			TestCase.assertTrue("Asserting that isLeafNode() returns false when an interior node is passed.", 
-					!session.isLeafNode(TestExecPluginActivator.INTERIOR_NODE));
+			assertThat(!session.isLeafNode(TestExecPluginActivator.INTERIOR_NODE)).as("Asserting that isLeafNode() returns false when an interior node is passed.").isTrue();
         } catch (Exception e) {
         	tbc.failUnexpectedException(e);
         } finally {
@@ -122,13 +121,13 @@ public class IsLeafNode implements TestInterface  {
     private void testIsLeafNode003() {
 	    DmtSession session = null;
         try {
-			DefaultTestBundleControl.log("#testIsLeafNode003");
+			System.out.println("#testIsLeafNode003");
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
         	session.isLeafNode(TestExecPluginActivator.INEXISTENT_LEAF_NODE);
-            DefaultTestBundleControl.failException("", DmtException.class);
+            DmtTestControl.failException("", DmtException.class);
         } catch (DmtException e) {
-            TestCase.assertEquals("Asserting that DmtException code is NODE_NOT_FOUND", DmtException.NODE_NOT_FOUND, e.getCode());
+            assertThat(e.getCode()).as("Asserting that DmtException code is NODE_NOT_FOUND").isEqualTo(DmtException.NODE_NOT_FOUND);
         } catch (Exception e) {
         	tbc.failExpectedOtherException(DmtException.class, e);
         } finally {
@@ -145,13 +144,13 @@ public class IsLeafNode implements TestInterface  {
 	private void testIsLeafNode004() {
 	    DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsLeafNode004");
+			System.out.println("#testIsLeafNode004");
 
             tbc.openSessionAndSetNodeAcl(DmtConstants.OSGi_LOG, DmtConstants.PRINCIPAL, Acl.GET );
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
 			session = tbc.getDmtAdmin().getSession(DmtConstants.PRINCIPAL,DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_ATOMIC);
 			session.isLeafNode(DmtConstants.OSGi_LOG);
-			DefaultTestBundleControl.pass("isLeafNode correctly executed");
+			System.out.println("isLeafNode correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -170,11 +169,11 @@ public class IsLeafNode implements TestInterface  {
     private void testIsLeafNode005() {
         DmtSession session = null;
     	try {
-			DefaultTestBundleControl.log("#testIsLeafNode005");
+			System.out.println("#testIsLeafNode005");
 			tbc.setPermissions(new PermissionInfo(DmtPermission.class.getName(),DmtConstants.ALL_NODES,DmtPermission.GET));
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.isLeafNode(DmtConstants.OSGi_LOG);
-			DefaultTestBundleControl.pass("isLeafNode correctly executed");
+			System.out.println("isLeafNode correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -194,14 +193,14 @@ public class IsLeafNode implements TestInterface  {
 	private void testIsLeafNode006() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsLeafNode006");
+			System.out.println("#testIsLeafNode006");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.isLeafNode(TestExecPluginActivator.LEAF_RELATIVE);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with isLeafNode.");
+			System.out.println("A relative URI can be used with isLeafNode.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -218,14 +217,14 @@ public class IsLeafNode implements TestInterface  {
 	private void testIsLeafNode007() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsLeafNode007");
+			System.out.println("#testIsLeafNode007");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.LEAF_NODE, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.isLeafNode("");
 
-			DefaultTestBundleControl.pass("Asserts that an empty string as relative URI means the root " +
+			System.out.println("Asserts that an empty string as relative URI means the root " +
 					"URI the session was opened with");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);

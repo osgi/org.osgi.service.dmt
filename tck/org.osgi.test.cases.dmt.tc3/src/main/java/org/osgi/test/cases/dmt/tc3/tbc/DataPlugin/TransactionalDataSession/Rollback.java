@@ -29,14 +29,14 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -65,33 +65,22 @@ public class Rollback {
 	public void testRollback001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testRollback001");
+			System.out.println("#testRollback001");
 
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			TestDataPlugin.setRollbackThrowsException(true);
 			session.rollback();
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-							DmtException.ROLLBACK_FAILED, e.getCode());
+			assertThat(e.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.ROLLBACK_FAILED);
 			if (e.getCause() instanceof DmtException) {
 				DmtException exception = (DmtException)e.getCause();
-				TestCase
-						.assertNull(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct subtree (null)",exception.getURI());
-				TestCase
-						.assertEquals(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-								DmtException.ALERT_NOT_ROUTED, exception.getCode());
-				TestCase
-						.assertTrue(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct message. ",
-								exception.getMessage().indexOf(
-										TestDataPlugin.ROLLBACK) > -1);
+				assertThat(exception.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree (null)").isNull();
+				assertThat(exception.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.ALERT_NOT_ROUTED);
+				assertThat(exception.getMessage().indexOf(
+										TestDataPlugin.ROLLBACK) > -1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 				
 			} else {
 				DmtTestControl.failExpectedOtherException(DmtException.class, e.getCause());

@@ -29,6 +29,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtEvent;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -41,12 +43,9 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
-import org.osgi.test.support.sleep.Sleep;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 
 
@@ -106,7 +105,7 @@ public class DmtEvent implements TestInterface {
 		DmtSession session = null;
 		DmtEventListenerImpl eventListener = new DmtEventListenerImpl();
 		try {
-			DefaultTestBundleControl.log("#testDmtEvent001");
+			System.out.println("#testDmtEvent001");
 
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_ATOMIC);
 
@@ -120,7 +119,7 @@ public class DmtEvent implements TestInterface {
 			session.copy(TestExecPluginActivator.INTERIOR_NODE,TestExecPluginActivator.INEXISTENT_NODE,true);
 			session.renameNode(TestExecPluginActivator.INTERIOR_NODE,TestExecPluginActivator.RENAMED_NODE_NAME);
 			session.deleteNode(TestExecPluginActivator.INTERIOR_NODE);
-			TestCase.assertEquals("Asserts that if the session is atomic, no event is sent before commit.",0,eventListener.getCount());
+			assertThat(eventListener.getCount()).as("Asserts that if the session is atomic, no event is sent before commit.").isZero();
 			session.commit();
 			synchronized (tbc) {
 				tbc.wait(DmtConstants.WAITING_TIME);
@@ -145,7 +144,7 @@ public class DmtEvent implements TestInterface {
 			//wait for the close session event to be processed, otherwise it would interfere with the next test
             synchronized (tbc) {
             	try {
-					Sleep.sleep(DmtConstants.WAITING_TIME);
+					Thread.sleep(DmtConstants.WAITING_TIME);
             	} catch (Exception e) {
 				}
             }
@@ -154,31 +153,23 @@ public class DmtEvent implements TestInterface {
 	}
 
 	private void assertEvent(org.osgi.service.dmt.DmtEvent event,DmtSession session,int expectedType,String[] expectedNodes,String[] expectedNewNodes) {
-		TestCase.assertEquals("Asserts that DmtEvent.getType() returns the correct event",
-				expectedType,event.getType());
-		TestCase.assertTrue("Asserts that DmtEvent.getSessionId() returns the session Id",
-				event.getSessionId() == session.getSessionId());
+		assertThat(event.getType()).as("Asserts that DmtEvent.getType() returns the correct event").isEqualTo(expectedType);
+		assertThat(event.getSessionId() == session.getSessionId()).as("Asserts that DmtEvent.getSessionId() returns the session Id").isTrue();
 
 		if (null==expectedNodes) {
-			TestCase.assertNull("Asserts that DmtEvent.getNodes() returns null",
-					event.getNodes());
+			assertThat(event.getNodes()).as("Asserts that DmtEvent.getNodes() returns null").isNull();
 		} else {
-			TestCase.assertTrue("Asserts that DmtEvent.getNodes() returns all nodes expected in this event",
-					event.getNodes().length==expectedNodes.length);
+			assertThat(event.getNodes().length==expectedNodes.length).as("Asserts that DmtEvent.getNodes() returns all nodes expected in this event").isTrue();
 			for (int i = 0; i < expectedNodes.length; i++) {
-				TestCase.assertTrue("Asserts that DmtEvent.getNodes() returns the expected nodes of this event",
-						event.getNodes()[i].equals(expectedNodes[i]));
+				assertThat(event.getNodes()[i]).as("Asserts that DmtEvent.getNodes() returns the expected nodes of this event").isEqualTo(expectedNodes[i]);
 			}
 		}
 		if (null==expectedNewNodes) {
-			TestCase.assertNull("Asserts that DmtEvent.getNewNodes() returns null",
-					event.getNewNodes());
+			assertThat(event.getNewNodes()).as("Asserts that DmtEvent.getNewNodes() returns null").isNull();
 		} else {
-			TestCase.assertTrue("Asserts that DmtEvent.getNewNodes() returns all nodes expected in this event",
-					event.getNewNodes().length==expectedNewNodes.length);
+			assertThat(event.getNewNodes().length==expectedNewNodes.length).as("Asserts that DmtEvent.getNewNodes() returns all nodes expected in this event").isTrue();
 			for (int i = 0; i < expectedNewNodes.length; i++) {
-				TestCase.assertTrue("Asserts that DmtEvent.getNewNodes() returns the expected nodes of this event",
-						event.getNewNodes()[i].equals(expectedNewNodes[i]));
+				assertThat(event.getNewNodes()[i]).as("Asserts that DmtEvent.getNewNodes() returns the expected nodes of this event").isEqualTo(expectedNewNodes[i]);
 			}
 		}
 
@@ -195,7 +186,7 @@ public class DmtEvent implements TestInterface {
 		DmtSession session = null;
 		DmtEventListenerImpl eventListener = new DmtEventListenerImpl();
 		try {
-			DefaultTestBundleControl.log("#testDmtEvent002");
+			System.out.println("#testDmtEvent002");
 
 			addEventListener(DmtConstants.ALL_DMT_EVENTS,
 					TestExecPluginActivator.INTERIOR_NODE,eventListener);
@@ -205,7 +196,7 @@ public class DmtEvent implements TestInterface {
 			synchronized (tbc) {
 				tbc.wait(DmtConstants.WAITING_TIME);
 			}
-			TestCase.assertEquals("Asserts that the number of events are correct",2,eventListener.getCount());
+			assertThat(eventListener.getCount()).as("Asserts that the number of events are correct").isEqualTo(2);
 
 			org.osgi.service.dmt.DmtEvent[] dmtEvents = eventListener.getDmtEvents();
 			assertEvent(dmtEvents[0], session,org.osgi.service.dmt.DmtEvent.SESSION_OPENED,null,null);
@@ -230,7 +221,7 @@ public class DmtEvent implements TestInterface {
 		DmtSession session = null;
 		DmtEventListenerImpl eventLisneter = new DmtEventListenerImpl();
 		try {
-			DefaultTestBundleControl.log("#testDmtEvent003");
+			System.out.println("#testDmtEvent003");
 
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 
@@ -247,7 +238,7 @@ public class DmtEvent implements TestInterface {
 				tbc.wait(DmtConstants.WAITING_TIME);
 			}
 
-			TestCase.assertEquals("Asserts that if the session is exclusive, events are sent before close.",2,eventLisneter.getCount());
+			assertThat(eventLisneter.getCount()).as("Asserts that if the session is exclusive, events are sent before close.").isEqualTo(2);
 
 			org.osgi.service.dmt.DmtEvent[] dmtEvents = eventLisneter.getDmtEvents();
 			//The first one must be the DmtEvent.REPLACED and the second one DmtEvent.ADDED

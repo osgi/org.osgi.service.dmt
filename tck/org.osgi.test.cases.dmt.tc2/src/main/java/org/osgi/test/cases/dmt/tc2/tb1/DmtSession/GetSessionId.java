@@ -32,15 +32,14 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
-
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -73,14 +72,12 @@ public class GetSessionId implements TestInterface {
 		DmtSession session1 = null;
 		DmtSession session2 = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSessionId001");
+			System.out.println("#testGetSessionId001");
 			session1 = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
 			session2 = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
-			TestCase.assertTrue(
-					"Asserting that session1 and session2 has differents ids.",
-					(session1.getSessionId() != session2.getSessionId()));
+			assertThat((session1.getSessionId() != session2.getSessionId())).as("Asserting that session1 and session2 has differents ids.").isTrue();
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {

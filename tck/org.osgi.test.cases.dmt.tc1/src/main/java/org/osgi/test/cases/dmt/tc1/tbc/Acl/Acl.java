@@ -38,6 +38,9 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -56,20 +59,19 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String)
 	 */
+	@Test
 	public void testAcl001() {
 
 		try {
-			log("#testAcl001");
+			System.out.println("#testAcl001");
 			org.osgi.service.dmt.Acl Acl = null;
 			Acl = new org.osgi.service.dmt.Acl("Add="
 					+ DmtConstants.PRINCIPAL + "&Delete="
 					+ DmtConstants.PRINCIPAL + "&Get=*");
-			assertEquals(
-					"Asserting that all of the permissions were found",
-					org.osgi.service.dmt.Acl.ADD
+			assertThat(Acl
+							.getPermissions(DmtConstants.PRINCIPAL)).as("Asserting that all of the permissions were found").isEqualTo(org.osgi.service.dmt.Acl.ADD
 							| org.osgi.service.dmt.Acl.DELETE
-							| org.osgi.service.dmt.Acl.GET, Acl
-							.getPermissions(DmtConstants.PRINCIPAL));
+							| org.osgi.service.dmt.Acl.GET);
 
 			boolean found = false;
 			for (int i = 0; i < Acl.getPrincipals().length && !found; i++) {
@@ -77,7 +79,7 @@ public class Acl extends DmtTestControl {
 				found = (principal != null && principal
 						.equals(DmtConstants.PRINCIPAL)) ? true : false;
 			}
-			assertTrue("Asserting that the principal was found", found);
+			assertThat(found).as("Asserting that the principal was found").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -89,9 +91,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl002() {
 		try {
-			log("#testAcl002");
+			System.out.println("#testAcl002");
 			String[] principals = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2 };
 			int[] perm = {
@@ -107,9 +110,7 @@ public class Acl extends DmtTestControl {
 					passed = true;
 				}
 			}
-            assertTrue(
-					"All permissions granted to different principals were found",
-					passed);
+            assertThat(passed).as("All permissions granted to different principals were found").isTrue();
 
 			int totalExpected = principals.length;
 			int totalFound = 0;
@@ -122,8 +123,7 @@ public class Acl extends DmtTestControl {
 				}
 
 			}
-			assertEquals("Asserting that all of the principals were found",
-					totalExpected, totalFound);
+			assertThat(totalFound).as("Asserting that all of the principals were found").isEqualTo(totalExpected);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -136,13 +136,14 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String)
 	 */
+	@Test
 	public void testAcl003() {
 		try {
-			log("#testAcl003");
+			System.out.println("#testAcl003");
 			new org.osgi.service.dmt.Acl(DmtConstants.INVALID);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("Exception correctly thrown");
+			System.out.println("Exception correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(
 					IllegalArgumentException.class, e);
@@ -156,19 +157,18 @@ public class Acl extends DmtTestControl {
 	 * @spec Acl.Acl(String)
 	 */
 
+	@Test
 	public void testAcl004() {
 		try {
-			log("#testAcl004");
+			System.out.println("#testAcl004");
 			org.osgi.service.dmt.Acl Acl = new org.osgi.service.dmt.Acl(
 					null);
 			String[] principals = Acl.getPrincipals();
 			int permissions = Acl.getPermissions("*");
 
-			assertNotNull("Principals are not null", principals);
-			assertTrue("Asserting empty principals",
-					(principals.length == 0));
-			assertTrue("Asserting that no global permissions were granted",
-					permissions == 0);
+			assertThat(principals).as("Principals are not null").isNotNull();
+			assertThat((principals.length == 0)).as("Asserting empty principals").isTrue();
+			assertThat(permissions == 0).as("Asserting that no global permissions were granted").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -180,22 +180,21 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String)
 	 */
+	@Test
 	public void testAcl005() {
 		try {
-			log("#testAcl005");
+			System.out.println("#testAcl005");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2 };
 			org.osgi.service.dmt.Acl Acl = null;
 			Acl = new org.osgi.service.dmt.Acl("Add=" + principal[0]
 					+ "&Delete=" + principal[1] + "&Get=*");
-			assertEquals("Asserting permissions of " + principal[0],
-					org.osgi.service.dmt.Acl.ADD
-							| org.osgi.service.dmt.Acl.GET, Acl
-							.getPermissions(principal[0]));
-			assertEquals("Asserting permissions of " + principal[1],
-					org.osgi.service.dmt.Acl.DELETE
-							| org.osgi.service.dmt.Acl.GET, Acl
-							.getPermissions(principal[1]));
+			assertThat(Acl
+							.getPermissions(principal[0])).as("Asserting permissions of " + principal[0]).isEqualTo(org.osgi.service.dmt.Acl.ADD
+							| org.osgi.service.dmt.Acl.GET);
+			assertThat(Acl
+							.getPermissions(principal[1])).as("Asserting permissions of " + principal[1]).isEqualTo(org.osgi.service.dmt.Acl.DELETE
+							| org.osgi.service.dmt.Acl.GET);
 
 			int found = 0;
 			for (int i = 0; i < Acl.getPrincipals().length
@@ -207,8 +206,7 @@ public class Acl extends DmtTestControl {
 					}
 				}
 			}
-			assertEquals("All principals were found", principal.length,
-					found);
+			assertThat(found).as("All principals were found").isEqualTo(principal.length);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -220,9 +218,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String)
 	 */
+	@Test
 	public void testAcl006() {
 		try {
-			log("#testAcl006");
+			System.out.println("#testAcl006");
 			
             new org.osgi.service.dmt.Acl("Invalid="
 					+ DmtConstants.PRINCIPAL + "&Install="
@@ -230,7 +229,7 @@ public class Acl extends DmtTestControl {
             
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("Correctly caught IllegalArgumentException");
+			System.out.println("Correctly caught IllegalArgumentException");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -242,15 +241,16 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String)
 	 */
+	@Test
 	public void testAcl007() {
 		try {
-			log("#testAcl007");
+			System.out.println("#testAcl007");
             
 			new org.osgi.service.dmt.Acl("Add="+ DmtConstants.INVALID + "&Delete="
 					+ DmtConstants.INVALID + "&Get=*");
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("Correctly caught IllegalArgumentException");
+			System.out.println("Correctly caught IllegalArgumentException");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -262,9 +262,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl008() {
 		try {
-			log("#testAcl008");
+			System.out.println("#testAcl008");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2 };
 			int[] perm = { org.osgi.service.dmt.Acl.GET
@@ -276,7 +277,7 @@ public class Acl extends DmtTestControl {
 			failException("#", IllegalArgumentException.class);
 
 		} catch (IllegalArgumentException e) {
-			pass("Correctly caught IllegalArgumentException.");
+			System.out.println("Correctly caught IllegalArgumentException.");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -288,9 +289,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl009() {
 		try {
-			log("#testAcl009");
+			System.out.println("#testAcl009");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2 };
 			int[] perm = { org.osgi.service.dmt.Acl.GET | 99 };
@@ -299,7 +301,7 @@ public class Acl extends DmtTestControl {
 			
             failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("Correctly caught IllegalArgumentException.");
+			System.out.println("Correctly caught IllegalArgumentException.");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -311,9 +313,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl010() {
 		try {
-			log("#testAcl010");
+			System.out.println("#testAcl010");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.INVALID };
 			int[] perm = { org.osgi.service.dmt.Acl.GET,
@@ -323,7 +326,7 @@ public class Acl extends DmtTestControl {
 			
             failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("Correctly caught IllegalArgumentException.");
+			System.out.println("Correctly caught IllegalArgumentException.");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -334,9 +337,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl011() {
 		try {
-			log("#testAcl011");
+			System.out.println("#testAcl011");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2, "*" };
 			int[] perm = { org.osgi.service.dmt.Acl.GET,
@@ -353,9 +357,7 @@ public class Acl extends DmtTestControl {
 					passed = true;
 				}
 			}
-			assertTrue(
-					"Asserts if '*' grants permissions to all principals.",
-					passed);
+			assertThat(passed).as("Asserts if '*' grants permissions to all principals.").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -367,9 +369,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl012() {
 		try {
-			log("#testAcl012");
+			System.out.println("#testAcl012");
 			String[] principal = { DmtConstants.PRINCIPAL, "*" };
 			int[] perm = { org.osgi.service.dmt.Acl.GET,
 					org.osgi.service.dmt.Acl.ADD };
@@ -383,10 +386,8 @@ public class Acl extends DmtTestControl {
 					passed = true;
 				}
 			}
-			assertTrue(
-					"Asserts if '*' grants permissions to all principals, "
-							+ "even if it is not passed on the constructor.",
-					passed);
+			assertThat(passed).as("Asserts if '*' grants permissions to all principals, "
+							+ "even if it is not passed on the constructor.").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -398,9 +399,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl013() {
 		try {
-			log("#testAcl013");
+			System.out.println("#testAcl013");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2, DmtConstants.PRINCIPAL };
 			int[] perm = { org.osgi.service.dmt.Acl.GET,
@@ -411,7 +413,7 @@ public class Acl extends DmtTestControl {
             
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException was thrown when a principal appeared multiple times in the principals array");
+			System.out.println("IllegalArgumentException was thrown when a principal appeared multiple times in the principals array");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -423,9 +425,10 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String[],int[])
 	 */
+	@Test
 	public void testAcl014() {
 		try {
-			log("#testAcl014");
+			System.out.println("#testAcl014");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2 };
 			int[] perm = {
@@ -437,7 +440,7 @@ public class Acl extends DmtTestControl {
 			 acl.getPermissions(principal[1]);
 				failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("Correctly caught IllegalArgumentException. The constructor is ignoring principals with empty permissions.");
+			System.out.println("Correctly caught IllegalArgumentException. The constructor is ignoring principals with empty permissions.");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -449,15 +452,14 @@ public class Acl extends DmtTestControl {
      * 
      * @spec Acl.getPermissions(String)
      */
+    @Test
     public void testAcl015() {
         try {
-            log("#testAcl015");
+            System.out.println("#testAcl015");
             org.osgi.service.dmt.Acl acl = new org.osgi.service.dmt.Acl("Add=*&Get=" + DmtConstants.PRINCIPAL +"&Replace="+DmtConstants.PRINCIPAL_2);
             
             int perm = acl.getPermissions("*");
-            assertTrue(
-					"Asserts that getPermissions '*' gets the permissions that are granted globally, to all principals", 
-                perm==org.osgi.service.dmt.Acl.ADD);
+            assertThat(perm==org.osgi.service.dmt.Acl.ADD).as("Asserts that getPermissions '*' gets the permissions that are granted globally, to all principals").isTrue();
 
         } catch (Exception e) {
         	failUnexpectedException(e);
@@ -471,19 +473,19 @@ public class Acl extends DmtTestControl {
 	 * @spec Acl.Acl(String)
 	 */
 
+	@Test
 	public void testAcl016() {
 		try {
-			log("#testAcl016");
+			System.out.println("#testAcl016");
 			org.osgi.service.dmt.Acl Acl = new org.osgi.service.dmt.Acl("");
 			String[] principals = Acl.getPrincipals();
 			int permissions = Acl.getPermissions("*");
 
-			assertNotNull("Principals are not null", principals);
+			assertThat(principals).as("Principals are not null").isNotNull();
 			
-			assertTrue("Asserting empty principals", (principals.length == 0));
+			assertThat((principals.length == 0)).as("Asserting empty principals").isTrue();
 			
-			assertTrue("Asserting that no global permissions were granted",
-					permissions == 0);
+			assertThat(permissions == 0).as("Asserting that no global permissions were granted").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -497,17 +499,18 @@ public class Acl extends DmtTestControl {
 	 * 
 	 * @spec Acl.Acl(String)
 	 */
+	@Test
 	public void testAcl017() {
 		char[] invalidAclChar = new char[] { '=','&','*',' ' };
 		
 		try {
-			log("#testAcl017");
+			System.out.println("#testAcl017");
 			for (int i = 0; i < invalidAclChar.length; i++) {
 				try {
 					new org.osgi.service.dmt.Acl("Add=prin" + invalidAclChar[i] + "cipal");
 					failException("", IllegalArgumentException.class);
 				} catch (IllegalArgumentException e) {
-					pass("IllegalArgumentException correctly thrown when creating an Acl "
+					System.out.println("IllegalArgumentException correctly thrown when creating an Acl "
 							+
 							"using the invalid character \"" + invalidAclChar[i] + "\" in the remote server id");
 				}

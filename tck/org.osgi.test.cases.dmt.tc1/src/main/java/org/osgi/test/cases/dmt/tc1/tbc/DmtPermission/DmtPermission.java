@@ -29,8 +29,11 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPermission;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.StringTokenizer;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -46,9 +49,10 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission001() {
 		try {
-			log("#testDmtPermission001");
+			System.out.println("#testDmtPermission001");
 			StringTokenizer stringToken = new StringTokenizer(
 					new org.osgi.service.dmt.security.DmtPermission(
 							DmtConstants.OSGi_LOG, DmtConstants.ACTIONS)
@@ -80,14 +84,9 @@ public class DmtPermission extends DmtTestControl {
 				}
 			}
 
-			assertTrue(
-					"Asserts that no unexpected permissions were returned.",
-					!errorFound);
-			assertTrue("Asserts that all of the actions were returned.",
-					hasADD && hasGET && hasREPLACE);
-			assertTrue(
-					"Asserts that the order returned was the specified.",
-					ordered);
+			assertThat(!errorFound).as("Asserts that no unexpected permissions were returned.").isTrue();
+			assertThat(hasADD && hasGET && hasREPLACE).as("Asserts that all of the actions were returned.").isTrue();
+			assertThat(ordered).as("Asserts that the order returned was the specified.").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -100,9 +99,10 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission002() {
 		try {
-			log("#testDmtPermission002");
+			System.out.println("#testDmtPermission002");
 			StringTokenizer stringToken = new StringTokenizer(
 					new org.osgi.service.dmt.security.DmtPermission(
 							DmtConstants.OSGi_LOG, "*").getActions(), ",");
@@ -151,14 +151,9 @@ public class DmtPermission extends DmtTestControl {
 
 			}
 
-			assertTrue(
-					"Asserts that no unexpected permissions were returned.",
-					!errorFound);
-			assertTrue("Asserts that all of the actions were returned.",
-					hasADD && hasDELETE && hasEXEC && hasGET && hasREPLACE);
-			assertTrue(
-					"Asserts that the order returned was the specified.",
-					ordered);
+			assertThat(!errorFound).as("Asserts that no unexpected permissions were returned.").isTrue();
+			assertThat(hasADD && hasDELETE && hasEXEC && hasGET && hasREPLACE).as("Asserts that all of the actions were returned.").isTrue();
+			assertThat(ordered).as("Asserts that the order returned was the specified.").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -169,14 +164,15 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission003() {
-		log("#testDmtPermission003");
+		System.out.println("#testDmtPermission003");
 		try {
 			new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,
 					null);
 			failException("#", NullPointerException.class);
 		} catch (NullPointerException e) {
-			pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -188,13 +184,14 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission004() {
-		log("#testDmtPermission004");
+		System.out.println("#testDmtPermission004");
 		try {
 			new org.osgi.service.dmt.security.DmtPermission(null, DmtConstants.ACTIONS);
 			failException("#", NullPointerException.class);
 		} catch (NullPointerException e) {
-			pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -206,14 +203,15 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission005() {
-		log("#testDmtPermission005");
+		System.out.println("#testDmtPermission005");
 		try {
 			new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,
 					DmtConstants.TITLE);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -225,14 +223,15 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission006() {
-		log("#testDmtPermission006");
+		System.out.println("#testDmtPermission006");
 		try {
 			new org.osgi.service.dmt.security.DmtPermission(DmtConstants.INVALID,
 					DmtConstants.ACTIONS);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -244,15 +243,15 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission007() {
-		log("#testDmtPermission007");
+		System.out.println("#testDmtPermission007");
 		try {
 			String actions = new org.osgi.service.dmt.security.DmtPermission(
 					DmtConstants.OSGi_ROOT + "/l*",
 					org.osgi.service.dmt.security.DmtPermission.GET).getActions();
 
-			assertEquals("Asserts that a wildcard is permitted on dmtUri",
-					org.osgi.service.dmt.security.DmtPermission.GET, actions.trim());
+			assertThat(actions.trim()).as("Asserts that a wildcard is permitted on dmtUri").isEqualTo(org.osgi.service.dmt.security.DmtPermission.GET);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -264,17 +263,16 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission008() {
-		log("#testDmtPermission008");
+		System.out.println("#testDmtPermission008");
 		try {
 			String actions = new org.osgi.service.dmt.security.DmtPermission(
 					DmtConstants.OSGi_ROOT + "/*",
 					org.osgi.service.dmt.security.DmtPermission.GET).getActions();
 
-			assertEquals(
-							"Asserts that a wildcard is permitted on dmtUri after '/' character",
-							org.osgi.service.dmt.security.DmtPermission.GET, actions
-									.trim());
+			assertThat(actions
+									.trim()).as("Asserts that a wildcard is permitted on dmtUri after '/' character").isEqualTo(org.osgi.service.dmt.security.DmtPermission.GET);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -287,8 +285,9 @@ public class DmtPermission extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.DmtPermission(String,String)
 	 */
+	@Test
 	public void testDmtPermission009() {
-		log("#testDmtPermission009");
+		System.out.println("#testDmtPermission009");
 		try {
 			String expectedActions = org.osgi.service.dmt.security.DmtPermission.ADD + "," + 
 			org.osgi.service.dmt.security.DmtPermission.DELETE + "," +
@@ -300,11 +299,10 @@ public class DmtPermission extends DmtTestControl {
 			String actions = new org.osgi.service.dmt.security.DmtPermission(
 					DmtConstants.OSGi_ROOT,expectedActions.toUpperCase()).getActions();
 
-			assertEquals(
-					"Asserts that action names are interpreted case-insensitively, "
+			assertThat(actions).as("Asserts that action names are interpreted case-insensitively, "
 							+
 					"and that the canonical action string returned by getActions() uses the " +
-					"forms defined by the action constants.",expectedActions,actions);
+					"forms defined by the action constants.").isEqualTo(expectedActions);
 
 		} catch (Exception e) {
 			failUnexpectedException(e);

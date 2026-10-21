@@ -17,6 +17,12 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.ext.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtSession;
@@ -31,18 +37,21 @@ import org.osgi.test.cases.dmt.tc4.ext.util.TestMetaNode;
 public class SharedMountPointTest extends DmtAdminTestCase {
 
     @Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
         super.setUp();
         getDmtAdmin();
     }
 
     @Override
-	protected void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
         unregisterPlugins();
         closeDmtSession();
         super.tearDown();
     }
 
+    @Test
     public void testMountPointNotIndicatePluginTableOrder01() throws Exception {
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -52,8 +61,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 				});
 
         MountPointEvent addedEvent = pluginTable.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEvent.getType());
-        assertEquals("./A1", Uri.toUri(addedEvent.getMountPoint().getMountPath()));
+        assertThat(addedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
+        assertThat(Uri.toUri(addedEvent.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         TestDataMountPlugin sharedPluginB1 = new TestDataMountPlugin();
         setLeafNode(sharedPluginB1, "./A1/B1");
@@ -62,18 +71,19 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         assertInteriorNode("./A1");
-        assertEquals(0, session.getChildNodeNames("./A1").length);
+		assertThat(session.getChildNodeNames("./A1")).isEmpty();
         assertNodeNotFound("./A1/B1");
         session.close();
 
         unregister(registrationA1);
         MountPointEvent removedEvent = pluginTable.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEvent.getType());
-        assertEquals("./A1", Uri.toUri(removedEvent.getMountPoint().getMountPath()));
+        assertThat(removedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEvent.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         unregister(registrationB1);
     }
 
+    @Test
     public void testMountPointNotIndicatePluginTableOrder02() throws Exception {
         TestDataMountPlugin sharedPluginB1 = new TestDataMountPlugin();
         setLeafNode(sharedPluginB1, "./A1/B1");
@@ -81,9 +91,9 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 				sharedPluginB1, "./A1/#");
 
         MountPointEvent addedEvent = sharedPluginB1.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEvent.getType());
+        assertThat(addedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String mountUri = Uri.toUri(addedEvent.getMountPoint().getMountPath());
-        assertTrue(mountUri.startsWith("./A1"));
+		assertThat(mountUri).startsWith("./A1");
         setInteriorNode(sharedPluginB1, mountUri);
 
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
@@ -95,7 +105,7 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         assertScaffoldNode("./A1");
-        assertEquals(1, session.getChildNodeNames("./A1").length);
+		assertThat(session.getChildNodeNames("./A1")).hasSize(1);
         assertInteriorNode(mountUri);
         assertNodeNotFound("./A1/B1");
         session.close();
@@ -104,10 +114,11 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         unregister(registrationB1);
         MountPointEvent removedEvent = sharedPluginB1.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEvent.getType());
-        assertEquals(mountUri, Uri.toUri(removedEvent.getMountPoint().getMountPath()));
+        assertThat(removedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEvent.getMountPoint().getMountPath())).isEqualTo(mountUri);
     }
 
+    @Test
     public void testRootURINotIndicatePluginTableOrder01() throws Exception {
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -117,8 +128,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 				});
 
         MountPointEvent addedEvent = pluginTable.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEvent.getType());
-        assertEquals("./A1", Uri.toUri(addedEvent.getMountPoint().getMountPath()));
+        assertThat(addedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
+        assertThat(Uri.toUri(addedEvent.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         TestDataMountPlugin sharedPluginB1 = new TestDataMountPlugin();
         setLeafNode(sharedPluginB1, "./A1/B1");
@@ -127,18 +138,19 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         assertInteriorNode("./A1");
-        assertEquals(0, session.getChildNodeNames("./A1").length);
+		assertThat(session.getChildNodeNames("./A1")).isEmpty();
         assertNodeNotFound("./A1/B1");
         session.close();
 
         unregister(registrationA1);
         MountPointEvent removedEvent = pluginTable.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEvent.getType());
-        assertEquals("./A1", Uri.toUri(removedEvent.getMountPoint().getMountPath()));
+        assertThat(removedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEvent.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         unregister(registrationB1);
     }
 
+    @Test
     public void testRootURINotIndicatePluginTablOrder02() throws Exception {
         TestDataMountPlugin sharedPluginB1 = new TestDataMountPlugin();
         setLeafNode(sharedPluginB1, "./A1/B1");
@@ -146,8 +158,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 				sharedPluginB1, "./A1/B1");
 
         MountPointEvent addedEvent = sharedPluginB1.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEvent.getType());
-        assertEquals("./A1/B1", Uri.toUri(addedEvent.getMountPoint().getMountPath()));
+        assertThat(addedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
+        assertThat(Uri.toUri(addedEvent.getMountPoint().getMountPath())).isEqualTo("./A1/B1");
 
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -165,10 +177,11 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         unregister(registrationB1);
         MountPointEvent removedEvent = sharedPluginB1.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEvent.getType());
-        assertEquals("./A1/B1", Uri.toUri(removedEvent.getMountPoint().getMountPath()));
+        assertThat(removedEvent.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEvent.getMountPoint().getMountPath())).isEqualTo("./A1/B1");
     }
 
+    @Test
     public void testRemountEnumeratedPlugins01() throws Exception {
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -177,14 +190,14 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 						"#"
 				});
         MountPointEvent addedEventA1 = pluginTable.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventA1.getType());
-        assertEquals("./A1", Uri.toUri(addedEventA1.getMountPoint().getMountPath()));
+        assertThat(addedEventA1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
+        assertThat(Uri.toUri(addedEventA1.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         TestDataMountPlugin sharedPluginB1 = new TestDataMountPlugin();
 		ServiceRegistration<DataPlugin> registrationB1 = registerMountDataPlugin(
 				sharedPluginB1, "./A1/#");
         MountPointEvent addedEventB1 = sharedPluginB1.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventB1.getType());
+        assertThat(addedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] mountPathB1 = addedEventB1.getMountPoint().getMountPath();
         String rootNodeNameB1 = getLastSegment(mountPathB1);
         assertEnumratedPluginMountPoint(mountPathB1, "./A1");
@@ -198,8 +211,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         unregister(registrationA1);
         MountPointEvent removedEventA1 = pluginTable.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventA1.getType());
-        assertEquals("./A1", Uri.toUri(removedEventA1.getMountPoint().getMountPath()));
+        assertThat(removedEventA1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEventA1.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         assertScaffoldNode("./A1");
@@ -214,8 +227,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 						"#"
 				});
         MountPointEvent addedEventNewA1 = newPluginTable.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventNewA1.getType());
-        assertEquals("./A1", Uri.toUri(addedEventNewA1.getMountPoint().getMountPath()));
+        assertThat(addedEventNewA1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
+        assertThat(Uri.toUri(addedEventNewA1.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         assertInteriorNode("./A1");
@@ -225,15 +238,16 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         unregister(newRegistrationA1);
         MountPointEvent removedEventNewA1 = newPluginTable.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventNewA1.getType());
-        assertEquals("./A1", Uri.toUri(removedEventNewA1.getMountPoint().getMountPath()));
+        assertThat(removedEventNewA1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEventNewA1.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         unregister(registrationB1);
         MountPointEvent removedEventB1 = sharedPluginB1.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventB1.getType());
-        assertEquals(Uri.toUri(mountPathB1), Uri.toUri(removedEventB1.getMountPoint().getMountPath()));
+        assertThat(removedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEventB1.getMountPoint().getMountPath())).isEqualTo(Uri.toUri(mountPathB1));
     }
 
+    @Test
     public void testRemountEnumeratedPlugins02() throws Exception {
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -242,14 +256,14 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 						"#"
 				});
         MountPointEvent addedEventA1 = pluginTable.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventA1.getType());
-        assertEquals("./A1", Uri.toUri(addedEventA1.getMountPoint().getMountPath()));
+        assertThat(addedEventA1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
+        assertThat(Uri.toUri(addedEventA1.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         TestDataMountPlugin sharedPluginB1 = new TestDataMountPlugin();
 		ServiceRegistration<DataPlugin> registrationB1 = registerMountDataPlugin(
 				sharedPluginB1, "./A1/#");
         MountPointEvent addedEventB1 = sharedPluginB1.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventB1.getType());
+        assertThat(addedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] mountPathB1 = addedEventB1.getMountPoint().getMountPath();
         String rootNodeNameB1 = getLastSegment(mountPathB1);
         assertEnumratedPluginMountPoint(mountPathB1, "./A1");
@@ -263,8 +277,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         unregister(registrationA1);
         MountPointEvent removedEventA1 = pluginTable.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventA1.getType());
-        assertEquals("./A1", Uri.toUri(removedEventA1.getMountPoint().getMountPath()));
+        assertThat(removedEventA1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEventA1.getMountPoint().getMountPath())).isEqualTo("./A1");
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         assertScaffoldNode("./A1");
@@ -285,19 +299,20 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         unregister(registrationB1);
         MountPointEvent removedEventB1 = sharedPluginB1.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventB1.getType());
-        assertEquals(Uri.toUri(mountPathB1), Uri.toUri(removedEventB1.getMountPoint().getMountPath()));
+        assertThat(removedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEventB1.getMountPoint().getMountPath())).isEqualTo(Uri.toUri(mountPathB1));
 
         MountPointEvent addedEventB2 = sharedPluginB2.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventB2.getType());
-        assertEquals("./A1/B2", Uri.toUri(addedEventB2.getMountPoint().getMountPath()));
+        assertThat(addedEventB2.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
+        assertThat(Uri.toUri(addedEventB2.getMountPoint().getMountPath())).isEqualTo("./A1/B2");
 
         unregister(registrationB2);
         MountPointEvent removedEventB2 = sharedPluginB2.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventB2.getType());
-        assertEquals("./A1/B2", Uri.toUri(removedEventB2.getMountPoint().getMountPath()));
+        assertThat(removedEventB2.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
+        assertThat(Uri.toUri(removedEventB2.getMountPoint().getMountPath())).isEqualTo("./A1/B2");
     }
 
+    @Test
     public void testMountUnknownEnumeratedPlugins() throws Exception {
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -311,7 +326,7 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 				sharedPluginB1, "./A1/#");
 
         MountPointEvent addedEventB1 = sharedPluginB1.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventB1.getType());
+        assertThat(addedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] mountPathB1 = addedEventB1.getMountPoint().getMountPath();
         int mountPonintNumberB1 = assertEnumratedPluginMountPoint(mountPathB1, "./A1");
 
@@ -320,25 +335,26 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 				sharedPluginB2, "./A1/#");
 
         MountPointEvent addedEventB2 = sharedPluginB2.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventB2.getType());
+        assertThat(addedEventB2.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] mountPathB2 = addedEventB2.getMountPoint().getMountPath();
         int mountPonintNumberB2 = assertEnumratedPluginMountPoint(mountPathB2, "./A1");
 
-        assertEquals(mountPonintNumberB1 + 1, mountPonintNumberB2);
+        assertThat(mountPonintNumberB2).isEqualTo(mountPonintNumberB1 + 1);
 
         unregister(registrationB1);
         MountPointEvent removedEventB1 = sharedPluginB1.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventB1.getType());
+        assertThat(removedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
         ArrayAssert.assertEquivalenceArrays(mountPathB1, removedEventB1.getMountPoint().getMountPath());
 
         unregister(registrationB2);
         MountPointEvent removedEventB2 = sharedPluginB2.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventB2.getType());
+        assertThat(removedEventB2.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
         ArrayAssert.assertEquivalenceArrays(mountPathB2, removedEventB2.getMountPoint().getMountPath());
 
         unregister(registrationA1);
     }
 
+    @Test
     public void testMountKnownEnumeratedPlugins() throws Exception {
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -353,7 +369,7 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 						"B1"
 				});
         MountPointEvent addedEventB1 = sharedPluginB1.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventB1.getType());
+        assertThat(addedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] mountPathB1 = addedEventB1.getMountPoint().getMountPath();
         int mountPonintNumberB1 = assertEnumratedPluginMountPoint(mountPathB1, "./A1");
 
@@ -363,15 +379,15 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 						"B2"
 				});
         MountPointEvent addedEventB2 = sharedPluginB2.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, addedEventB2.getType());
+        assertThat(addedEventB2.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] mountPathB2 = addedEventB2.getMountPoint().getMountPath();
         int mountPonintNumberB2 = assertEnumratedPluginMountPoint(mountPathB2, "./A1");
 
-        assertTrue(mountPonintNumberB1 != mountPonintNumberB2);
+		assertThat(mountPonintNumberB1).isNotEqualTo(mountPonintNumberB2);
 
         unregister(registrationB1);
         MountPointEvent removedEventB1 = sharedPluginB1.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventB1.getType());
+        assertThat(removedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
         ArrayAssert.assertEquivalenceArrays(mountPathB1, removedEventB1.getMountPoint().getMountPath());
 
         TestDataMountPlugin newSharedPluginB1 = new TestDataMountPlugin();
@@ -380,15 +396,15 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 						"B1"
 				});
         MountPointEvent newAddedEventB1 = newSharedPluginB1.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, newAddedEventB1.getType());
+        assertThat(newAddedEventB1.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] newMountPathB1 = newAddedEventB1.getMountPoint().getMountPath();
         int newMountPonintNumberB1 = assertEnumratedPluginMountPoint(newMountPathB1, "./A1");
 
-        assertEquals(mountPonintNumberB1, newMountPonintNumberB1);
+        assertThat(newMountPonintNumberB1).isEqualTo(mountPonintNumberB1);
 
         unregister(registrationB2);
         MountPointEvent removedEventB2 = sharedPluginB2.getMountPointEvent(1);
-        assertEquals(MountPointEvent.MOUNT_POINTS_REMOVED, removedEventB2.getType());
+        assertThat(removedEventB2.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_REMOVED);
         ArrayAssert.assertEquivalenceArrays(mountPathB2, removedEventB2.getMountPoint().getMountPath());
 
         TestDataMountPlugin newSharedPluginB2 = new TestDataMountPlugin();
@@ -397,17 +413,18 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 						"B2"
 				});
         MountPointEvent newAddedEventB2 = newSharedPluginB2.getMountPointEvent(0);
-        assertEquals(MountPointEvent.MOUNT_POINTS_ADDED, newAddedEventB2.getType());
+        assertThat(newAddedEventB2.getType()).isEqualTo(MountPointEvent.MOUNT_POINTS_ADDED);
         String[] newMountPathB2 = newAddedEventB2.getMountPoint().getMountPath();
         int newMountPonintNumberB2 = assertEnumratedPluginMountPoint(newMountPathB2, "./A1");
 
-        assertEquals(mountPonintNumberB2, newMountPonintNumberB2);
+        assertThat(newMountPonintNumberB2).isEqualTo(mountPonintNumberB2);
 
         unregister(registrationA1);
         unregister(newRegistrationB1);
         unregister(newRegistrationB2);
     }
 
+    @Test
     public void testGetMetaNodeNotMountSharedPlugins() throws Exception {
         TestDataMountPlugin pluginTable = new TestDataMountPlugin();
         setInteriorNode(pluginTable, "./A1");
@@ -434,7 +451,7 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB1)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB1)).getClass()).isEqualTo(TestMetaNode.class);
         } finally {
             session.close();
         }
@@ -450,8 +467,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB1)).getClass());
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB2)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB1)).getClass()).isEqualTo(TestMetaNode.class);
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB2)).getClass()).isEqualTo(TestMetaNode.class);
         } finally {
             session.close();
         }
@@ -461,7 +478,7 @@ public class SharedMountPointTest extends DmtAdminTestCase {
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
             assertSharedMountPointMetaNode(session.getMetaNode(Uri.toUri(mountPathB1)), MetaNode.DYNAMIC);
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB2)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB2)).getClass()).isEqualTo(TestMetaNode.class);
         } finally {
             session.close();
         }
@@ -475,8 +492,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB1)).getClass());
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB2)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB1)).getClass()).isEqualTo(TestMetaNode.class);
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB2)).getClass()).isEqualTo(TestMetaNode.class);
         } finally {
             session.close();
         }
@@ -485,7 +502,7 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB1)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB1)).getClass()).isEqualTo(TestMetaNode.class);
             assertSharedMountPointMetaNode(session.getMetaNode(Uri.toUri(mountPathB2)), MetaNode.DYNAMIC);
         } finally {
             session.close();
@@ -500,8 +517,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
 
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB1)).getClass());
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB2)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB1)).getClass()).isEqualTo(TestMetaNode.class);
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB2)).getClass()).isEqualTo(TestMetaNode.class);
         } finally {
             session.close();
         }
@@ -509,8 +526,8 @@ public class SharedMountPointTest extends DmtAdminTestCase {
         unregister(registrationA1);
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB1)).getClass());
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB2)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB1)).getClass()).isEqualTo(TestMetaNode.class);
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB2)).getClass()).isEqualTo(TestMetaNode.class);
         } finally {
             session.close();
         }
@@ -518,7 +535,7 @@ public class SharedMountPointTest extends DmtAdminTestCase {
         unregister(newRegistrationB1);
         session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
         try {
-            assertEquals(TestMetaNode.class, session.getMetaNode(Uri.toUri(mountPathB2)).getClass());
+            assertThat(session.getMetaNode(Uri.toUri(mountPathB2)).getClass()).isEqualTo(TestMetaNode.class);
         } finally {
             session.close();
         }
@@ -527,32 +544,32 @@ public class SharedMountPointTest extends DmtAdminTestCase {
     }
 
     private void assertSharedMountPointMetaNode(MetaNode sharedMountPointMetaNode, int scope) {
-        assertTrue(sharedMountPointMetaNode.can(MetaNode.CMD_GET));
-        assertNull(sharedMountPointMetaNode.getDefault());
-        assertNull(sharedMountPointMetaNode.getDescription());
-        assertEquals(DmtData.FORMAT_NODE, sharedMountPointMetaNode.getFormat());
-        assertEquals(Double.MAX_VALUE, sharedMountPointMetaNode.getMax(), 0.0d);
-        assertEquals(Integer.MAX_VALUE, sharedMountPointMetaNode.getMaxOccurrence());
-        assertNull(null, sharedMountPointMetaNode.getMimeTypes());
-        assertEquals(Double.MIN_VALUE, sharedMountPointMetaNode.getMin(), 0.0d);
-        assertNull(sharedMountPointMetaNode.getRawFormatNames());
-        assertEquals(scope, sharedMountPointMetaNode.getScope());
-        assertNull(sharedMountPointMetaNode.getValidNames());
-        assertNull(sharedMountPointMetaNode.getValidValues());
-        assertFalse(sharedMountPointMetaNode.isLeaf());
+        assertThat(sharedMountPointMetaNode.can(MetaNode.CMD_GET)).isTrue();
+        assertThat(sharedMountPointMetaNode.getDefault()).isNull();
+        assertThat(sharedMountPointMetaNode.getDescription()).isNull();
+        assertThat(sharedMountPointMetaNode.getFormat()).isEqualTo(DmtData.FORMAT_NODE);
+        assertThat(sharedMountPointMetaNode.getMax()).isCloseTo(Double.MAX_VALUE, within(0.0d));
+        assertThat(sharedMountPointMetaNode.getMaxOccurrence()).isEqualTo(Integer.MAX_VALUE);
+        assertThat(sharedMountPointMetaNode.getMimeTypes()).isNull();
+        assertThat(sharedMountPointMetaNode.getMin()).isCloseTo(Double.MIN_VALUE, within(0.0d));
+        assertThat(sharedMountPointMetaNode.getRawFormatNames()).isNull();
+        assertThat(sharedMountPointMetaNode.getScope()).isEqualTo(scope);
+        assertThat(sharedMountPointMetaNode.getValidNames()).isNull();
+        assertThat(sharedMountPointMetaNode.getValidValues()).isNull();
+        assertThat(sharedMountPointMetaNode.isLeaf()).isFalse();
 
-        assertFalse(sharedMountPointMetaNode.isValidName("foo"));
-        assertFalse(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MIN_VALUE)));
-        assertFalse(sharedMountPointMetaNode.isValidName("-1"));
-        assertFalse(sharedMountPointMetaNode.isValidName("0"));
-        assertTrue(sharedMountPointMetaNode.isValidName("1"));
-        assertTrue(sharedMountPointMetaNode.isValidName("2"));
-        assertTrue(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MAX_VALUE - 1)));
-        assertFalse(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MAX_VALUE)));
-        assertFalse(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MAX_VALUE) + "0"));
+        assertThat(sharedMountPointMetaNode.isValidName("foo")).isFalse();
+        assertThat(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MIN_VALUE))).isFalse();
+        assertThat(sharedMountPointMetaNode.isValidName("-1")).isFalse();
+        assertThat(sharedMountPointMetaNode.isValidName("0")).isFalse();
+        assertThat(sharedMountPointMetaNode.isValidName("1")).isTrue();
+        assertThat(sharedMountPointMetaNode.isValidName("2")).isTrue();
+        assertThat(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MAX_VALUE - 1))).isTrue();
+        assertThat(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MAX_VALUE))).isFalse();
+        assertThat(sharedMountPointMetaNode.isValidName(Integer.toString(Integer.MAX_VALUE) + "0")).isFalse();
 
-        assertFalse(sharedMountPointMetaNode.isValidValue(new DmtData(1)));
-        assertFalse(sharedMountPointMetaNode.isValidValue(new DmtData("foo")));
-        assertTrue(sharedMountPointMetaNode.isZeroOccurrenceAllowed());
+        assertThat(sharedMountPointMetaNode.isValidValue(new DmtData(1))).isFalse();
+        assertThat(sharedMountPointMetaNode.isValidValue(new DmtData("foo"))).isFalse();
+        assertThat(sharedMountPointMetaNode.isZeroOccurrenceAllowed()).isTrue();
     }
 }

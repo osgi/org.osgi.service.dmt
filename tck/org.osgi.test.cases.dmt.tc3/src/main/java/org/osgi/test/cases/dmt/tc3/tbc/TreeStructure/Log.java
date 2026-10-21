@@ -29,15 +29,15 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.TreeStructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
-
 import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -82,13 +82,13 @@ public class Log {
 	public void testLog001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog001");
+			System.out.println("#testLog001");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			MetaNode metaNode = session.getMetaNode(DmtConstants.OSGi_LOG);
-			TestCase.assertEquals("Asserts that $/Log node is permanent",MetaNode.PERMANENT, metaNode.getScope());
-			TestCase.assertTrue("Asserts $/Log node can be gotten", metaNode.can(MetaNode.CMD_GET));
-			TestCase.assertEquals("Asserts $/Log node format is an interior node", DmtData.FORMAT_NODE,metaNode.getFormat());
-			TestCase.assertTrue("Asserts $/Log node cardinality", !metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+			assertThat(metaNode.getScope()).as("Asserts that $/Log node is permanent").isEqualTo(MetaNode.PERMANENT);
+			assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log node can be gotten").isTrue();
+			assertThat(metaNode.getFormat()).as("Asserts $/Log node format is an interior node").isEqualTo(DmtData.FORMAT_NODE);
+			assertThat(!metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log node cardinality").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -105,16 +105,16 @@ public class Log {
 	public void testLog002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog002");
+			System.out.println("#testLog002");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH);
-			TestCase.assertEquals("Asserts that $/Log/<search_id> node is dynamic",MetaNode.DYNAMIC, metaNode.getScope());
-			TestCase.assertTrue("Asserts $/Log/<search_id> node can be added", metaNode.can(MetaNode.CMD_ADD));
-			TestCase.assertTrue("Asserts $/Log/<search_id> node can be deleted", metaNode.can(MetaNode.CMD_DELETE));
-			TestCase.assertTrue("Asserts $/Log/<search_id> node can be gotten", metaNode.can(MetaNode.CMD_GET));
-			TestCase.assertEquals("Asserts $/Log/<search_id> node format is an interior node", DmtData.FORMAT_NODE,metaNode.getFormat());
-			TestCase.assertTrue("Asserts $/Log/<search_id> node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==Integer.MAX_VALUE);
+			assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id> node is dynamic").isEqualTo(MetaNode.DYNAMIC);
+			assertThat(metaNode.can(MetaNode.CMD_ADD)).as("Asserts $/Log/<search_id> node can be added").isTrue();
+			assertThat(metaNode.can(MetaNode.CMD_DELETE)).as("Asserts $/Log/<search_id> node can be deleted").isTrue();
+			assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id> node can be gotten").isTrue();
+			assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id> node format is an interior node").isEqualTo(DmtData.FORMAT_NODE);
+			assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==Integer.MAX_VALUE).as("Asserts $/Log/<search_id> node cardinality").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -131,15 +131,15 @@ public class Log {
 	public void testLog003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog003");
+			System.out.println("#testLog003");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_FILTER);
-			TestCase.assertEquals("Asserts that $/Log/<search_id>/Filter node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/Filter node can be replaced", metaNode.can(MetaNode.CMD_REPLACE));
-			TestCase.assertTrue("Asserts $/Log/<search_id>/Filter node can be gotten", metaNode.can(MetaNode.CMD_GET));
-			TestCase.assertEquals("Asserts $/Log/<search_id>/Filter node format is a chr node", DmtData.FORMAT_STRING,metaNode.getFormat());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/Filter node cardinality", !metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+			assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/Filter node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+			assertThat(metaNode.can(MetaNode.CMD_REPLACE)).as("Asserts $/Log/<search_id>/Filter node can be replaced").isTrue();
+			assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/Filter node can be gotten").isTrue();
+			assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/Filter node format is a chr node").isEqualTo(DmtData.FORMAT_STRING);
+			assertThat(!metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/Filter node cardinality").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -156,15 +156,15 @@ public class Log {
 	public void testLog004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog004");
+			System.out.println("#testLog004");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_MAXRECORDS);
-			TestCase.assertEquals("Asserts that $/Log/<search_id>/MaxRecords node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/MaxRecords node can be replaced", metaNode.can(MetaNode.CMD_REPLACE));
-			TestCase.assertTrue("Asserts $/Log/<search_id>/MaxRecords node can be gotten", metaNode.can(MetaNode.CMD_GET));
-			TestCase.assertEquals("Asserts $/Log/<search_id>/MaxRecords node format is an integer node", DmtData.FORMAT_INTEGER,metaNode.getFormat());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/MaxRecords node cardinality", !metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+			assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/MaxRecords node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+			assertThat(metaNode.can(MetaNode.CMD_REPLACE)).as("Asserts $/Log/<search_id>/MaxRecords node can be replaced").isTrue();
+			assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/MaxRecords node can be gotten").isTrue();
+			assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/MaxRecords node format is an integer node").isEqualTo(DmtData.FORMAT_INTEGER);
+			assertThat(!metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/MaxRecords node cardinality").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -181,15 +181,15 @@ public class Log {
 	public void testLog005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog005");
+			System.out.println("#testLog005");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_EXCLUDE);
-			TestCase.assertEquals("Asserts that $/Log/<search_id>/Exclude node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/Exclude node can be replaced", metaNode.can(MetaNode.CMD_REPLACE));
-			TestCase.assertTrue("Asserts $/Log/<search_id>/Exclude node can be gotten", metaNode.can(MetaNode.CMD_GET));
-			TestCase.assertEquals("Asserts $/Log/<search_id>/Exclude node format is a chr node", DmtData.FORMAT_STRING,metaNode.getFormat());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/Exclude node cardinality", !metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+			assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/Exclude node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+			assertThat(metaNode.can(MetaNode.CMD_REPLACE)).as("Asserts $/Log/<search_id>/Exclude node can be replaced").isTrue();
+			assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/Exclude node can be gotten").isTrue();
+			assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/Exclude node format is a chr node").isEqualTo(DmtData.FORMAT_STRING);
+			assertThat(!metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/Exclude node cardinality").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -206,14 +206,14 @@ public class Log {
 	public void testLog006() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog006");
+			System.out.println("#testLog006");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT);
-			TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult node can be gotten", metaNode.can(MetaNode.CMD_GET));
-			TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult node format is an interior node", DmtData.FORMAT_NODE,metaNode.getFormat());
-			TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult node cardinality", !metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+			assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+			assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult node can be gotten").isTrue();
+			assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult node format is an interior node").isEqualTo(DmtData.FORMAT_NODE);
+			assertThat(!metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/LogResult node cardinality").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -230,18 +230,18 @@ public class Log {
 	public void testLog007() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog007");
+			System.out.println("#testLog007");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			String[] children = session.getChildNodeNames(DmtConstants.LOG_SEARCH_RESULT);
 			if (children.length>0) {
 				MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT + "/" + children[0]);
-				TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult/<record_id> node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id> node can be gotten", metaNode.can(MetaNode.CMD_GET));
-				TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult/<record_id> node format is an interior node", DmtData.FORMAT_NODE,metaNode.getFormat());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id> node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==Integer.MAX_VALUE);
+				assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult/<record_id> node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+				assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult/<record_id> node can be gotten").isTrue();
+				assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult/<record_id> node format is an interior node").isEqualTo(DmtData.FORMAT_NODE);
+				assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==Integer.MAX_VALUE).as("Asserts $/Log/<search_id>/LogResult/<record_id> node cardinality").isTrue();
 			} else {
-			    TestCase.fail("There is no child under $/Log/<search_id>/LogResult");
+			    fail("There is no child under $/Log/<search_id>/LogResult");
 			}
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -259,18 +259,18 @@ public class Log {
 	public void testLog008() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog008");
+			System.out.println("#testLog008");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			String[] children = session.getChildNodeNames(DmtConstants.LOG_SEARCH_RESULT);
 			if (children.length>0) {
 				MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT + "/" + children[0] + "/Time");
-				TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult/<record_id>/Time node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Time node can be gotten", metaNode.can(MetaNode.CMD_GET));
-				TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult/<record_id>/Time node format is an interior node", DmtData.FORMAT_STRING,metaNode.getFormat());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Time node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+				assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult/<record_id>/Time node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+				assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Time node can be gotten").isTrue();
+				assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Time node format is an interior node").isEqualTo(DmtData.FORMAT_STRING);
+				assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Time node cardinality").isTrue();
 			} else {
-			    TestCase.fail("There is no child under $/Log/<search_id>/LogResult");
+			    fail("There is no child under $/Log/<search_id>/LogResult");
 			}
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -288,18 +288,18 @@ public class Log {
 	public void testLog009() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog009");
+			System.out.println("#testLog009");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			String[] children = session.getChildNodeNames(DmtConstants.LOG_SEARCH_RESULT);
 			if (children.length>0) {
 				MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT + "/" + children[0] + "/Severity");
-				TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult/<record_id>/Severity node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Severity node can be gotten", metaNode.can(MetaNode.CMD_GET));
-				TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult/<record_id>/Severity node format is an integer node", DmtData.FORMAT_INTEGER,metaNode.getFormat());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Severity node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+				assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult/<record_id>/Severity node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+				assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Severity node can be gotten").isTrue();
+				assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Severity node format is an integer node").isEqualTo(DmtData.FORMAT_INTEGER);
+				assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Severity node cardinality").isTrue();
 			} else {
-			    TestCase.fail("There is no child under $/Log/<search_id>/LogResult");
+			    fail("There is no child under $/Log/<search_id>/LogResult");
 			}
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -317,18 +317,18 @@ public class Log {
 	public void testLog010() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog010");
+			System.out.println("#testLog010");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			String[] children = session.getChildNodeNames(DmtConstants.LOG_SEARCH_RESULT);
 			if (children.length>0) {
 				MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT + "/" + children[0] + "/System");
-				TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult/<record_id>/System node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/System node can be gotten", metaNode.can(MetaNode.CMD_GET));
-				TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult/<record_id>/System node format is a chr node", DmtData.FORMAT_STRING,metaNode.getFormat());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/System node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+				assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult/<record_id>/System node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+				assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult/<record_id>/System node can be gotten").isTrue();
+				assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult/<record_id>/System node format is a chr node").isEqualTo(DmtData.FORMAT_STRING);
+				assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/LogResult/<record_id>/System node cardinality").isTrue();
 			} else {
-			    TestCase.fail("There is no child under $/Log/<search_id>/LogResult");
+			    fail("There is no child under $/Log/<search_id>/LogResult");
 			}
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -345,18 +345,18 @@ public class Log {
 	public void testLog011() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog011");
+			System.out.println("#testLog011");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			String[] children = session.getChildNodeNames(DmtConstants.LOG_SEARCH_RESULT);
 			if (children.length>0) {
 				MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT + "/" + children[0] + "/SubSystem");
-				TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult/<record_id>/SubSystem node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/SubSystem node can be gotten", metaNode.can(MetaNode.CMD_GET));
-				TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult/<record_id>/SubSystem node format is a chr node", DmtData.FORMAT_STRING,metaNode.getFormat());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/SubSystem node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+				assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult/<record_id>/SubSystem node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+				assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult/<record_id>/SubSystem node can be gotten").isTrue();
+				assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult/<record_id>/SubSystem node format is a chr node").isEqualTo(DmtData.FORMAT_STRING);
+				assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/LogResult/<record_id>/SubSystem node cardinality").isTrue();
 			} else {
-			    TestCase.fail("There is no child under $/Log/<search_id>/LogResult");
+			    fail("There is no child under $/Log/<search_id>/LogResult");
 			}
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -373,18 +373,18 @@ public class Log {
 	public void testLog012() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog012");
+			System.out.println("#testLog012");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			String[] children = session.getChildNodeNames(DmtConstants.LOG_SEARCH_RESULT);
 			if (children.length>0) {
 				MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT + "/" + children[0] + "/Message");
-				TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult/<record_id>/Message node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Message node can be gotten", metaNode.can(MetaNode.CMD_GET));
-				TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult/<record_id>/Message node format is a chr node", DmtData.FORMAT_STRING,metaNode.getFormat());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Message node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+				assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult/<record_id>/Message node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+				assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Message node can be gotten").isTrue();
+				assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Message node format is a chr node").isEqualTo(DmtData.FORMAT_STRING);
+				assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Message node cardinality").isTrue();
 			} else {
-			    TestCase.fail("There is no child under $/Log/<search_id>/LogResult");
+			    fail("There is no child under $/Log/<search_id>/LogResult");
 			}
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -401,18 +401,18 @@ public class Log {
 	public void testLog013() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testLog013");
+			System.out.println("#testLog013");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(DmtConstants.LOG_SEARCH);
 			String[] children = session.getChildNodeNames(DmtConstants.LOG_SEARCH_RESULT);
 			if (children.length>0) {
 				MetaNode metaNode = session.getMetaNode(DmtConstants.LOG_SEARCH_RESULT + "/" + children[0] + "/Data");
-				TestCase.assertEquals("Asserts that $/Log/<search_id>/LogResult/<record_id>/Data node is automatic",MetaNode.AUTOMATIC, metaNode.getScope());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Data node can be gotten", metaNode.can(MetaNode.CMD_GET));
-				TestCase.assertEquals("Asserts $/Log/<search_id>/LogResult/<record_id>/Data node format is a chr node", DmtData.FORMAT_STRING,metaNode.getFormat());
-				TestCase.assertTrue("Asserts $/Log/<search_id>/LogResult/<record_id>/Data node cardinality", metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1);
+				assertThat(metaNode.getScope()).as("Asserts that $/Log/<search_id>/LogResult/<record_id>/Data node is automatic").isEqualTo(MetaNode.AUTOMATIC);
+				assertThat(metaNode.can(MetaNode.CMD_GET)).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Data node can be gotten").isTrue();
+				assertThat(metaNode.getFormat()).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Data node format is a chr node").isEqualTo(DmtData.FORMAT_STRING);
+				assertThat(metaNode.isZeroOccurrenceAllowed() && metaNode.getMaxOccurrence()==1).as("Asserts $/Log/<search_id>/LogResult/<record_id>/Data node cardinality").isTrue();
 			} else {
-			    TestCase.fail("There is no child under $/Log/<search_id>/LogResult");
+			    fail("There is no child under $/Log/<search_id>/LogResult");
 			}
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);

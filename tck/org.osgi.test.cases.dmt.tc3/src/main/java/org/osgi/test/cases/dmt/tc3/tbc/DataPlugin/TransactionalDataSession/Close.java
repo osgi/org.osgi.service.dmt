@@ -28,14 +28,14 @@
  */
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>close</code> method, 
@@ -60,31 +60,22 @@ public class Close {
 	public void testClose001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testClose001");
+			System.out.println("#testClose001");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			TestDataPlugin.setCloseThrowsException(true);
 			session.close();
-			DefaultTestBundleControl.failException("",DmtException.class);
+			DmtTestControl.failException("",DmtException.class);
 
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that COMMAND_FAILED is thrown if an underlying plugin failed to close:", 
-				DmtException.COMMAND_FAILED, e.getCode());
+			assertThat(e.getCode()).as("Asserts that COMMAND_FAILED is thrown if an underlying plugin failed to close:").isEqualTo(DmtException.COMMAND_FAILED);
 		
 			if (e.getCause() instanceof DmtException) {
 				DmtException exception = (DmtException)e.getCause();
-				TestCase
-						.assertNull(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct subtree",exception.getURI());
-				TestCase
-						.assertEquals(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-								DmtException.CONCURRENT_ACCESS, exception.getCode());
-				TestCase
-						.assertTrue(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct message. ",
-								exception.getMessage().indexOf(
-								    TestDataPlugin.CLOSE) > -1);
+				assertThat(exception.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree").isNull();
+				assertThat(exception.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.CONCURRENT_ACCESS);
+				assertThat(exception.getMessage().indexOf(
+								    TestDataPlugin.CLOSE) > -1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 			}	else {
 				DmtTestControl.failExpectedOtherException(DmtException.class,e.getCause());
 			}		
@@ -102,31 +93,22 @@ public class Close {
 	public void testClose002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testClose002");
+			System.out.println("#testClose002");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			TestDataPlugin.setCommitThrowsException(true);
 			session.close();
-			DefaultTestBundleControl.failException("",DmtException.class);
+			DmtTestControl.failException("",DmtException.class);
 
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that TRANSACTION_ERROR is thrown if an underlying plugin failed to commit:", 
-					DmtException.TRANSACTION_ERROR, e.getCode());
+			assertThat(e.getCode()).as("Asserts that TRANSACTION_ERROR is thrown if an underlying plugin failed to commit:").isEqualTo(DmtException.TRANSACTION_ERROR);
 			
 			if (e.getCause() instanceof DmtException) {
 				DmtException exception = (DmtException)e.getCause();
-				TestCase
-						.assertNull(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct subtree",exception.getURI());
-				TestCase
-						.assertEquals(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-								DmtException.COMMAND_FAILED, exception.getCode());
-				TestCase
-						.assertTrue(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct message. ",
-								exception.getMessage().indexOf(
-								    TestDataPlugin.COMMIT) > -1);
+				assertThat(exception.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree").isNull();
+				assertThat(exception.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.COMMAND_FAILED);
+				assertThat(exception.getMessage().indexOf(
+								    TestDataPlugin.COMMIT) > -1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 				
 			} else {
 				DmtTestControl.failExpectedOtherException(DmtException.class, e.getCause());

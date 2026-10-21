@@ -32,8 +32,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
-import org.osgi.service.dmt.Acl;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.Acl;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -52,18 +54,15 @@ public class IsPermitted extends DmtTestControl {
 	 * 
 	 * @spec Acl.isPermitted(String,int)
 	 */
+	@Test
 	public void testIsPermitted001() {
 		try {
-			log("#testIsPermitted001");
+			System.out.println("#testIsPermitted001");
 			Acl acl = new Acl(ACL_DEFAULT);
-			assertTrue(
-					"Asserting that isPermitted returns true only for permissions granted",
-					acl.isPermitted(
-					DmtConstants.PRINCIPAL, Acl.GET | Acl.ADD | Acl.DELETE));
-			assertTrue(
-					"Asserting that isPermitted returns false for permissions not granted",
-					!acl.isPermitted(
-					DmtConstants.PRINCIPAL, Acl.EXEC | Acl.REPLACE));			
+			assertThat(acl.isPermitted(
+					DmtConstants.PRINCIPAL, Acl.GET | Acl.ADD | Acl.DELETE)).as("Asserting that isPermitted returns true only for permissions granted").isTrue();
+			assertThat(!acl.isPermitted(
+					DmtConstants.PRINCIPAL, Acl.EXEC | Acl.REPLACE)).as("Asserting that isPermitted returns false for permissions not granted").isTrue();			
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -75,15 +74,16 @@ public class IsPermitted extends DmtTestControl {
 	 * 
 	 * @spec Acl.isPermitted(String,int)
 	 */
+	@Test
 	public void testIsPermitted002() {
 		try {
-			log("#testIsPermitted002");
+			System.out.println("#testIsPermitted002");
 			Acl acl = new Acl(ACL_DEFAULT);
 			acl.isPermitted(DmtConstants.PRINCIPAL, 2005);
 
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown on isPermitted method");
+			System.out.println("IllegalArgumentException correctly thrown on isPermitted method");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -96,15 +96,16 @@ public class IsPermitted extends DmtTestControl {
 	 * 
 	 * @spec Acl.isPermitted(String,int)
 	 */
+	@Test
 	public void testIsPermitted003() {
 		try {
-			log("#testIsPermitted003");
+			System.out.println("#testIsPermitted003");
 			Acl acl = new Acl(ACL_DEFAULT);
 			
 			acl.isPermitted(DmtConstants.INVALID, Acl.DELETE | Acl.GET);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown on isPermitted method");
+			System.out.println("IllegalArgumentException correctly thrown on isPermitted method");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -115,18 +116,15 @@ public class IsPermitted extends DmtTestControl {
 	 * 
 	 * @spec Acl.isPermitted(String,int)
 	 */
+	@Test
 	public void testIsPermitted004() {
 		try {
-			log("#testIsPermitted004");
+			System.out.println("#testIsPermitted004");
 			Acl acl = new Acl(ACL_DEFAULT);
 			
-			assertTrue(
-					"Asserting that '*' returns true if the permission is global",
-					acl.isPermitted("*", Acl.GET));
-			assertTrue(
-					"Asserting that '*' returns false if the permission is not global",
-					!acl.isPermitted("*", Acl.ADD | Acl.DELETE | Acl.EXEC
-							| Acl.REPLACE));
+			assertThat(acl.isPermitted("*", Acl.GET)).as("Asserting that '*' returns true if the permission is global").isTrue();
+			assertThat(!acl.isPermitted("*", Acl.ADD | Acl.DELETE | Acl.EXEC
+							| Acl.REPLACE)).as("Asserting that '*' returns false if the permission is not global").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}

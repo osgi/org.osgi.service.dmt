@@ -32,6 +32,9 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.ExecPlugin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Date;
 
 import org.osgi.service.dmt.DmtData;
@@ -46,7 +49,6 @@ import org.osgi.service.dmt.spi.TransactionalDataSession;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -77,19 +79,12 @@ public class TestExecPlugin implements ExecPlugin, DataPlugin, ReadableDataSessi
 			
 		} else {
 			if (null == session) {
-				TestCase
-						.fail("A reference to the session in which the operation was issued is null");
+				fail("A reference to the session in which the operation was issued is null");
 			} else {
-				TestCase
-						.assertEquals(
-								"Asserts that DmtSession is fowarded to ExecPlugin with the same lock type",
-								DmtSession.LOCK_TYPE_EXCLUSIVE, session
-										.getLockType());
-				TestCase
-						.assertEquals(
-								"Asserts that DmtSession is fowarded to ExecPlugin with the same subtree",
-								TestExecPluginActivator.ROOT, session
-										.getRootUri());
+				assertThat(session
+										.getLockType()).as("Asserts that DmtSession is fowarded to ExecPlugin with the same lock type").isEqualTo(DmtSession.LOCK_TYPE_EXCLUSIVE);
+				assertThat(session
+										.getRootUri()).as("Asserts that DmtSession is fowarded to ExecPlugin with the same subtree").isEqualTo(TestExecPluginActivator.ROOT);
 			}
 			DmtConstants.TEMPORARY = EXECUTE;
 			DmtConstants.PARAMETER_2 = correlator;

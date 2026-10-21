@@ -29,16 +29,16 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Date;
 
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -67,12 +67,12 @@ public class GetNodeTimestamp {
 	public void testGetNodeTimestamp001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeTimestamp001");
+			System.out.println("#testGetNodeTimestamp001");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			Date date = session.getNodeTimestamp(TestDataPluginActivator.ROOT);
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "+ TestDataPlugin.GETNODETIMESTAMP
-					+" to the correct plugin",TestDataPlugin.GETNODETIMESTAMP_VALUE,date);
+			assertThat(date).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.GETNODETIMESTAMP
+					+" to the correct plugin").isEqualTo(TestDataPlugin.GETNODETIMESTAMP_VALUE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -89,20 +89,17 @@ public class GetNodeTimestamp {
 	public void testGetNodeTimestamp002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeTimestamp002");
+			System.out.println("#testGetNodeTimestamp002");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.getNodeTimestamp(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION);
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 			
 		} catch (DmtException e) {
 			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ", 
-					TestDataPluginActivator.INTERIOR_NODE_EXCEPTION, e.getURI());			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct code: ", 
-					DmtException.URI_TOO_LONG, e.getCode());
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded the DmtException with the correct message. ", 
-					e.getMessage().indexOf(TestDataPlugin.GETNODETIMESTAMP)>-1);
+			assertThat(e.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION);			
+			assertThat(e.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.URI_TOO_LONG);
+			assertThat(e.getMessage().indexOf(TestDataPlugin.GETNODETIMESTAMP)>-1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {

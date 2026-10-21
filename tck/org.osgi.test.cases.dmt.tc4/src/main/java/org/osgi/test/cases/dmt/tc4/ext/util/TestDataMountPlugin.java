@@ -17,7 +17,7 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.ext.util;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +59,7 @@ public class TestDataMountPlugin extends TestDataPlugin implements MountPlugin {
             if (eventList.size() <= index) {
                 eventList.wait(1000);
             }
-			assertTrue("No expected mount point", index < eventList.size());
+			assertThat(index < eventList.size()).as("No expected mount point").isTrue();
             return eventList.get(index);
         }
     }

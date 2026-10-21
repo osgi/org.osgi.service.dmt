@@ -29,20 +29,19 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.Others;
 
-import org.osgi.service.dmt.DmtSession;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.osgi.service.dmt.DmtSession;
+import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.ExecPlugin.TestExecPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.ExecPlugin.TestExecPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.OverlappingDataPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.OverlappingExecPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.OverlappingSubtreeDataPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.ToBeOverlappedDataPlugin;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -73,16 +72,13 @@ public class OverlappingPlugins {
 	public void testOverlappingPlugins001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testOverlappingPlugins001");
+			System.out.println("#testOverlappingPlugins001");
 
 			session = tbc.getDmtAdmin().getSession(
 					OverlappingDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			String nodeTitle = session.getNodeTitle(OverlappingDataPluginActivator.ROOT);
-			TestCase
-					.assertEquals(
-							"Asserts that a DataPlugin cannot be overlapped by other DataPlugin",
-							TestDataPlugin.GETNODETITLE, nodeTitle);
+			assertThat(nodeTitle).as("Asserts that a DataPlugin cannot be overlapped by other DataPlugin").isEqualTo(TestDataPlugin.GETNODETITLE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -98,16 +94,14 @@ public class OverlappingPlugins {
 	public void testOverlappingPlugins002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testOverlappingPlugins002");
+			System.out.println("#testOverlappingPlugins002");
 			session = tbc.getDmtAdmin().getSession(
 					OverlappingSubtreeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			String nodeTitle = session.getNodeTitle(OverlappingSubtreeDataPluginActivator.ROOT);
-			TestCase
-					.assertEquals(
-							"Asserts that a it is not possible for a plugin to control the same, or part of the same, "
+			assertThat(nodeTitle).as("Asserts that a it is not possible for a plugin to control the same, or part of the same, "
 									+
-					"subtree that another plugins controls.",TestDataPlugin.GETNODETITLE,nodeTitle);
+					"subtree that another plugins controls.").isEqualTo(TestDataPlugin.GETNODETITLE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -123,22 +117,16 @@ public class OverlappingPlugins {
 	public void testOverlappingPlugins003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testOverlappingPlugins003");
+			System.out.println("#testOverlappingPlugins003");
 
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			String nodeTitle = session.getNodeTitle(TestExecPluginActivator.ROOT);
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin allows that an ExecPlugin overlaps a DataPlugin",
-							ToBeOverlappedDataPlugin.MESSAGE, nodeTitle);
+			assertThat(nodeTitle).as("Asserts that DmtAdmin allows that an ExecPlugin overlaps a DataPlugin").isEqualTo(ToBeOverlappedDataPlugin.MESSAGE);
 			
 			session.execute(TestExecPluginActivator.ROOT, "");
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin allows that an ExecPlugin overlaps a DataPlugin",
-							TestExecPlugin.EXECUTE, DmtConstants.TEMPORARY);
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin allows that an ExecPlugin overlaps a DataPlugin").isEqualTo(TestExecPlugin.EXECUTE);
 			
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -155,22 +143,16 @@ public class OverlappingPlugins {
 	public void testOverlappingPlugins004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testOverlappingPlugins004");
+			System.out.println("#testOverlappingPlugins004");
 
 			session = tbc.getDmtAdmin().getSession(
 					OverlappingExecPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			String nodeTitle = session.getNodeTitle(OverlappingExecPluginActivator.ROOT);
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin does not allow that an ExecPlugin overlaps another ExecPlugin",
-							ToBeOverlappedDataPlugin.MESSAGE, nodeTitle);
+			assertThat(nodeTitle).as("Asserts that DmtAdmin does not allow that an ExecPlugin overlaps another ExecPlugin").isEqualTo(ToBeOverlappedDataPlugin.MESSAGE);
 			
 			session.execute(OverlappingExecPluginActivator.ROOT, "");
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin does not allow that an ExecPlugin overlaps another ExecPlugin",
-							TestExecPlugin.EXECUTE, DmtConstants.TEMPORARY);
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin does not allow that an ExecPlugin overlaps another ExecPlugin").isEqualTo(TestExecPlugin.EXECUTE);
 			
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);

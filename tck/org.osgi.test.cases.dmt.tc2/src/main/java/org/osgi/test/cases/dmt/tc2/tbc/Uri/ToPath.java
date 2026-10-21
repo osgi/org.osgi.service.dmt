@@ -29,12 +29,11 @@
 
 package org.osgi.test.cases.dmt.tc2.tbc.Uri;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Uri;
-
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 
 /**
@@ -63,11 +62,11 @@ public class ToPath {
 	private void testToPath001() {
 
 		try {
-			DefaultTestBundleControl.log("#testToPath001");
+			System.out.println("#testToPath001");
 			Uri.toPath(null);
-			DefaultTestBundleControl.failException("", NullPointerException.class);
+			DmtTestControl.failException("", NullPointerException.class);
 		} catch (NullPointerException e) {
-			DefaultTestBundleControl.pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(NullPointerException.class,e);
 		}
@@ -82,11 +81,11 @@ public class ToPath {
 	private void testToPath002() {
 
 		try {
-			DefaultTestBundleControl.log("#testToPath002");
+			System.out.println("#testToPath002");
 			String[] array = Uri.toPath("./Test/Dmt");
-			TestCase.assertTrue("Asserts that Uri.toPath(String) splits the specified URI " +
-					"along the path separator '/' charaters and return an array of URI segments.",array.length==3 
-					&& array[0].equals(".")&& array[1].equals("Test")&& array[2].equals("Dmt"));
+			assertThat(array.length==3 
+					&& array[0].equals(".")&& array[1].equals("Test")&& array[2].equals("Dmt")).as("Asserts that Uri.toPath(String) splits the specified URI " +
+					"along the path separator '/' charaters and return an array of URI segments.").isTrue();
 			
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -102,16 +101,16 @@ public class ToPath {
 	private void testToPath003() {
 
 		try {
-			DefaultTestBundleControl.log("#testToPath003");
+			System.out.println("#testToPath003");
             //It is from 1 because 0 is 'null' and null throws NullPointerException in this method
 			for (int i = 1; i < DmtTestControl.INVALID_URIS.length; i++) {
 				String uri = null;
 				try {
 					uri = DmtTestControl.INVALID_URIS[i].toString();
 					Uri.toPath(uri);
-					DefaultTestBundleControl.failException("", IllegalArgumentException.class);
+					DmtTestControl.failException("", IllegalArgumentException.class);
 				} catch (IllegalArgumentException e) {
-					DefaultTestBundleControl.pass("IllegalArgumentException correctly thrown when calling Uri.toPath(" + uri + ")");
+					System.out.println("IllegalArgumentException correctly thrown when calling Uri.toPath(" + uri + ")");
 				}
 			}
 		} catch (Exception e) {

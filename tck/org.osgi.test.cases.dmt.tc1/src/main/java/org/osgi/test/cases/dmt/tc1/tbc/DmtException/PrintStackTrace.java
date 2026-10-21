@@ -32,11 +32,14 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
 /**
@@ -49,8 +52,9 @@ public class PrintStackTrace extends DmtTestControl {
 	 * 
 	 * @spec DmtException.printStackTrace(java.io.PrintStream)
 	 */
+	@Test
 	public void testPrintStackTrace001() {
-		log("#testPrintStackTrace001");
+		System.out.println("#testPrintStackTrace001");
         try {
     		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException(
     				(String)null, 0, null, new Exception());
@@ -59,8 +63,7 @@ public class PrintStackTrace extends DmtTestControl {
     		PrintStream ps = new PrintStream(baos);
     		de.printStackTrace(ps);
     
-    		assertTrue("Asserts printStackTrace method",
-    						baos.toString().indexOf("java.lang.Exception") > -1);
+    		assertThat(baos.toString().indexOf("java.lang.Exception") > -1).as("Asserts printStackTrace method").isTrue();
     		
     		try {
     			ps.close();
@@ -79,8 +82,9 @@ public class PrintStackTrace extends DmtTestControl {
 	 * 
 	 * @spec DmtException.printStackTrace(java.io.PrintStream)
 	 */
+	@Test
 	public void testPrintStackTrace002() {
-		log("#testPrintStackTrace002");
+		System.out.println("#testPrintStackTrace002");
         try {
 			Vector<Exception> causes = new Vector<>();
     		causes.add(0,new Exception());
@@ -93,11 +97,9 @@ public class PrintStackTrace extends DmtTestControl {
     		PrintStream ps = new PrintStream(baos);
     		de.printStackTrace(ps);
     
-    		assertTrue("Asserts printStackTrace method",
-    						baos.toString().indexOf("java.lang.Exception") > -1);
+    		assertThat(baos.toString().indexOf("java.lang.Exception") > -1).as("Asserts printStackTrace method").isTrue();
     
-    		assertTrue("Asserts printStackTrace method",
-    				baos.toString().indexOf("java.lang.NullPointerException") > -1);
+    		assertThat(baos.toString().indexOf("java.lang.NullPointerException") > -1).as("Asserts printStackTrace method").isTrue();
     
     		try {
     			ps.close();

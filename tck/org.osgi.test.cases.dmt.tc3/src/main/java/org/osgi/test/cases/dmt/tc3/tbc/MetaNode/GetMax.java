@@ -32,12 +32,13 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.MetaNode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 
 /**
@@ -64,14 +65,14 @@ public class GetMax {
 	public void testGetMax001(){
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMax001");
+			System.out.println("#testGetMax001");
 			session = tbc.getDmtAdmin().getSession(
 					TestMetaNodeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_SHARED);
 
 			MetaNode metanode = session
 					.getMetaNode(TestMetaNodeDataPluginActivator.ROOT);
-			TestCase.assertEquals("Asserts getMax method", TestMetaNode.DEFAULT_MAX_VALUE, metanode.getMax(), 0.0);
+			assertThat(metanode.getMax()).as("Asserts getMax method").isCloseTo(TestMetaNode.DEFAULT_MAX_VALUE, within(0.0));
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {

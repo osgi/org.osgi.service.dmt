@@ -29,6 +29,9 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPermission;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
 /**
@@ -39,18 +42,14 @@ public class DmtPermissionConstants extends DmtTestControl {
 	/**
 	 * This method asserts the constants values
 	 */
+	@Test
 	public void testConstants001() {
-		log("#testConstants001");
-		assertEquals("Asserting DmtPermission.ADD", "Add",
-				org.osgi.service.dmt.security.DmtPermission.ADD);
-		assertEquals("Asserting DmtPermission.DELETE", "Delete",
-				org.osgi.service.dmt.security.DmtPermission.DELETE);
-		assertEquals("Asserting DmtPermission.EXEC", "Exec",
-				org.osgi.service.dmt.security.DmtPermission.EXEC);
-		assertEquals("Asserting DmtPermission.GET", "Get",
-				org.osgi.service.dmt.security.DmtPermission.GET);
-		assertEquals("Asserting DmtPermission.REPLACE", "Replace",
-				org.osgi.service.dmt.security.DmtPermission.REPLACE);
+		System.out.println("#testConstants001");
+		assertThat(org.osgi.service.dmt.security.DmtPermission.ADD).as("Asserting DmtPermission.ADD").isEqualTo("Add");
+		assertThat(org.osgi.service.dmt.security.DmtPermission.DELETE).as("Asserting DmtPermission.DELETE").isEqualTo("Delete");
+		assertThat(org.osgi.service.dmt.security.DmtPermission.EXEC).as("Asserting DmtPermission.EXEC").isEqualTo("Exec");
+		assertThat(org.osgi.service.dmt.security.DmtPermission.GET).as("Asserting DmtPermission.GET").isEqualTo("Get");
+		assertThat(org.osgi.service.dmt.security.DmtPermission.REPLACE).as("Asserting DmtPermission.REPLACE").isEqualTo("Replace");
 	}
 	
 

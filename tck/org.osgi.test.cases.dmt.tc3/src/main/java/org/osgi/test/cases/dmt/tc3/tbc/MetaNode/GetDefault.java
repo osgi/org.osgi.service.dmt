@@ -32,13 +32,13 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.MetaNode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>getDefault</code> method of MetaNode, 
@@ -64,7 +64,7 @@ public class GetDefault {
 	public void testGetDefault001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetDefault001");
+			System.out.println("#testGetDefault001");
 			session = tbc.getDmtAdmin().getSession(
 					TestMetaNodeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_SHARED);
@@ -73,8 +73,7 @@ public class GetDefault {
 					.getMetaNode(TestMetaNodeDataPluginActivator.ROOT);
 
 			DmtData dmtData = metanode.getDefault();
-			TestCase.assertEquals("Asserts getDefault method",
-					TestMetaNode.DEFAULT_VALUE, dmtData.getString());
+			assertThat(dmtData.getString()).as("Asserts getDefault method").isEqualTo(TestMetaNode.DEFAULT_VALUE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {

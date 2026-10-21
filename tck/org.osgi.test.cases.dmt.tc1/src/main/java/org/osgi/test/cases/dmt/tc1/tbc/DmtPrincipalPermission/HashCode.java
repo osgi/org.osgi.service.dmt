@@ -28,8 +28,10 @@
  */
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPrincipalPermission;
 
-import org.osgi.service.dmt.security.DmtPrincipalPermission;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -43,16 +45,15 @@ public class HashCode extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.hashCode()
 	 */
+	@Test
 	public void testHashCode001() {
 		try {
-			log("#testHashCode001");
+			System.out.println("#testHashCode001");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission("*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission("*");
 
-			assertTrue(
-					"Assert if hashCodes are the same for two DmtPrincipalPermission instances that are equal",
-					d1.hashCode()==d2.hashCode());
+			assertThat(d1.hashCode()==d2.hashCode()).as("Assert if hashCodes are the same for two DmtPrincipalPermission instances that are equal").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -65,16 +66,15 @@ public class HashCode extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.hashCode()
 	 */
+	@Test
 	public void testHashCode002() {
 		try {
-			log("#testHashCode002");
+			System.out.println("#testHashCode002");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission(DmtConstants.PRINCIPAL,"*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission(DmtConstants.PRINCIPAL,"*");
 
-			assertTrue(
-					"Assert if hashCodes are the same for two DmtPrincipalPermission instances that are equal",
-					d1.hashCode()==d2.hashCode());
+			assertThat(d1.hashCode()==d2.hashCode()).as("Assert if hashCodes are the same for two DmtPrincipalPermission instances that are equal").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);

@@ -17,8 +17,14 @@
  *******************************************************************************/
 package org.osgi.test.cases.residentialmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.Uri;
 
@@ -35,33 +41,36 @@ public class RMTRootNodeTestCase extends RMTTestBase {
 	 * asserts that the system property for the top-level location is set and contains an absolute and valid URI
 	 * @throws Exception 
 	 */
+	@Test
 	public void testSystemProperty() throws Exception {
-		String root = getProperty("org.osgi.dmt.residential");
-		assertNotNull( "The system property 'org.osgi.dmt.residential' is not set.", root );
-		assertTrue("The configured root must be an absolute Uri.", Uri.isAbsoluteUri(root));
-		assertTrue("The configured root uri is invalid.", Uri.isValidUri(root));
+		String root = AccessController.doPrivileged((PrivilegedAction<String>) () -> context.getProperty("org.osgi.dmt.residential"));
+		assertThat(root).as("The system property 'org.osgi.dmt.residential' is not set.").isNotNull();
+		assertThat(Uri.isAbsoluteUri(root)).as("The configured root must be an absolute Uri.").isTrue();
+		assertThat(Uri.isValidUri(root)).as("The configured root uri is invalid.").isTrue();
 	}
 	
 	/**
 	 * checks existence configured top-level node and tries to open a session on each of its children
 	 * @throws Exception
 	 */
+	@Test
 	public void testExistenceOfRootNode() throws Exception {
-		String root = getProperty("org.osgi.dmt.residential");
+		String root = AccessController.doPrivileged((PrivilegedAction<String>) () -> context.getProperty("org.osgi.dmt.residential"));
 		
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull( session );
-		assertTrue( "The configured RMT-root node does not exist:" + root, session.isNodeUri(root) );
+		assertThat(session).isNotNull();
+		assertThat(session.isNodeUri(root)).as("The configured RMT-root node does not exist:" + root).isTrue();
 	}
 	
 	/**
 	 * asserts that the root node has the mandatory and no undefined children 
 	 * @throws Exception
 	 */
+	@Test
 	public void testChildrenOfRootNode() throws Exception {
-		String root = getProperty("org.osgi.dmt.residential");
+		String root = AccessController.doPrivileged((PrivilegedAction<String>) () -> context.getProperty("org.osgi.dmt.residential"));
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull( session );
+		assertThat(session).isNotNull();
 		
 		Set<String> mandatory = new HashSet<String>();
 		Set<String> optional = new HashSet<String>();
@@ -77,14 +86,14 @@ public class RMTRootNodeTestCase extends RMTTestBase {
 			mandatory.remove(child);
 		}
 		
-		assertEquals("Mandatory child-nodes are missing for the root node: " + mandatory, 0, mandatory.size());
-		assertEquals("There are undefined child-nodes under thee root node: " + undefined, 0, undefined.size());
+		assertThat(mandatory).as("Mandatory child-nodes are missing for the root node: " + mandatory).isEmpty();
+		assertThat(undefined).as("There are undefined child-nodes under thee root node: " + undefined).isEmpty();
 		session.close();
 		
 		// try to open session on each child
 		for (String child : children) {
 			session = dmtAdmin.getSession(root + "/" + child, DmtSession.LOCK_TYPE_SHARED);
-			assertNotNull("Null DMT session for: " + root + "/" + child, session);
+			assertThat(session).as("Null DMT session for: " + root + "/" + child).isNotNull();
 			session.close();
 		}
 	}

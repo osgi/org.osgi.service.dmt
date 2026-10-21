@@ -29,16 +29,16 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc3.tbc.TestPluginMetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
+import org.osgi.test.cases.dmt.tc3.tbc.TestPluginMetaNode;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -66,12 +66,12 @@ public class GetMetaNode {
 	public void testGetMetaNode001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode001");
+			System.out.println("#testGetMetaNode001");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			MetaNode metanode = session.getMetaNode(TestDataPluginActivator.INTERIOR_NODE);
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded "+ TestDataPlugin.GETMETANODE
-					+" to the correct plugin", (metanode instanceof TestPluginMetaNode));
+			assertThat((metanode instanceof TestPluginMetaNode)).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.GETMETANODE
+					+" to the correct plugin").isTrue();
 			
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -89,19 +89,16 @@ public class GetMetaNode {
 	public void testGetMetaNode002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode002");
+			System.out.println("#testGetMetaNode002");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.getMetaNode(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION2);
 			
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ", 
-					TestDataPluginActivator.INTERIOR_NODE_EXCEPTION2, e.getURI());			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct code: ", 
-					DmtException.DATA_STORE_FAILURE, e.getCode());
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded the DmtException with the correct message. ", 
-					e.getMessage().indexOf(TestDataPlugin.GETMETANODE)>-1);
+			assertThat(e.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION2);			
+			assertThat(e.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.DATA_STORE_FAILURE);
+			assertThat(e.getMessage().indexOf(TestDataPlugin.GETMETANODE)>-1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 			
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);

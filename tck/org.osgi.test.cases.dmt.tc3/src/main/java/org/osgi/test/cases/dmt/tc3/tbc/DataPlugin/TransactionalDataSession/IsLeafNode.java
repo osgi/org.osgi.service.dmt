@@ -29,13 +29,13 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -64,11 +64,11 @@ public class IsLeafNode {
 	public void testIsLeafNode001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsLeafNode001");
+			System.out.println("#testIsLeafNode001");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded "+ TestDataPlugin.ISLEAFNODE
-					+" to the correct plugin",session.isLeafNode(TestDataPluginActivator.LEAF_NODE));
+			assertThat(session.isLeafNode(TestDataPluginActivator.LEAF_NODE)).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.ISLEAFNODE
+					+" to the correct plugin").isTrue();
 
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
@@ -86,11 +86,11 @@ public class IsLeafNode {
 	public void testIsLeafNode002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsLeafNode002");
+			System.out.println("#testIsLeafNode002");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded "+ TestDataPlugin.ISLEAFNODE
-					+" to the correct plugin",!session.isLeafNode(TestDataPluginActivator.INTERIOR_NODE));
+			assertThat(!session.isLeafNode(TestDataPluginActivator.INTERIOR_NODE)).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.ISLEAFNODE
+					+" to the correct plugin").isTrue();
 
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);

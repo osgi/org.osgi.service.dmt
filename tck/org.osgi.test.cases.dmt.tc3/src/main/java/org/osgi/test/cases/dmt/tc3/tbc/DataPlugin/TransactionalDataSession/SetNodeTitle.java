@@ -29,15 +29,15 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -67,13 +67,13 @@ public class SetNodeTitle {
 	public void testSetNodeTitle001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testSetNodeTitle001");
+			System.out.println("#testSetNodeTitle001");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			String title = "title";
 			session.setNodeTitle(TestDataPluginActivator.INTERIOR_NODE,title);
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "+ TestDataPlugin.SETNODETITLE+" to the correct plugin",TestDataPlugin.SETNODETITLE,DmtConstants.TEMPORARY);
-			TestCase.assertEquals("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification",title,DmtConstants.PARAMETER_2);
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.SETNODETITLE+" to the correct plugin").isEqualTo(TestDataPlugin.SETNODETITLE);
+			assertThat(DmtConstants.PARAMETER_2).as("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification").isEqualTo(title);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -91,18 +91,18 @@ public class SetNodeTitle {
 	public void testSetNodeTitle002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testSetNodeTitle002");
+			System.out.println("#testSetNodeTitle002");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.setNodeTitle(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION,"title");
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ", TestDataPluginActivator.INTERIOR_NODE_EXCEPTION, e
-					.getURI());			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct code: ", DmtException.CONCURRENT_ACCESS, e
-					.getCode());
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded the DmtException with the correct message. ", e
-					.getMessage().indexOf(TestDataPlugin.SETNODETITLE)>-1);
+			assertThat(e
+					.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INTERIOR_NODE_EXCEPTION);			
+			assertThat(e
+					.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.CONCURRENT_ACCESS);
+			assertThat(e
+					.getMessage().indexOf(TestDataPlugin.SETNODETITLE)>-1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {
