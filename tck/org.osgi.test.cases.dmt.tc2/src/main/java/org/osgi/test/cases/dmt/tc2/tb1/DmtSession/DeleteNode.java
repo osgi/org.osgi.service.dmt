@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtIllegalStateException;
@@ -41,13 +43,11 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.NonAtomic.TestNonAtomicPluginActivator;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ReadOnly.TestReadOnlyPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * This Test Case Validates the implementation of <code>deleteNode<code> 
@@ -88,17 +88,15 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode001");
+			System.out.println("#testDeleteNode001");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.deleteNode(TestExecPluginActivator.INEXISTENT_NODE);
 
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException's code is NODE_NOT_FOUND",
-					DmtException.NODE_NOT_FOUND, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException's code is NODE_NOT_FOUND").isEqualTo(DmtException.NODE_NOT_FOUND);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -117,14 +115,14 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode002");
+			System.out.println("#testDeleteNode002");
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_SHARED);
 			session.deleteNode(TestExecPluginActivator.INTERIOR_NODE);
-			DefaultTestBundleControl.failException("", DmtIllegalStateException.class);
+			DmtTestControl.failException("", DmtIllegalStateException.class);
 		} catch (DmtIllegalStateException e) {
-			DefaultTestBundleControl.pass("DmtIllegalStateException correctly thrown");
+			System.out.println("DmtIllegalStateException correctly thrown");
 		} catch (Exception e) {
-			DefaultTestBundleControl.failException("", DmtIllegalStateException.class);
+			DmtTestControl.failException("", DmtIllegalStateException.class);
 		} finally {
 			tbc.closeSession(session);
 		}
@@ -138,14 +136,14 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode003");
+			System.out.println("#testDeleteNode003");
             tbc.openSessionAndSetNodeAcl(TestExecPluginActivator.INTERIOR_NODE, DmtConstants.PRINCIPAL, Acl.DELETE );
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
 			session = tbc.getDmtAdmin().getSession(DmtConstants.PRINCIPAL, TestExecPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.deleteNode(TestExecPluginActivator.INTERIOR_NODE);
 			
-			DefaultTestBundleControl.pass("deleteNode was successfully executed");
+			System.out.println("deleteNode was successfully executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -164,7 +162,7 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode004");
+			System.out.println("#testDeleteNode004");
             tbc.setPermissions(new PermissionInfo[] {
                     new PermissionInfo(DmtPermission.class.getName(), TestExecPluginActivator.ROOT, DmtPermission.GET),
                     new PermissionInfo(DmtPermission.class.getName(), DmtConstants.ALL_NODES,DmtPermission.DELETE)});
@@ -173,7 +171,7 @@ public class DeleteNode implements TestInterface {
 
 			session.deleteNode(TestExecPluginActivator.INTERIOR_NODE);
 			
-			DefaultTestBundleControl.pass("deleteNode was successfully executed");
+			System.out.println("deleteNode was successfully executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		
@@ -194,13 +192,13 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode005");
+			System.out.println("#testDeleteNode005");
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.deleteNode(TestExecPluginActivator.INTERIOR_NODE_NAME);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with deleteNode.");
+			System.out.println("A relative URI can be used with deleteNode.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -218,15 +216,13 @@ public class DeleteNode implements TestInterface {
 	 */
 	private void testDeleteNode006() {
 		DmtSession session = null;
-		DefaultTestBundleControl.log("#testDeleteNode006");
+		System.out.println("#testDeleteNode006");
 		try {
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.deleteNode(".");
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException code is COMMAND_NOT_ALLOWED",
-					DmtException.COMMAND_NOT_ALLOWED, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code is COMMAND_NOT_ALLOWED").isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -243,15 +239,13 @@ public class DeleteNode implements TestInterface {
 	 */
 	private void testDeleteNode007() {
 		DmtSession session = null;
-		DefaultTestBundleControl.log("#testDeleteNode007");
+		System.out.println("#testDeleteNode007");
 		try {
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.deleteNode(TestNonAtomicPluginActivator.INTERIOR_NODE);
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException code is COMMAND_NOT_ALLOWED",
-					DmtException.COMMAND_NOT_ALLOWED, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code is COMMAND_NOT_ALLOWED").isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -267,15 +261,13 @@ public class DeleteNode implements TestInterface {
 	 */
 	private void testDeleteNode008() {
 		DmtSession session = null;
-		DefaultTestBundleControl.log("#testDeleteNode008");
+		System.out.println("#testDeleteNode008");
 		try {
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.deleteNode(TestReadOnlyPluginActivator.INTERIOR_NODE);
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException code is COMMAND_NOT_ALLOWED",
-					DmtException.COMMAND_NOT_ALLOWED, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code is COMMAND_NOT_ALLOWED").isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -293,15 +285,14 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode009() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode009");
+			System.out.println("#testDeleteNode009");
 			session = tbc.getDmtAdmin().getSession(".",
 			    DmtSession.LOCK_TYPE_ATOMIC);
 			
 			session.deleteNode(TestReadOnlyPluginActivator.INTERIOR_NODE);
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserting that DmtException code is TRANSACTION_ERROR",
-					DmtException.TRANSACTION_ERROR, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code is TRANSACTION_ERROR").isEqualTo(DmtException.TRANSACTION_ERROR);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -318,15 +309,14 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode010() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode010");
+			System.out.println("#testDeleteNode010");
 			session = tbc.getDmtAdmin().getSession(".",
 			    DmtSession.LOCK_TYPE_ATOMIC);
 			
 			session.deleteNode(TestNonAtomicPluginActivator.INTERIOR_NODE);
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserting that DmtException code is TRANSACTION_ERROR",
-					DmtException.TRANSACTION_ERROR, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code is TRANSACTION_ERROR").isEqualTo(DmtException.TRANSACTION_ERROR);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -343,15 +333,14 @@ public class DeleteNode implements TestInterface {
 	private void testDeleteNode011() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDeleteNode011");
+			System.out.println("#testDeleteNode011");
 			session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.INTERIOR_NODE,
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.deleteNode(TestExecPluginActivator.INTERIOR_NODE);
 			
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserting that DmtException code is COMMAND_NOT_ALLOWED",
-					DmtException.COMMAND_NOT_ALLOWED, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code is COMMAND_NOT_ALLOWED").isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {

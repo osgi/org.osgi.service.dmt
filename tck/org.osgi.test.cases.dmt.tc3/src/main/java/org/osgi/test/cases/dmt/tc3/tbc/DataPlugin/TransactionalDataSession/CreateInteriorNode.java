@@ -28,15 +28,15 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 
 /**
@@ -68,7 +68,7 @@ public class CreateInteriorNode {
 	public void testCreateInteriorNode001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCreateInteriorNode001");
+			System.out.println("#testCreateInteriorNode001");
 
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
@@ -76,11 +76,9 @@ public class CreateInteriorNode {
 
 			session.createInteriorNode(TestDataPluginActivator.INEXISTENT_NODE);
 
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin fowarded "
 					+ TestDataPlugin.CREATEINTERIORNODE
-					+ " to the correct plugin",
-					TestDataPlugin.CREATEINTERIORNODE,
-					DmtConstants.TEMPORARY);
+					+ " to the correct plugin").isEqualTo(TestDataPlugin.CREATEINTERIORNODE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -99,7 +97,7 @@ public class CreateInteriorNode {
 	public void testCreateInteriorNode002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCreateInteriorNode002");
+			System.out.println("#testCreateInteriorNode002");
 
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
@@ -108,24 +106,14 @@ public class CreateInteriorNode {
 			session.createInteriorNode(
 					TestDataPluginActivator.INEXISTENT_NODE_EXCEPTION);
 
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ",
-							TestDataPluginActivator.INEXISTENT_NODE_EXCEPTION,
-							e.getURI());
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-							DmtException.CONCURRENT_ACCESS, e.getCode());
-			TestCase
-					.assertTrue(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct message. ",
-							e
+			assertThat(e.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INEXISTENT_NODE_EXCEPTION);
+			assertThat(e.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.CONCURRENT_ACCESS);
+			assertThat(e
 									.getMessage()
 									.indexOf(
-											TestDataPlugin.CREATEINTERIORNODE) > -1);
+											TestDataPlugin.CREATEINTERIORNODE) > -1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -141,7 +129,7 @@ public class CreateInteriorNode {
 	public void testCreateInteriorNode003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCreateInteriorNode003");
+			System.out.println("#testCreateInteriorNode003");
 
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
@@ -150,11 +138,9 @@ public class CreateInteriorNode {
 			session.createInteriorNode(TestDataPluginActivator.INEXISTENT_NODE,
 					DmtConstants.DDF);
 
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin fowarded "
 					+ TestDataPlugin.CREATEINTERIORNODE
-					+ " to the correct plugin",
-					TestDataPlugin.CREATEINTERIORNODE,
-					DmtConstants.TEMPORARY);
+					+ " to the correct plugin").isEqualTo(TestDataPlugin.CREATEINTERIORNODE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -173,7 +159,7 @@ public class CreateInteriorNode {
 	public void testCreateInteriorNode004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCreateInteriorNode004");
+			System.out.println("#testCreateInteriorNode004");
 
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
@@ -183,24 +169,14 @@ public class CreateInteriorNode {
 					TestDataPluginActivator.INEXISTENT_NODE_EXCEPTION,
 					DmtConstants.DDF);
 
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ",
-							TestDataPluginActivator.INEXISTENT_NODE_EXCEPTION,
-							e.getURI());
-			TestCase
-					.assertEquals(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-							DmtException.CONCURRENT_ACCESS, e.getCode());
-			TestCase
-					.assertTrue(
-							"Asserts that DmtAdmin fowarded the DmtException with the correct message. ",
-							e
+			assertThat(e.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INEXISTENT_NODE_EXCEPTION);
+			assertThat(e.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.CONCURRENT_ACCESS);
+			assertThat(e
 									.getMessage()
 									.indexOf(
-											TestDataPlugin.CREATEINTERIORNODE) > -1);
+											TestDataPlugin.CREATEINTERIORNODE) > -1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {

@@ -29,12 +29,11 @@
 
 package org.osgi.test.cases.dmt.tc2.tbc.Uri;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Uri;
-
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 
 /**
@@ -65,11 +64,11 @@ public class ToUri {
 	private void testToUri001() {
 
 		try {
-			DefaultTestBundleControl.log("#testToUri001");
+			System.out.println("#testToUri001");
 			Uri.toUri(null);
-			DefaultTestBundleControl.failException("", NullPointerException.class);
+			DmtTestControl.failException("", NullPointerException.class);
 		} catch (NullPointerException e) {
-			DefaultTestBundleControl.pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(NullPointerException.class,e);
 		}
@@ -84,11 +83,11 @@ public class ToUri {
 	private void testToUri002() {
 
 		try {
-			DefaultTestBundleControl.log("#testToUri002");
+			System.out.println("#testToUri002");
 			Uri.toUri(new String[] { ".", "Test",null, "Dmt" });
-			DefaultTestBundleControl.failException("", NullPointerException.class);
+			DmtTestControl.failException("", NullPointerException.class);
 		} catch (NullPointerException e) {
-			DefaultTestBundleControl.pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(NullPointerException.class,e);
 		}
@@ -103,9 +102,9 @@ public class ToUri {
 	private void testToUri003() {
 
 		try {
-			DefaultTestBundleControl.log("#testToUri003");
-			TestCase.assertTrue("Asserts that Uri.toUri(String[]) returns an empty URI (\"\") if " +
-					"the specified path is an empty array",Uri.toUri(new String[0]).equals(""));
+			System.out.println("#testToUri003");
+			assertThat(Uri.toUri(new String[0])).as("Asserts that Uri.toUri(String[]) returns an empty URI (\"\") if " +
+					"the specified path is an empty array").isEqualTo("");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		}
@@ -119,13 +118,13 @@ public class ToUri {
 
 	private void testToUri004() {
 		try {
-			DefaultTestBundleControl.log("#testToUri004");
+			System.out.println("#testToUri004");
 			for (int i = 0; i < DmtTestControl.URIS_TOO_LONG.length; i++) {
 				try {
 					Uri.toUri(DmtTestControl.toPath(DmtTestControl.URIS_TOO_LONG[i]));
-					DefaultTestBundleControl.failException("", IllegalArgumentException.class);
+					DmtTestControl.failException("", IllegalArgumentException.class);
 				} catch (IllegalArgumentException e) {
-					DefaultTestBundleControl.pass("IllegalArgumentException correctly thrown when calling Uri.toUri(" + DmtTestControl.URIS_TOO_LONG[i] + ")");
+					System.out.println("IllegalArgumentException correctly thrown when calling Uri.toUri(" + DmtTestControl.URIS_TOO_LONG[i] + ")");
 				}
 			}
 			

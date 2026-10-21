@@ -30,6 +30,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -45,11 +47,9 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -118,10 +118,10 @@ public class TestExceptions implements TestInterface {
 	private void testExceptions001() {
 
 		try {
-			DefaultTestBundleControl.log("#testExceptions001");
+			System.out.println("#testExceptions001");
 		    openSessionAndSimulateDmtException(DmtException.INVALID_URI);
 		} catch (Throwable e) {
-			DefaultTestBundleControl.log(e.getMessage());
+			System.out.println(e.getMessage());
 
 		}
 	}
@@ -134,10 +134,10 @@ public class TestExceptions implements TestInterface {
 	 */
 	private void testExceptions002() {
 		try {
-			DefaultTestBundleControl.log("#testExceptions002");
+			System.out.println("#testExceptions002");
 		    openSessionAndSimulateDmtException(DmtException.COMMAND_FAILED);
 		} catch (Throwable e) {
-			DefaultTestBundleControl.log(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -149,18 +149,17 @@ public class TestExceptions implements TestInterface {
 	 */
 	private void testExceptions003() {
 		try {
-			DefaultTestBundleControl.log("#testExceptions003");
+			System.out.println("#testExceptions003");
 		    if (DmtTestControl.URIS_TOO_LONG.length>0) {
 		        openSessionAndSimulateDmtException(DmtException.URI_TOO_LONG);
 		    } else {
-				DefaultTestBundleControl.log(
-						"#There are no maximum node length and maximum node segments, "
+				System.out.println("#There are no maximum node length and maximum node segments, "
 								+
 		        		"DmtException.URI_TOO_LONG will not be tested");
 		    }
 		    
 		} catch (Throwable e) {
-			DefaultTestBundleControl.log(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -173,10 +172,10 @@ public class TestExceptions implements TestInterface {
 	 */
 	private void testExceptions004() {
 		try {
-			DefaultTestBundleControl.log("#testExceptions004");
+			System.out.println("#testExceptions004");
 		    openSessionAndSimulateDmtException(DmtException.PERMISSION_DENIED);
 		} catch (Throwable e) {
-			DefaultTestBundleControl.log(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -188,10 +187,10 @@ public class TestExceptions implements TestInterface {
 	 */
 	private void testExceptions005() {
 		try {
-			DefaultTestBundleControl.log("#testExceptions005");
+			System.out.println("#testExceptions005");
 		    openSessionAndSimulateDmtIllegalStateException(false);
 		} catch (Throwable e) {
-			DefaultTestBundleControl.log(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -203,11 +202,11 @@ public class TestExceptions implements TestInterface {
 	 */
 	private void testExceptions006() {
 		try {
-			DefaultTestBundleControl.log("#testExceptions006");
+			System.out.println("#testExceptions006");
 
 		    openSessionAndSimulateDmtIllegalStateException(true);
 		} catch (Throwable e) {
-			DefaultTestBundleControl.log(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -219,10 +218,10 @@ public class TestExceptions implements TestInterface {
 	 */
 	private void testExceptions007() {
 		try {
-			DefaultTestBundleControl.log("#testExceptions007");
+			System.out.println("#testExceptions007");
 		    openSessionAndSimulateSecurityException();
 		} catch (Throwable e) {
-			DefaultTestBundleControl.log(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	/**
@@ -235,7 +234,7 @@ public class TestExceptions implements TestInterface {
 		DmtSession session = null;
 	    try {
 	        String exceptionName = DmtConstants.getDmtExceptionCodeText(code);
-			DefaultTestBundleControl.log("#Asserting DmtException."
+			System.out.println("#Asserting DmtException."
 					+ exceptionName
 					+ " in all DmtSession methods that throw this DmtException.");
 			switch (code) {
@@ -246,8 +245,7 @@ public class TestExceptions implements TestInterface {
 			    case DmtException.COMMAND_FAILED:
 			        //The session is opened in a subtree different source
 			        session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,DmtSession.LOCK_TYPE_ATOMIC);
-					DefaultTestBundleControl.log(
-							"#The root URI for all methods that throws DmtException."
+					System.out.println("#The root URI for all methods that throws DmtException."
 									+ exceptionName + " is \""
 									+ session.getRootUri() + "\"");
 			    	break;
@@ -261,8 +259,7 @@ public class TestExceptions implements TestInterface {
 			    	
 			        tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(), DmtConstants.PRINCIPAL, "*"));
 					session = tbc.getDmtAdmin().getSession(DmtConstants.PRINCIPAL,".",DmtSession.LOCK_TYPE_EXCLUSIVE);
-					DefaultTestBundleControl.log(
-							"#The Acl is not set for the URI's used, so DmtException."
+					System.out.println("#The Acl is not set for the URI's used, so DmtException."
 									+ exceptionName + " must be thrown");
 			    	break;
 			}
@@ -343,7 +340,7 @@ public class TestExceptions implements TestInterface {
 	    String problemName=(timeOut)?"timed out":"closed";
 	    try {
 		    method.invoke(session,parameterValues);
-			DefaultTestBundleControl.failException(
+			DmtTestControl.failException(
 					"DmtIllegalStateException was not thrown when the session is "
 							+ problemName + " and DmtSession." +
 			    methodName+ " is called.",DmtIllegalStateException.class);
@@ -353,8 +350,7 @@ public class TestExceptions implements TestInterface {
 			Throwable exceptionReturned = e.getTargetException();
 			
 			if (exceptionReturned instanceof DmtIllegalStateException) {
-				DefaultTestBundleControl.pass(
-						"DmtIllegalStateException correctly thrown when the session is "
+				System.out.println("DmtIllegalStateException correctly thrown when the session is "
 								+ problemName + " and DmtSession." + methodName
 								+ " is called.");
 			} else {
@@ -384,13 +380,10 @@ public class TestExceptions implements TestInterface {
 		            do {
 	                wait(100);
 		            } while (System.currentTimeMillis() - start < DmtConstants.TIMEOUT);
-					TestCase.assertEquals(
-							"Asserts that DmtSession.getState returns STATE_INVALID in case of timeout",
-							DmtSession.STATE_INVALID, session.getState());
+					assertThat(session.getState()).as("Asserts that DmtSession.getState returns STATE_INVALID in case of timeout").isEqualTo(DmtSession.STATE_INVALID);
 		            
 		        } else {
-					DefaultTestBundleControl.log(
-							"#Timeout period was not defined, tests of DmtIllegalStateException in case of timeout will not be tested");
+					System.out.println("#Timeout period was not defined, tests of DmtIllegalStateException in case of timeout will not be tested");
 		            timeoutPeriodDefined = false;
 		        }
 		    } else {
@@ -442,7 +435,7 @@ public class TestExceptions implements TestInterface {
 					        Object[] parameterValues = getDefaultValuesToParameters(currentMethod);
 						    try {
 						        currentMethod.invoke(session,parameterValues);
-								DefaultTestBundleControl.failException(
+								DmtTestControl.failException(
 										"SecurityException was not thrown when the caller does not have DmtPermission for the specified node. Method: DmtSession."
 												+ currentMethodName,
 										SecurityException.class);
@@ -452,8 +445,7 @@ public class TestExceptions implements TestInterface {
 								Throwable exceptionReturned = e.getTargetException();
 								
 								if (exceptionReturned instanceof SecurityException) {
-									DefaultTestBundleControl.pass(
-											"SecurityException correctly thrown when the caller does not have DmtPermission for the specified node. Method: DmtSession."
+									System.out.println("SecurityException correctly thrown when the caller does not have DmtPermission for the specified node. Method: DmtSession."
 													+ currentMethodName);
 								} else {
 									tbc.failExpectedOtherException(DmtException.class, exceptionReturned);
@@ -487,7 +479,7 @@ public class TestExceptions implements TestInterface {
         
         switch (code) {
             case DmtException.INVALID_URI:
-				DefaultTestBundleControl.log("#DmtSession." + methodName + " - "
+				System.out.println("#DmtSession." + methodName + " - "
 						+ DmtConstants.getDmtExceptionCodeText(code));
                 for (int i=0;i<DmtTestControl.INVALID_URIS.length;i++) {
     			    //The first parameter is always the nodeUri. 
@@ -528,7 +520,7 @@ public class TestExceptions implements TestInterface {
 		String dmtExceptionCodeName = DmtConstants.getDmtExceptionCodeText(code);
 		try {
 			method.invoke(session,parameters);
-			DefaultTestBundleControl.failException("DmtException."
+			DmtTestControl.failException("DmtException."
 					+ dmtExceptionCodeName + " was not thrown in DmtSession." +
 					currentMethodName ,DmtException.class);
 			
@@ -538,11 +530,11 @@ public class TestExceptions implements TestInterface {
 			
 			if (exceptionReturned instanceof DmtException) {
 				DmtException exception = (DmtException)exceptionReturned;
-				TestCase.assertEquals("Asserts that DmtSession."
+				assertThat(exception.getCode()).as("Asserts that DmtSession."
 						+ currentMethodName + " throws DmtException."
 						+ dmtExceptionCodeName
 						+
-				    " correctly. Node URI: \"" + parameters[0] + "\"",code,exception.getCode());
+				    " correctly. Node URI: \"" + parameters[0] + "\"").isEqualTo(code);
 				
 			} else {
 			    tbc.failExpectedOtherException(DmtException.class, exceptionReturned);

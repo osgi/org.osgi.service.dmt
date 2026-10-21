@@ -29,6 +29,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtAdmin;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
 import org.osgi.service.dmt.security.DmtPrincipalPermission;
@@ -36,11 +38,9 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tb1.DmtEvent.DmtEventListenerImpl;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -78,12 +78,12 @@ public class RemoveEventListener implements TestInterface {
 	 */
 	private void testRemoveEventListener001() {
 		try {
-			DefaultTestBundleControl.log("#testRemoveEventListener001");
+			System.out.println("#testRemoveEventListener001");
 			// Does not compile anymore
 			// tbc.getDmtAdmin().removeEventListener(null);
-			DefaultTestBundleControl.failException("", NullPointerException.class);
+			DmtTestControl.failException("", NullPointerException.class);
 		} catch (NullPointerException e) {
-			DefaultTestBundleControl.pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -98,7 +98,7 @@ public class RemoveEventListener implements TestInterface {
 	private void testRemoveEventListener002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testRemoveEventListener002");
+			System.out.println("#testRemoveEventListener002");
 			session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			
@@ -119,7 +119,7 @@ public class RemoveEventListener implements TestInterface {
 //			
 //			tbc.assertEquals("Asserts that the listener does not receive change notifications after DmtAdmin.removeEventListener() is called",0,event.getCount());
 
-			TestCase.fail("API changed - pkriens");
+			fail("API changed - pkriens");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {

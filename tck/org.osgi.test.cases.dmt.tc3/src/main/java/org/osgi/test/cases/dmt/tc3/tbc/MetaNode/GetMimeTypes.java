@@ -32,12 +32,12 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.MetaNode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>getMimeTypes</code> method of MetaNode, 
@@ -67,7 +67,7 @@ public class GetMimeTypes {
 	public void testGetMimeTypes001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMimeTypes001");
+			System.out.println("#testGetMimeTypes001");
 			session = tbc.getDmtAdmin().getSession(
 					TestMetaNodeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_SHARED);
@@ -75,8 +75,7 @@ public class GetMimeTypes {
 			MetaNode metanode = session
 					.getMetaNode(TestMetaNodeDataPluginActivator.ROOT);
 
-			TestCase.assertEquals("Asserts getMimeTypes method",
-					TestMetaNode.DEFAULT_MIME_TYPES, metanode.getMimeTypes());
+			assertThat(metanode.getMimeTypes()).as("Asserts getMimeTypes method").isSameAs(TestMetaNode.DEFAULT_MIME_TYPES);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -93,13 +92,13 @@ public class GetMimeTypes {
     public void testGetMimeTypes002() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testGetMimeTypes002");
+            System.out.println("#testGetMimeTypes002");
             session = tbc.getDmtAdmin().getSession(
                     TestMetaNodeDataPluginActivator.ROOT,
                     DmtSession.LOCK_TYPE_EXCLUSIVE);
 
             session.createLeafNode(TestMetaNodeDataPluginActivator.INEXISTENT_LEAF_NODE_WITHOUT_METANODE);
-            DefaultTestBundleControl.pass("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
+            System.out.println("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
 
         } catch (Exception e) {
         	DmtTestControl.failUnexpectedException(e);
@@ -117,13 +116,13 @@ public class GetMimeTypes {
     public void testGetMimeTypes003() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testGetMimeTypes003");
+            System.out.println("#testGetMimeTypes003");
             session = tbc.getDmtAdmin().getSession(
                     TestMetaNodeDataPluginActivator.ROOT,
                     DmtSession.LOCK_TYPE_EXCLUSIVE);
 
             session.createLeafNode(TestMetaNodeDataPluginActivator.INEXISTENT_LEAF_NODE_WITHOUT_METANODE,null);
-            DefaultTestBundleControl.pass("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
+            System.out.println("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
 
         } catch (Exception e) {
         	DmtTestControl.failUnexpectedException(e);
@@ -141,13 +140,13 @@ public class GetMimeTypes {
     public void testGetMimeTypes004() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testGetMimeTypes004");
+            System.out.println("#testGetMimeTypes004");
             session = tbc.getDmtAdmin().getSession(
                     TestMetaNodeDataPluginActivator.ROOT,
                     DmtSession.LOCK_TYPE_EXCLUSIVE);
 
             session.createLeafNode(TestMetaNodeDataPluginActivator.INEXISTENT_LEAF_NODE_WITHOUT_METANODE,null,null);
-            DefaultTestBundleControl.pass("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
+            System.out.println("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
 
         } catch (Exception e) {
         	DmtTestControl.failUnexpectedException(e);
@@ -164,13 +163,13 @@ public class GetMimeTypes {
     public void testGetMimeTypes005() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testGetMimeTypes005");
+            System.out.println("#testGetMimeTypes005");
             session = tbc.getDmtAdmin().getSession(
                     TestMetaNodeDataPluginActivator.ROOT,
                     DmtSession.LOCK_TYPE_EXCLUSIVE);
 
             session.setNodeType(TestMetaNodeDataPluginActivator.NODE_WITHOUT_METANODE,null);
-            DefaultTestBundleControl.pass("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
+            System.out.println("If DmtSession.getMetaNode returns null for a node, DmtSession.createLeafNode can be called without throwing any exceptions");
 
         } catch (Exception e) {
         	DmtTestControl.failUnexpectedException(e);

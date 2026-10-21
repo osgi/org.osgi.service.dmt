@@ -17,25 +17,28 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtIllegalStateException;
-import org.osgi.test.support.OSGiTestCase;
 
-public class TestBug1670_NewDmtDataTypes extends OSGiTestCase{
+public class TestBug1670_NewDmtDataTypes{
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 		System.out.println("setting up");
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println( "tearing down");
 	}
 	
@@ -43,6 +46,7 @@ public class TestBug1670_NewDmtDataTypes extends OSGiTestCase{
 	/**
 	 * tests existence of specified constants for data formats in org.osgi.service.dmt.DmtData
 	 */
+	@Test
 	public void testNewFormatConstants() throws Exception {
 		checkIntConstant(DmtData.class, "FORMAT_LONG", 0x2000 );
 		checkIntConstant(DmtData.class, "FORMAT_DATE_TIME", 0x4000 );
@@ -51,6 +55,7 @@ public class TestBug1670_NewDmtDataTypes extends OSGiTestCase{
 	/**
 	 * performs several checks with an DmtData instance of FORMAT_LONG
 	 */
+	@Test
 	public void testFormatLong() throws Exception {
 		long l = 2701;
 		DmtData data = new DmtData( l );
@@ -58,11 +63,11 @@ public class TestBug1670_NewDmtDataTypes extends OSGiTestCase{
 			// just testing with the new formats
 			data.getDateTime();
 			// ...
-			fail( "must not be able to retrieve any format other than FORMAT_LONG");
+			fail("must not be able to retrieve any format other than FORMAT_LONG");
 		} catch (DmtIllegalStateException e) {}
-		assertEquals(DmtData.FORMAT_LONG, data.getFormat() );
+		assertThat(data.getFormat()).isEqualTo(DmtData.FORMAT_LONG);
 		long l2 = data.getLong();
-		assertEquals( "initial and returned value are not the same", l, l2 );
+		assertThat(l2).as("initial and returned value are not the same").isEqualTo(l);
 	}
 	
 //	/**
@@ -157,18 +162,19 @@ public class TestBug1670_NewDmtDataTypes extends OSGiTestCase{
 	 * 
 	 * TODO test is against string, mst be against Date object
 	 */
+	@Test
 	public void testFormatDateTime() throws Exception {
 		DmtData data = null;
 		String dt = "20100101T102030";
 		try {
 			data = new DmtData( dt, DmtData.FORMAT_DATE_TIME );
-			fail( "DmtData(String,int) must not accept FORMAT_DATE_TIME format" );
+			fail("DmtData(String,int) must not accept FORMAT_DATE_TIME format");
 		} catch (IllegalArgumentException e) {
 		}
 		dt = "20100101T102030Z";
 		try {
 			data = new DmtData( dt, DmtData.FORMAT_DATE_TIME );
-			fail( "DmtData(String,int) must not accept FORMAT_DATE_TIME format" );
+			fail("DmtData(String,int) must not accept FORMAT_DATE_TIME format");
 		} catch (IllegalArgumentException e) {
 		}
 
@@ -176,17 +182,17 @@ public class TestBug1670_NewDmtDataTypes extends OSGiTestCase{
 		try {
 			data = new DmtData(dt1);
 		} catch (IllegalArgumentException e) {
-			fail( "DmtData(Date) must not throw IllegalArgumentException" );
+			fail("DmtData(Date) must not throw IllegalArgumentException");
 		}
 		try {
 			// just testing with the new formats
 			data.getLong();
 			// ...
-			fail( "must not be able to retrieve any format other than FORMAT_DATE_TIME");
+			fail("must not be able to retrieve any format other than FORMAT_DATE_TIME");
 		} catch (DmtIllegalStateException e) {}
-		assertEquals(DmtData.FORMAT_DATE_TIME, data.getFormat() );
+		assertThat(data.getFormat()).isEqualTo(DmtData.FORMAT_DATE_TIME);
 		Date dt2 = data.getDateTime();
-		assertEquals( "initial and returned value are not the same", dt1, dt2 );
+		assertThat(dt2).as("initial and returned value are not the same").isEqualTo(dt1);
 	}
 	
 	
@@ -246,10 +252,10 @@ public class TestBug1670_NewDmtDataTypes extends OSGiTestCase{
 		
 		try {
 			Field f = fieldClass.getField(fieldName);
-			assertTrue(Modifier.isPublic(f.getModifiers()));
-			assertTrue(Modifier.isStatic(f.getModifiers()));
-			assertTrue(Modifier.isFinal(f.getModifiers()));
-			assertEquals(fieldName, value, f.getInt(null));
+			assertThat(Modifier.isPublic(f.getModifiers())).isTrue();
+			assertThat(Modifier.isStatic(f.getModifiers())).isTrue();
+			assertThat(Modifier.isFinal(f.getModifiers())).isTrue();
+			assertThat(f.getInt(null)).as(fieldName).isEqualTo(value);
 		}
 		catch (NoSuchFieldException e) {
 			fail("missing field: " + fieldName, e);

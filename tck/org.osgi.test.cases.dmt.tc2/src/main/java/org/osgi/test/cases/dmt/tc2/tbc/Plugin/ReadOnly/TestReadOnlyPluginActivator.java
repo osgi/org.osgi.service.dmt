@@ -37,7 +37,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.spi.DataPlugin;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.support.OSGiTestCaseProperties;
+import org.osgi.test.cases.dmt.tc2.tbc.DmtTestProperties;
 
 /**
  * @author Andre Assad
@@ -49,7 +49,7 @@ public class TestReadOnlyPluginActivator implements BundleActivator {
 	
 	private DmtTestControl tbc;
 
-	public static final String	OSGi_ROOT				= OSGiTestCaseProperties
+	public static final String	OSGi_ROOT				= DmtTestProperties
 																.getProperty("org.osgi.service.dmt.osgi.root");
 
     public static final String ROOT = OSGi_ROOT + "/read_only_plugin";

@@ -29,15 +29,14 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
-
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -71,12 +70,11 @@ public class GetState implements TestInterface {
 	private void testGetState001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetState001");
+			System.out.println("#testGetState001");
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
 
-			TestCase.assertEquals("Asserting that the session is opened ",
-					DmtSession.STATE_OPEN, session.getState());
+			assertThat(session.getState()).as("Asserting that the session is opened ").isEqualTo(DmtSession.STATE_OPEN);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -92,13 +90,12 @@ public class GetState implements TestInterface {
 	private void testGetState002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetState002");
+			System.out.println("#testGetState002");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
 			session.close();
-			TestCase.assertEquals("Asserting that the session is closed ",
-					DmtSession.STATE_CLOSED, session.getState());
+			assertThat(session.getState()).as("Asserting that the session is closed ").isEqualTo(DmtSession.STATE_CLOSED);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {

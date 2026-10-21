@@ -35,8 +35,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
-import org.osgi.service.dmt.Acl;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.Acl;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -58,17 +60,18 @@ public class DeletePermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.deletePermission(String,int)
 	 */
+	@Test
 	public void testDeletePermission001() {
 		try {
-			log("#testDeletePermission001");
+			System.out.println("#testDeletePermission001");
 			Acl acl = new Acl(ACL_DEFAULT);
 
 			acl = acl.deletePermission(DmtConstants.PRINCIPAL,
 					Acl.DELETE);
 
-			assertEquals("Asserting deleted permission", Acl.ADD
-					| Acl.EXEC | Acl.GET, acl
-					.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl
+					.getPermissions(DmtConstants.PRINCIPAL)).as("Asserting deleted permission").isEqualTo(Acl.ADD
+					| Acl.EXEC | Acl.GET);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -79,17 +82,18 @@ public class DeletePermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.deletePermission(String,int)
 	 */
+	@Test
 	public void testDeletePermission002() {
 		try {
-			log("#testDeletePermission002");
+			System.out.println("#testDeletePermission002");
 			Acl acl = new Acl(ACL_DEFAULT);
 
 			acl = acl.deletePermission(DmtConstants.PRINCIPAL,
 					Acl.DELETE | Acl.EXEC);
 
-			assertEquals("Asserting deleted permission", Acl.ADD
-					| Acl.GET, acl
-					.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl
+					.getPermissions(DmtConstants.PRINCIPAL)).as("Asserting deleted permission").isEqualTo(Acl.ADD
+					| Acl.GET);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -101,14 +105,15 @@ public class DeletePermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.deletePermission(String,int)
 	 */
+	@Test
 	public void testDeletePermission003() {
 		try {
-			log("#testDeletePermission003");
+			System.out.println("#testDeletePermission003");
 			Acl acl = new Acl(ACL_DEFAULT);
 			acl = acl.deletePermission(DmtConstants.PRINCIPAL, 2005);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -120,15 +125,16 @@ public class DeletePermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.deletePermission(String,int)
 	 */
+	@Test
 	public void testDeletePermission004() {
 		try {
-			log("#testDeletePermission004");
+			System.out.println("#testDeletePermission004");
 			Acl acl = new Acl(ACL_DEFAULT);
 			acl = acl.deletePermission(DmtConstants.INVALID,
 					Acl.EXEC);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -140,9 +146,10 @@ public class DeletePermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.deletePermission(String,int)
 	 */
+	@Test
 	public void testDeletePermission005() {
 		try {
-			log("#testDeletePermission005");
+			System.out.println("#testDeletePermission005");
 			Acl acl = new Acl("Add=" + DmtConstants.PRINCIPAL
 					+ "&Delete=" + DmtConstants.PRINCIPAL + "&Exec="
 					+ DmtConstants.PRINCIPAL + "&Get=*");
@@ -150,24 +157,19 @@ public class DeletePermission extends DmtTestControl {
 			Acl acl2 = acl.deletePermission(DmtConstants.PRINCIPAL,
 					Acl.EXEC);
 
-			assertEquals("Assert " + DmtConstants.PRINCIPAL
-					+ " permission", Acl.GET | Acl.ADD | Acl.EXEC
-					| Acl.DELETE, acl
-					.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl
+					.getPermissions(DmtConstants.PRINCIPAL)).as("Assert " + DmtConstants.PRINCIPAL
+					+ " permission").isEqualTo(Acl.GET | Acl.ADD | Acl.EXEC
+					| Acl.DELETE);
 
-			assertEquals(
-					"Assert that '*' grants permission to all principals",
-					Acl.GET, acl2
-							.getPermissions(DmtConstants.PRINCIPAL_2));
+			assertThat(acl2
+							.getPermissions(DmtConstants.PRINCIPAL_2)).as("Assert that '*' grants permission to all principals").isEqualTo(Acl.GET);
 
-			assertEquals("Assert " + DmtConstants.PRINCIPAL
-					+ " permission", Acl.GET | Acl.ADD | Acl.DELETE,
-					acl2.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl2.getPermissions(DmtConstants.PRINCIPAL)).as("Assert " + DmtConstants.PRINCIPAL
+					+ " permission").isEqualTo(Acl.GET | Acl.ADD | Acl.DELETE);
 
-			assertEquals(
-					"Assert that '*' grants permission to all principals",
-					Acl.GET, acl
-							.getPermissions(DmtConstants.PRINCIPAL_2));
+			assertThat(acl
+							.getPermissions(DmtConstants.PRINCIPAL_2)).as("Assert that '*' grants permission to all principals").isEqualTo(Acl.GET);
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -179,16 +181,17 @@ public class DeletePermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.deletePermission(String,int)
 	 */
+	@Test
 	public void testDeletePermission006() {
 		try {
-			log("#testDeletePermission006");
+			System.out.println("#testDeletePermission006");
 			Acl acl = new Acl(ACL_DEFAULT);
 
 			acl = acl.deletePermission(DmtConstants.PRINCIPAL,
 					Acl.GET);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -199,9 +202,10 @@ public class DeletePermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.deletePermission(String,int)
 	 */
+	@Test
 	public void testDeletePermission007() {
 		try {
-			log("#testDeletePermission007");
+			System.out.println("#testDeletePermission007");
 			String[] principal = { DmtConstants.PRINCIPAL,
 					DmtConstants.PRINCIPAL_2, "*" };
 			int[] perm = { Acl.GET, Acl.EXEC, Acl.ADD };
@@ -215,9 +219,7 @@ public class DeletePermission extends DmtTestControl {
 					passed = true;
 				}
 			}
-			assertTrue(
-					"Asserts if '*' revokes permissions from all principals.",
-					passed);
+			assertThat(passed).as("Asserts if '*' revokes permissions from all principals.").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);

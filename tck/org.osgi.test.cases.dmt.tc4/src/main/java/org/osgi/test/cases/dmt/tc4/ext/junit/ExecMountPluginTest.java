@@ -20,6 +20,9 @@ package org.osgi.test.cases.dmt.tc4.ext.junit;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
@@ -30,18 +33,21 @@ import org.osgi.test.cases.dmt.tc4.ext.util.TestExecPlugin;
 public class ExecMountPluginTest extends DmtAdminTestCase {
 
     @Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
         super.setUp();
         getDmtAdmin();
     }
 
     @Override
-	protected void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
         unregisterPlugins();
         closeDmtSession();
         super.tearDown();
     }
 
+    @Test
     public void testExecutePluginIsNotOnDataPlugin1() throws DmtException {
         TestExecPlugin pluginA = new TestExecPlugin();
 		ServiceRegistration<ExecPlugin> registrationA = registerMountingExecPlugin(
@@ -66,6 +72,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB);
     }
 
+    @Test
     public void testExecutePluginIsNotOnDataPlugin2() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerMountDataPlugin(dataPlugin, "./A1", new String[] { "B1" });
@@ -98,6 +105,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
      * 
      * @throws DmtException
      */
+    @Test
     public void testPluginIsNotMappedIfExecRootUrisContainsInvalidTypeObject() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setLeafNode(dataPlugin, "./A1");
@@ -126,6 +134,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
      * 
      * @throws DmtException
      */
+    @Test
     public void testPluginIsMappedWhen1DataRootURIAnd0MountPointsAreSpecified() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setLeafNode(dataPlugin, "./A1");
@@ -148,6 +157,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         }
     }
 
+    @Test
     public void testPluginIsIgnoredWhen2ExecRootURIsAnd0MountPointsAreSpecified() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1", "./A2" });
@@ -172,6 +182,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         }
     }
 
+    @Test
     public void testPluginIsIgnoredWhen2ExecRootURIsAnd1MountPointsAreSpecified() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setLeafNode(dataPlugin, "./A1");
@@ -196,6 +207,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         }
     }
 
+    @Test
     public void testPluginIsIgnoredWhenMountPointsContainsNull() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setLeafNode(dataPlugin, "./A1");
@@ -218,6 +230,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         }
     }
 
+    @Test
     public void testPluginIsIgnoredWhenMountPointsContainsInvalidURI() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setLeafNode(dataPlugin, "./A1");
@@ -241,6 +254,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         }
     }
 
+    @Test
     public void testPluginIsIgnoredWhenMountPointsContainsAbsoluteURI() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setLeafNode(dataPlugin, "./A1");
@@ -264,6 +278,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         }
     }
 
+    @Test
     public void testPluginIsIgnoredWhenMountPointsContainsOverlappedRelativeURIs() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setLeafNode(dataPlugin, "./A1");
@@ -287,6 +302,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         }
     }
 
+    @Test
     public void test1MountPoint0MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -307,6 +323,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationA);
     }
 
+    @Test
     public void testMountingPlugin0MountPoints() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -329,6 +346,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB);
     }
 
+    @Test
     public void testMountingPlugin1MountPointsMathced() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -353,6 +371,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB);
     }
 
+    @Test
     public void testMountingPlugin1MountPointsUnMathced() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -379,6 +398,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB);
     }
 
+    @Test
     public void testMountingPlugin1MountPointsMathcedDeepPath() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -404,6 +424,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void testMountingPlugin2MountPoints1stMathced() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -429,6 +450,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB);
     }
 
+    @Test
     public void testMountingPlugin2MountPoints2ndMathced() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -455,6 +477,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB);
     }
 
+    @Test
     public void testMountingPlugin2MountPoints2Mathced() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -485,6 +508,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB2);
     }
 
+    @Test
     public void testMountingPlugin2MountPointsUnmatched() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -513,6 +537,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB3);
     }
 
+    @Test
     public void testRemountToUnmounedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -563,6 +588,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationD);
     }
 
+    @Test
     public void test1MountPoint0MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -587,6 +613,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB2);
     }
 
+    @Test
     public void test1MountPoint1MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -612,6 +639,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB1);
     }
 
+    @Test
     public void test1MountPoint1MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -642,6 +670,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB2);
     }
 
+    @Test
     public void test2MountPoints0MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -663,6 +692,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationA);
     }
 
+    @Test
     public void test2MountPoints0MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -689,6 +719,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB3);
     }
 
+    @Test
     public void test2MountPoints1MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -715,6 +746,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB1);
     }
 
+    @Test
     public void test2MountPoints1MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -746,6 +778,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB3);
     }
 
+    @Test
     public void test2MountPoints2MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -777,6 +810,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB2);
     }
 
+    @Test
     public void test2MountPoints2MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -813,6 +847,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationB3);
     }
 
+    @Test
     public void test2MountPoints2MatchedPlugin1UnmachedPluginDepthPath() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -849,6 +884,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC3);
     }
 
+    @Test
     public void testRemount0MountPoints0MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -887,6 +923,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void testRemount1MountPoints1MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -927,6 +964,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void testRemount1MountPoints1MatchedPlugin0UnmachedPluginDeepPath() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -969,6 +1007,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationD);
     }
 
+    @Test
     public void testRemount1MountPoints0MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1009,6 +1048,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void testRemount2MountPoints1MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1062,6 +1102,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC2);
     }
 
+    @Test
     public void testRemount2MountPoints0MatchedPlugin2UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1102,6 +1143,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void test2PluginsRegisterUnregisterOrderPattern01() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1138,6 +1180,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test2PluginsRegisterUnregisterOrderPattern02() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1175,6 +1218,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test2PluginsRegisterUnregisterOrderPattern03() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1211,6 +1255,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test2PluginsRegisterUnregisterOrderPattern04() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1247,6 +1292,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test3PluginsRegisterUnregisterOrderPattern01() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1304,6 +1350,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test3PluginsRegisterUnregisterOrderPattern02() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1361,6 +1408,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test3PluginsRegisterUnregisterOrderPattern03() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1418,6 +1466,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test3PluginsRegisterUnregisterOrderPattern04() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1475,6 +1524,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test3PluginsRegisterUnregisterOrderPattern05() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1532,6 +1582,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void test3PluginsRegisterUnregisterOrderPattern06() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         registerDataPlugin(dataPlugin, new String[] { "./A1" });
@@ -1589,6 +1640,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         session.close();
     }
 
+    @Test
     public void testModified0MountPoints0MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1626,6 +1678,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void testModified1MountPoints1MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1663,6 +1716,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void testModified1MountPoints1MatchedPlugin0UnmachedPluginDeepPath() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1702,6 +1756,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationD);
     }
 
+    @Test
     public void testModified1MountPoints0MatchedPlugin1UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1739,6 +1794,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC);
     }
 
+    @Test
     public void testModified2MountPoints1MatchedPlugin0UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");
@@ -1789,6 +1845,7 @@ public class ExecMountPluginTest extends DmtAdminTestCase {
         unregister(registrationC2);
     }
 
+    @Test
     public void testModified2MountPoints0MatchedPlugin2UnmachedPlugin() throws DmtException {
         TestDataPlugin dataPlugin = new TestDataPlugin();
         setInteriorNode(dataPlugin, "./A1");

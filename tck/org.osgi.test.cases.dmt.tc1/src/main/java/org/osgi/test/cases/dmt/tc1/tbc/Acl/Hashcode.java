@@ -29,8 +29,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
-import org.osgi.service.dmt.Acl;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.Acl;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 /**
@@ -45,16 +47,15 @@ public class Hashcode extends DmtTestControl {
 	 * 
 	 * @spec Acl.hashcode()
 	 */
+	@Test
 	public void testHashcode001() {
 		try {
-			log("#testHashcode001");
+			System.out.println("#testHashcode001");
 			String[] principals = { DmtConstants.PRINCIPAL, DmtConstants.PRINCIPAL_2 } ;
 			int[] permissions = { Acl.ADD, Acl.GET };
 			Acl Acl = new Acl(principals,permissions);
 			Acl Acl2 = new Acl(principals,permissions);
-			assertTrue(
-					"Asserts that two Acl have the same hashcode when they are equals",
-					Acl.hashCode() == Acl2.hashCode());
+			assertThat(Acl.hashCode() == Acl2.hashCode()).as("Asserts that two Acl have the same hashcode when they are equals").isTrue();
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}

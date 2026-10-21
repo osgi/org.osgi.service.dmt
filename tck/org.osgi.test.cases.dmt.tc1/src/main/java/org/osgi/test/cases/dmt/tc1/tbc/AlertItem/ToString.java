@@ -28,8 +28,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.AlertItem;
 
-import org.osgi.service.dmt.DmtData;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.DmtData;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -43,16 +45,16 @@ public class ToString extends DmtTestControl {
 	 * 
 	 * @spec AlertItem.toString()
 	 */
+	@Test
 	public void testToString001() {
 		try {		
-			log("#testToString001");
+			System.out.println("#testToString001");
 			String mark = "mark";
 			DmtData data = new DmtData("test");
 			org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem(DmtConstants.OSGi_LOG,DmtConstants.MIMETYPE,mark,data);
-			assertEquals("Asserts that the expected string is returned",
-					"AlertItem(" + alert.getSource() + ", " + alert.getType()
+			assertThat(alert.toString()).as("Asserts that the expected string is returned").isEqualTo("AlertItem(" + alert.getSource() + ", " + alert.getType()
 							+ ", " + alert.getMark() + ", " + alert.getData()
-							+ ")", alert.toString());
+							+ ")");
 		} catch(Exception e) {
 			failUnexpectedException(e);
 		}
@@ -63,12 +65,12 @@ public class ToString extends DmtTestControl {
 	 * 
 	 * @spec AlertItem.toString()
 	 */
+	@Test
 	public void testToString002() {
 		try {		
-			log("#testToString002");
+			System.out.println("#testToString002");
 			org.osgi.service.dmt.notification.AlertItem alert = new org.osgi.service.dmt.notification.AlertItem((String)null,null,null,null);
-			assertEquals("Asserts that the expected string is returned",
-					"AlertItem(null, null, null, null)", alert.toString());
+			assertThat(alert.toString()).as("Asserts that the expected string is returned").isEqualTo("AlertItem(null, null, null, null)");
 		} catch(Exception e) {
 			failUnexpectedException(e);
 		}

@@ -29,18 +29,18 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtAdmin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPlugin;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -81,10 +81,10 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri001");
+			System.out.println("#testDmtAdressingUri001");
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(TestExecPluginActivator.ROOT+ "/" + DmtConstants.UNICODE);
-			DefaultTestBundleControl.pass("It is possible to create a node with full Unicode character set.");
+			System.out.println("It is possible to create a node with full Unicode character set.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -100,10 +100,10 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri002");
+			System.out.println("#testDmtAdressingUri002");
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(TestExecPluginActivator.ROOT+ "/" + "test\\/slash");
-			DefaultTestBundleControl.pass("It is possible to create a node containing a slash if a backslash is inserted before it.");
+			System.out.println("It is possible to create a node containing a slash if a backslash is inserted before it.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -118,10 +118,10 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri003");
+			System.out.println("#testDmtAdressingUri003");
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(TestExecPluginActivator.ROOT+ "/" + "test\\\\slash");
-			DefaultTestBundleControl.pass("It is possible to create a node containing a backslash if a backslash is inserted before it.");
+			System.out.println("It is possible to create a node containing a backslash if a backslash is inserted before it.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -137,13 +137,13 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri004");
+			System.out.println("#testDmtAdressingUri004");
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
 			int nodeLength = TestExecPluginActivator.INTERIOR_NODE_NAME.length();
 			String nodeName = TestExecPluginActivator.INTERIOR_NODE_NAME.substring(0,nodeLength-1) + "\\" +  TestExecPluginActivator.INTERIOR_NODE_NAME.substring(nodeLength-1,nodeLength);
 			
 			boolean passed = session.isNodeUri(TestExecPluginActivator.ROOT + "/" + nodeName );
-			TestCase.assertTrue("The DmtAdmin ignores a backslash when it is not followed by a slash or backslash.",passed);
+			assertThat(passed).as("The DmtAdmin ignores a backslash when it is not followed by a slash or backslash.").isTrue();
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -158,12 +158,11 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri005");
+			System.out.println("#testDmtAdressingUri005");
 			session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.ROOT + "/",DmtSession.LOCK_TYPE_EXCLUSIVE);
-			DefaultTestBundleControl.failException("",DmtException.class);
+			DmtTestControl.failException("",DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that a URI must not end with the delimiter slash (\"/\")",
-					DmtException.INVALID_URI, e.getCode());			
+			assertThat(e.getCode()).as("Asserts that a URI must not end with the delimiter slash (\"/\")").isEqualTo(DmtException.INVALID_URI);			
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -179,12 +178,11 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri006() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri006");
+			System.out.println("#testDmtAdressingUri006");
 			session = tbc.getDmtAdmin().getSession("./",DmtSession.LOCK_TYPE_EXCLUSIVE);
-			DefaultTestBundleControl.failException("",DmtException.class);
+			DmtTestControl.failException("",DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that the root node must not be denoted as ./",
-					DmtException.INVALID_URI, e.getCode());			
+			assertThat(e.getCode()).as("Asserts that the root node must not be denoted as ./").isEqualTo(DmtException.INVALID_URI);			
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -200,13 +198,12 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri007() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri007");
+			System.out.println("#testDmtAdressingUri007");
 			String upwardTree = "/../" + TestExecPluginActivator.INTERIOR_NODE_NAME;
 			session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.INTERIOR_NODE_COPY + upwardTree,DmtSession.LOCK_TYPE_EXCLUSIVE);
-			DefaultTestBundleControl.failException("",DmtException.class);
+			DmtTestControl.failException("",DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that a URI must not be constructed using the character sequence ../ to traverse the tree upwards",
-					DmtException.INVALID_URI, e.getCode());			
+			assertThat(e.getCode()).as("Asserts that a URI must not be constructed using the character sequence ../ to traverse the tree upwards").isEqualTo(DmtException.INVALID_URI);			
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -222,13 +219,12 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri008() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri008");
+			System.out.println("#testDmtAdressingUri008");
 			String newRoot = "/./" + TestExecPluginActivator.INTERIOR_NODE_NAME;
 			session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.ROOT + newRoot,DmtSession.LOCK_TYPE_EXCLUSIVE);
-			DefaultTestBundleControl.failException("",DmtException.class);
+			DmtTestControl.failException("",DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that the character sequence ./ must not be used anywhere else but in the beginning of a URI.",
-					DmtException.INVALID_URI, e.getCode());			
+			assertThat(e.getCode()).as("Asserts that the character sequence ./ must not be used anywhere else but in the beginning of a URI.").isEqualTo(DmtException.INVALID_URI);			
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -244,13 +240,11 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri009() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri009");
+			System.out.println("#testDmtAdressingUri009");
 			session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_EXCLUSIVE);
-			TestCase.assertTrue("This method asserts that URIs used in the DMT must be treated and interpreted as case sensitive",
-					!session.isNodeUri(TestExecPluginActivator.ROOT+ "/" + TestExecPluginActivator.INTERIOR_NODE_NAME.toUpperCase()));
+			assertThat(!session.isNodeUri(TestExecPluginActivator.ROOT+ "/" + TestExecPluginActivator.INTERIOR_NODE_NAME.toUpperCase())).as("This method asserts that URIs used in the DMT must be treated and interpreted as case sensitive").isTrue();
             
-            TestCase.assertTrue("This method asserts that URIs used in the DMT must be treated and interpreted as case sensitive",
-                !session.isNodeUri(TestExecPluginActivator.ROOT+ "/" + TestExecPluginActivator.INTERIOR_NODE_NAME.toLowerCase()));
+            assertThat(!session.isNodeUri(TestExecPluginActivator.ROOT+ "/" + TestExecPluginActivator.INTERIOR_NODE_NAME.toLowerCase())).as("This method asserts that URIs used in the DMT must be treated and interpreted as case sensitive").isTrue();
 			
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -268,14 +262,14 @@ public class DmtAdressingUri implements TestInterface {
 	private void testDmtAdressingUri010() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri010");
+			System.out.println("#testDmtAdressingUri010");
 			String nodeWithoutRoot = TestExecPluginActivator.ROOT.substring(2,TestExecPluginActivator.ROOT.length());
 			session = tbc.getDmtAdmin().getSession(nodeWithoutRoot,DmtSession.LOCK_TYPE_EXCLUSIVE);
-			DefaultTestBundleControl.failException("",DmtException.class);
+			DmtTestControl.failException("",DmtException.class);
 			
 		} catch (DmtException e) {
-			TestCase.assertEquals("This method asserts that the URI must be given with the root of the management " +
-					"tree as the starting point",DmtException.COMMAND_FAILED, e.getCode());			
+			assertThat(e.getCode()).as("This method asserts that the URI must be given with the root of the management " +
+					"tree as the starting point").isEqualTo(DmtException.COMMAND_FAILED);			
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 
@@ -293,12 +287,12 @@ public class DmtAdressingUri implements TestInterface {
 		DmtSession session = null;
 		String lastNodeName = "test%2Fslash%5C";
 		try {
-			DefaultTestBundleControl.log("#testDmtAdressingUri011");
+			System.out.println("#testDmtAdressingUri011");
 
 			session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.ROOT,DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.createInteriorNode(TestExecPluginActivator.ROOT+ "/" + lastNodeName);
 			String[] newInteriorNodeName = TestExecPlugin.getNewInteriorNodeName();
-			TestCase.assertEquals("This method asserts that the slash and backslash must not be escaped using the % escaping.", lastNodeName, newInteriorNodeName[newInteriorNodeName.length-1]);
+			assertThat(newInteriorNodeName[newInteriorNodeName.length-1]).as("This method asserts that the slash and backslash must not be escaped using the % escaping.").isEqualTo(lastNodeName);
 			
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);

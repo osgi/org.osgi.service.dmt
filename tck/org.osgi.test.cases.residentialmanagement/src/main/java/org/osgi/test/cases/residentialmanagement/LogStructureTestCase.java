@@ -17,10 +17,15 @@
  *******************************************************************************/
 package org.osgi.test.cases.residentialmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtConstants;
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtException;
@@ -38,8 +43,8 @@ public class LogStructureTestCase extends RMTTestBase {
 
 	private LogService log;
 	
-	@Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		super.setUp();
 		log = getService(LogService.class);
 	}
@@ -48,6 +53,7 @@ public class LogStructureTestCase extends RMTTestBase {
 	 * asserts that the Log node has correct children
 	 * @throws DmtException
 	 */
+	@Test
 	public void testLogStructure() throws DmtException {
 		String[] children;
 		HashSet<String> mandatory = new HashSet<String>();
@@ -63,8 +69,8 @@ public class LogStructureTestCase extends RMTTestBase {
 				unknown.add(child);
 			mandatory.remove(child);
 		}
-		assertEquals("There are children missing in the Log node:" + mandatory, 0, mandatory.size());
-		assertEquals("There are unknown children in the Log node:" + unknown, 0, unknown.size());
+		assertThat(mandatory).as("There are children missing in the Log node:" + mandatory).isEmpty();
+		assertThat(unknown).as("There are unknown children in the Log node:" + unknown).isEmpty();
 		
 	}
 
@@ -72,19 +78,20 @@ public class LogStructureTestCase extends RMTTestBase {
 	 * asserts that the LogEntry has the right structure
 	 * @throws Exception 
 	 */
+	@Test
 	public void testLogEntryStructure() throws Exception {
 		String[] children;
 		HashSet<String> expected = new HashSet<String>();
 		HashSet<String> optional = new HashSet<String>(); 
 		
 		// ensure that there is at least one log entry
-		assertNotNull("Null LogService.", log);
+		assertThat(log).as("Null LogService.").isNotNull();
 		log.log(LogService.LOG_INFO, "This is a testlog!");
 
 		session = dmtAdmin.getSession(LOG_ROOT, DmtSession.LOCK_TYPE_EXCLUSIVE);
 		String[] entries = session.getChildNodeNames(LOG_ROOT + "/" + LOG_ENTRIES );
-		assertNotNull("No LogEntries found.", entries);
-		assertFalse("No LogEntries found.", entries.length == 0);
+		assertThat(entries).as("No LogEntries found.").isNotNull();
+		assertThat(entries.length == 0).as("No LogEntries found.").isFalse();
 		
 		optional = new HashSet<String>();
 		optional.add(EXCEPTION);
@@ -99,21 +106,17 @@ public class LogStructureTestCase extends RMTTestBase {
 			expected.add(MESSAGE);
 
 			children = session.getChildNodeNames(LOG_ROOT + "/" + LOG_ENTRIES + "/" + entry);
-			assertNotNull("Log entry children must not be null for: " + entry,
-					children);
-			assertTrue("Log entry children must exist for: " + entry,
-					children.length > 0);
+			assertThat(children).as("Log entry children must not be null for: " + entry).isNotNull();
+			assertThat(children.length > 0).as("Log entry children must exist for: " + entry).isTrue();
 			for (String child : children) {
 				if ( ! expected.contains(child) && ! optional.contains(child) )
 					undefined.add(child);
 				expected.remove(child);
 			}
 
-			assertEquals("Mandatory nodes are missing in Framework.Bundle." + entry, 0,
-					expected.size());
+			assertThat(expected).as("Mandatory nodes are missing in Framework.Bundle." + entry).isEmpty();
 			
-			assertEquals("There are un-specified nodes in Framework.Bundle." + entry + ": " + undefined, 0,
-					undefined.size());
+			assertThat(undefined).as("There are un-specified nodes in Framework.Bundle." + entry + ": " + undefined).isEmpty();
 		}
 		
 	}
@@ -123,13 +126,14 @@ public class LogStructureTestCase extends RMTTestBase {
 	 * asserts that the Log tree provides correct metadata and node types
 	 * @throws Exception
 	 */
+	@Test
 	public void testMetaDataAndType() throws Exception {
 		try {
 			session = dmtAdmin.getSession(LOG_ROOT, DmtSession.LOCK_TYPE_SHARED);
-			assertNotNull("Null DMT session.", session);
+			assertThat(session).as("Null DMT session.").isNotNull();
 			assertMetaData( LOG_ROOT, false, "_G__", "0,1", MetaNode.PERMANENT, DmtData.FORMAT_NODE);
 			assertMetaData( LOG_ROOT + "/" + LOG_ENTRIES, false, "_G__", "1", MetaNode.AUTOMATIC, DmtData.FORMAT_NODE);
-			assertEquals( "The nodeType of the Log.LogEntries node must be " + DmtConstants.DDF_LIST, DmtConstants.DDF_LIST, session.getNodeType(LOG_ROOT + "/" + LOG_ENTRIES));
+			assertThat(session.getNodeType(LOG_ROOT + "/" + LOG_ENTRIES)).as("The nodeType of the Log.LogEntries node must be " + DmtConstants.DDF_LIST).isEqualTo(DmtConstants.DDF_LIST);
 	
 			String[] logEntries = session.getChildNodeNames(LOG_ROOT + "/" + LOG_ENTRIES);
 			for (String entry : logEntries) {

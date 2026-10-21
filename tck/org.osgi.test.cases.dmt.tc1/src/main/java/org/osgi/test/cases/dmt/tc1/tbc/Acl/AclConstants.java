@@ -32,8 +32,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
-import org.osgi.service.dmt.Acl;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.Acl;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
 /**
@@ -47,13 +49,14 @@ public class AclConstants extends DmtTestControl {
 	/**
 	 * Tests all constants values according to the specified values
 	 */
+	@Test
 	public void testConstants001() {
-		log("#testConstants001");
-		assertEquals("Asserting GET value", 1, Acl.GET);
-		assertEquals("Asserting ADD value", 2, Acl.ADD);
-		assertEquals("Asserting REPLACE value", 4, Acl.REPLACE);
-		assertEquals("Asserting DELETE value", 8, Acl.DELETE);
-		assertEquals("Asserting EXEC value", 16, Acl.EXEC);
-		assertEquals("Asserting ALL_PERMISSION 	 value", 31, Acl.ALL_PERMISSION);
+		System.out.println("#testConstants001");
+		assertThat(Acl.GET).as("Asserting GET value").isOne();
+		assertThat(Acl.ADD).as("Asserting ADD value").isEqualTo(2);
+		assertThat(Acl.REPLACE).as("Asserting REPLACE value").isEqualTo(4);
+		assertThat(Acl.DELETE).as("Asserting DELETE value").isEqualTo(8);
+		assertThat(Acl.EXEC).as("Asserting EXEC value").isEqualTo(16);
+		assertThat(Acl.ALL_PERMISSION).as("Asserting ALL_PERMISSION 	 value").isEqualTo(31);
 	}
 }

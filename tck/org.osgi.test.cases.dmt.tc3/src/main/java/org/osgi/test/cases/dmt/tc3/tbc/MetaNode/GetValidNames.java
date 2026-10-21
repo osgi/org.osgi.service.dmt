@@ -32,12 +32,12 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.MetaNode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>getValidNames</code> method of MetaNode, 
@@ -63,7 +63,7 @@ public class GetValidNames {
 	public void testGetValidNames001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetValidNames001");
+			System.out.println("#testGetValidNames001");
 			session = tbc.getDmtAdmin().getSession(
 					TestMetaNodeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_SHARED);
@@ -71,8 +71,7 @@ public class GetValidNames {
 			MetaNode metanode = session
 					.getMetaNode(TestMetaNodeDataPluginActivator.ROOT);
 
-			TestCase.assertEquals("Asserts getValidNames method",
-					TestMetaNode.DEFAULT_VALID_NAMES, metanode.getValidNames());
+			assertThat(metanode.getValidNames()).as("Asserts getValidNames method").isSameAs(TestMetaNode.DEFAULT_VALID_NAMES);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {

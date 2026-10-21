@@ -28,6 +28,9 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.AlertPermission;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -41,14 +44,13 @@ public class HashCode extends DmtTestControl {
      * 
      * @spec AlertPermission.hashCode()
 	 */
+	@Test
 	public void testHashCode001() {
 		try {		
-			log("#testHashCode001");
+			System.out.println("#testHashCode001");
 			org.osgi.service.dmt.security.AlertPermission permission = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER);
 			org.osgi.service.dmt.security.AlertPermission permission2 = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER);
-			assertTrue(
-					"Asserts that two AlertPermission instances produces the same hashCode if they have the same target string",
-					permission.hashCode() == permission2.hashCode());
+			assertThat(permission.hashCode() == permission2.hashCode()).as("Asserts that two AlertPermission instances produces the same hashCode if they have the same target string").isTrue();
 		} catch(Exception e) {
 			failUnexpectedException(e);
 		}

@@ -71,7 +71,6 @@ import org.osgi.test.cases.dmt.tc2.tb1.NotificationService.SendNotification;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.TB1Service;
 import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
 public class Activator implements BundleActivator, TB1Service  {
 	private ServiceRegistration<TB1Service> servReg;
@@ -86,7 +85,7 @@ public class Activator implements BundleActivator, TB1Service  {
 	}
 
 	@Override
-	public TestInterface[] getTestClasses(DefaultTestBundleControl tbc) {
+	public TestInterface[] getTestClasses(DmtTestControl tbc) {
 		return new TestInterface[] { 
 				 new Close((DmtTestControl)tbc), 
 				 new Commit((DmtTestControl)tbc),

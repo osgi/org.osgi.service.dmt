@@ -29,8 +29,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPermission;
 
-import org.osgi.service.dmt.security.DmtPermission;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.security.DmtPermission;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -44,17 +46,15 @@ public class HashCode extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.hashCode()
 	 */
+	@Test
 	public void testHashCode001() {
 		try {
-			log("#testHashCode001");
+			System.out.println("#testHashCode001");
 			org.osgi.service.dmt.security.DmtPermission permission = new org.osgi.service.dmt.security.DmtPermission(
 					DmtConstants.OSGi_LOG, DmtConstants.ACTIONS);
-			assertEquals(
-							"Asserting that two objects initialized with the same dmtUri and actions have the same hashcode",
-							new org.osgi.service.dmt.security.DmtPermission(
+			assertThat(permission.hashCode()).as("Asserting that two objects initialized with the same dmtUri and actions have the same hashcode").isEqualTo(new org.osgi.service.dmt.security.DmtPermission(
 									DmtConstants.OSGi_LOG,
-									DmtConstants.ACTIONS).hashCode(),
-							permission.hashCode());
+									DmtConstants.ACTIONS).hashCode());
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -66,21 +66,19 @@ public class HashCode extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.hashCode()
 	 */
+	@Test
 	public void testHashCode002() {
 		try {
-			log("#testHashCode002");
+			System.out.println("#testHashCode002");
 			String actions = DmtPermission.ADD + "," + DmtPermission.DELETE
 					+ "," + DmtPermission.EXEC;
 			String actionsDifferentOrder = DmtPermission.DELETE + ","
 					+ DmtPermission.EXEC + "," + DmtPermission.ADD;
 			org.osgi.service.dmt.security.DmtPermission permission = new org.osgi.service.dmt.security.DmtPermission(
 					DmtConstants.OSGi_LOG, actions);
-			assertEquals(
-							"Asserting that two objects initialized with the same dmtUri and actions are equal",
-							permission.hashCode(),
-							(new org.osgi.service.dmt.security.DmtPermission(
+			assertThat((new org.osgi.service.dmt.security.DmtPermission(
 									DmtConstants.OSGi_LOG,
-									actionsDifferentOrder)).hashCode());
+									actionsDifferentOrder)).hashCode()).as("Asserting that two objects initialized with the same dmtUri and actions are equal").isEqualTo(permission.hashCode());
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}

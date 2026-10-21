@@ -32,8 +32,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
-import org.osgi.service.dmt.Acl;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.Acl;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -55,10 +57,11 @@ public class ToString extends DmtTestControl {
 	 * 
 	 * @spec Acl.toString()
 	 */
+	@Test
 	public void testToString001() {
 		try {
 
-			log("#testToString001");
+			System.out.println("#testToString001");
 
 			String canonic = "Exec=" + DmtConstants.PRINCIPAL + "&Add="
 					+ DmtConstants.PRINCIPAL_2 + "&Delete="
@@ -70,12 +73,12 @@ public class ToString extends DmtTestControl {
 
 			String result = Acl.toString();
 
-			assertEquals("Asserts toString returned value", "Add="
+			assertThat(result).as("Asserts toString returned value").isEqualTo("Add="
 					+ DmtConstants.PRINCIPAL + "+"+ DmtConstants.PRINCIPAL_2 +"&Delete="
 					+ DmtConstants.PRINCIPAL + "&Exec="
 					+ DmtConstants.PRINCIPAL + "&Get="
 					+ DmtConstants.PRINCIPAL + "&Replace="
-					+ DmtConstants.PRINCIPAL, result);
+					+ DmtConstants.PRINCIPAL);
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -88,9 +91,10 @@ public class ToString extends DmtTestControl {
 	 * 
 	 * @spec Acl.toString()
 	 */
+	@Test
 	public void testToString002() {
 		try {
-			log("#testToString002");
+			System.out.println("#testToString002");
 
 			String canonic = "Get=" + DmtConstants.PRINCIPAL + "&Add=*&Get="
 					+ DmtConstants.PRINCIPAL_2;
@@ -98,9 +102,9 @@ public class ToString extends DmtTestControl {
 
 			String result = Acl.toString();
 
-			assertEquals("Asserts toString returned value", "Add=*"
+			assertThat(result).as("Asserts toString returned value").isEqualTo("Add=*"
 					+ "&Get=" + DmtConstants.PRINCIPAL + "+"
-					+ DmtConstants.PRINCIPAL_2, result);
+					+ DmtConstants.PRINCIPAL_2);
 
 		} catch (Exception e) {
 			failUnexpectedException(e);

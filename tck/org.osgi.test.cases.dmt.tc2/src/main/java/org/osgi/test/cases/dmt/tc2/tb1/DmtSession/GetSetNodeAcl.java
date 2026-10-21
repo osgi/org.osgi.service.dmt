@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtIllegalStateException;
@@ -41,11 +43,9 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -91,14 +91,14 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl001");
+			System.out.println("#testGetSetNodeAcl001");
 			Acl acl = new Acl(DmtConstants.ACLSTR);
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.setNodeAcl(DmtConstants.OSGi_LOG, acl);
 
-			TestCase.assertEquals("Asserting node Acl", acl.toString(), session
-					.getNodeAcl(DmtConstants.OSGi_LOG).toString());
+			assertThat(session
+					.getNodeAcl(DmtConstants.OSGi_LOG).toString()).as("Asserting node Acl").isEqualTo(acl.toString());
 
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -117,18 +117,16 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl002");
+			System.out.println("#testGetSetNodeAcl002");
 			Acl acl = new Acl(DmtConstants.ACLSTR);
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.setNodeAcl(TestExecPluginActivator.INEXISTENT_NODE, acl);
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 			
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException code was NODE_NOT_FOUND.",
-					DmtException.NODE_NOT_FOUND, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code was NODE_NOT_FOUND.").isEqualTo(DmtException.NODE_NOT_FOUND);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -146,7 +144,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl003");
+			System.out.println("#testGetSetNodeAcl003");
 
             tbc.openSessionAndSetNodeAcl(DmtConstants.OSGi_LOG, DmtConstants.PRINCIPAL, Acl.REPLACE | Acl.GET );
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
@@ -162,7 +160,7 @@ public class GetSetNodeAcl implements TestInterface {
             session = tbc.getDmtAdmin().getSession(".",
                 DmtSession.LOCK_TYPE_EXCLUSIVE);
 
-			TestCase.assertEquals("Asserts that setNodeAcl really sets the Acl of a node",acl,session.getNodeAcl(DmtConstants.OSGi_LOG));
+			assertThat(session.getNodeAcl(DmtConstants.OSGi_LOG)).as("Asserts that setNodeAcl really sets the Acl of a node").isEqualTo(acl);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -180,7 +178,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl004");
+			System.out.println("#testGetSetNodeAcl004");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
@@ -195,7 +193,7 @@ public class GetSetNodeAcl implements TestInterface {
 			
 			tbc.setPermissions(new PermissionInfo(DmtPermission.class.getName(), DmtConstants.ALL_NODES,DmtConstants.ALL_ACTIONS));
 			
-            TestCase.assertEquals("Asserts that setNodeAcl really sets the Acl of a node",acl,session.getNodeAcl(DmtConstants.OSGi_LOG));
+            assertThat(session.getNodeAcl(DmtConstants.OSGi_LOG)).as("Asserts that setNodeAcl really sets the Acl of a node").isEqualTo(acl);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -214,17 +212,15 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl005");
+			System.out.println("#testGetSetNodeAcl005");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.getNodeAcl(TestExecPluginActivator.INEXISTENT_NODE);
 
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException code was NODE_NOT_FOUND.",
-					DmtException.NODE_NOT_FOUND, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code was NODE_NOT_FOUND.").isEqualTo(DmtException.NODE_NOT_FOUND);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -242,12 +238,12 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl006() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl006");
+			System.out.println("#testGetSetNodeAcl006");
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 
-			TestCase.assertNull("Asserting that it returns null if no acl is defined", session
-					.getNodeAcl(TestExecPluginActivator.INTERIOR_NODE));
+			assertThat(session
+					.getNodeAcl(TestExecPluginActivator.INTERIOR_NODE)).as("Asserting that it returns null if no acl is defined").isNull();
 
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -265,7 +261,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl007() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl007");
+			System.out.println("#testGetSetNodeAcl007");
 
             tbc.openSessionAndSetNodeAcl(DmtConstants.OSGi_LOG, DmtConstants.PRINCIPAL, Acl.GET );
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
@@ -274,7 +270,7 @@ public class GetSetNodeAcl implements TestInterface {
 
 			session.getNodeAcl(DmtConstants.OSGi_LOG);
 
-			DefaultTestBundleControl.pass("getNodeAcl correctly executed");
+			System.out.println("getNodeAcl correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -292,7 +288,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl008() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl008");
+			System.out.println("#testGetSetNodeAcl008");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
@@ -302,7 +298,7 @@ public class GetSetNodeAcl implements TestInterface {
 
 			session.getNodeAcl(DmtConstants.OSGi_LOG);
 
-			DefaultTestBundleControl.pass("getNodeAcl correctly executed");
+			System.out.println("getNodeAcl correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -321,7 +317,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl009() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl009");
+			System.out.println("#testGetSetNodeAcl009");
 			
 		
 			session = tbc.getDmtAdmin().getSession(
@@ -329,7 +325,7 @@ public class GetSetNodeAcl implements TestInterface {
 
 			session.getNodeAcl(TestExecPluginActivator.LEAF_RELATIVE);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with getNodeAcl.");
+			System.out.println("A relative URI can be used with getNodeAcl.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -345,7 +341,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl010() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl010");
+			System.out.println("#testGetSetNodeAcl010");
 			
 		
 			session = tbc.getDmtAdmin().getSession(
@@ -353,7 +349,7 @@ public class GetSetNodeAcl implements TestInterface {
 			Acl acl =  new Acl(DmtConstants.ACLSTR);
 			session.setNodeAcl(TestExecPluginActivator.LEAF_RELATIVE,acl);
 			
-            TestCase.assertEquals("A relative URI can be used with setNodeAcl.",acl,session.getNodeAcl(TestExecPluginActivator.LEAF_NODE));
+            assertThat(session.getNodeAcl(TestExecPluginActivator.LEAF_NODE)).as("A relative URI can be used with setNodeAcl.").isEqualTo(acl);
 			
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -372,13 +368,13 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl011() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl011");
+			System.out.println("#testGetSetNodeAcl011");
 			session = tbc.getDmtAdmin().getSession(
 				TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_SHARED);
 			session.setNodeAcl(TestExecPluginActivator.LEAF_RELATIVE, new Acl(DmtConstants.ACLSTR));
-			DefaultTestBundleControl.failException("", DmtIllegalStateException.class);
+			DmtTestControl.failException("", DmtIllegalStateException.class);
 		} catch (DmtIllegalStateException e) {
-			DefaultTestBundleControl.pass("DmtIllegalStateException correctly thrown");
+			System.out.println("DmtIllegalStateException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtIllegalStateException.class, e);
 		} finally {
@@ -396,17 +392,15 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl012() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl012");
+			System.out.println("#testGetSetNodeAcl012");
             tbc.setPermissions(new PermissionInfo(DmtPermission.class.getName(), ".",DmtConstants.ALL_ACTIONS));
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.setNodeAcl(".",new Acl("Add=www.cesar.org.br"));
 
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException code was COMMAND_NOT_ALLOWED.",
-					DmtException.COMMAND_NOT_ALLOWED, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException code was COMMAND_NOT_ALLOWED.").isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -426,7 +420,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl013() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl013");
+			System.out.println("#testGetSetNodeAcl013");
 			
 		
 			session = tbc.getDmtAdmin().getSession(
@@ -435,7 +429,7 @@ public class GetSetNodeAcl implements TestInterface {
 			session.getNodeAcl("");
 
 
-			DefaultTestBundleControl.pass("Asserts that an empty string as relative URI means the root " +
+			System.out.println("Asserts that an empty string as relative URI means the root " +
 					"URI the session was opened with");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -453,7 +447,7 @@ public class GetSetNodeAcl implements TestInterface {
 	private void testGetSetNodeAcl014() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetSetNodeAcl014");
+			System.out.println("#testGetSetNodeAcl014");
 			
 		
 			session = tbc.getDmtAdmin().getSession(
@@ -461,8 +455,8 @@ public class GetSetNodeAcl implements TestInterface {
 			Acl acl =  new Acl(DmtConstants.ACLSTR);
 			session.setNodeAcl("",acl);
 			
-            TestCase.assertEquals("Asserts that an empty string as relative URI means the root " +
-					"URI the session was opened with",acl,session.getNodeAcl(TestExecPluginActivator.LEAF_NODE));
+            assertThat(session.getNodeAcl(TestExecPluginActivator.LEAF_NODE)).as("Asserts that an empty string as relative URI means the root " +
+					"URI the session was opened with").isEqualTo(acl);
 
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);

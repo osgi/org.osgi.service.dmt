@@ -35,8 +35,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.Acl;
 
-import org.osgi.service.dmt.Acl;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.Acl;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 /**
@@ -56,20 +58,18 @@ public class AddPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.addPermission(String,int)
 	 */
+	@Test
 	public void testAddPermission001() {
 		try {
-			log("#testAddPermission001");
+			System.out.println("#testAddPermission001");
 			Acl acl = new Acl(
 					ACL_DEFAULT);
 	
 			acl =  acl.addPermission(DmtConstants.PRINCIPAL, Acl.DELETE);
 	
-			assertEquals("Asserting added permission",
-					Acl.ADD | Acl.GET | Acl.DELETE, acl
-							.getPermissions(DmtConstants.PRINCIPAL));
-			assertEquals(
-					"Asserting that '*' grants permissions to all principals",
-					Acl.GET, acl.getPermissions(DmtConstants.PRINCIPAL_2));			
+			assertThat(acl
+							.getPermissions(DmtConstants.PRINCIPAL)).as("Asserting added permission").isEqualTo(Acl.ADD | Acl.GET | Acl.DELETE);
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL_2)).as("Asserting that '*' grants permissions to all principals").isEqualTo(Acl.GET);			
 		} catch (Exception e) {
 			failUnexpectedException(e);
 		}
@@ -80,20 +80,18 @@ public class AddPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.addPermission(String,int)
 	 */
+	@Test
 	public void testAddPermission002() {
 		try {
-			log("#testAddPermission002");
+			System.out.println("#testAddPermission002");
 			Acl acl = new Acl(
 					ACL_DEFAULT);
 	
 			acl = acl.addPermission(DmtConstants.PRINCIPAL, Acl.DELETE | Acl.EXEC | Acl.REPLACE);
 	
-			assertEquals("Asserting principal permissions",
-					Acl.ALL_PERMISSION, acl
-							.getPermissions(DmtConstants.PRINCIPAL));
-			assertEquals(
-					"Asserting that '*' grants permissions to all principals",
-					Acl.GET, acl.getPermissions(DmtConstants.PRINCIPAL_2));			
+			assertThat(acl
+							.getPermissions(DmtConstants.PRINCIPAL)).as("Asserting principal permissions").isEqualTo(Acl.ALL_PERMISSION);
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL_2)).as("Asserting that '*' grants permissions to all principals").isEqualTo(Acl.GET);			
 			
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -106,14 +104,15 @@ public class AddPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.addPermission(String,int)
 	 */
+	@Test
 	public void testAddPermission003() {
 		try {
-			log("#testAddPermission003");
+			System.out.println("#testAddPermission003");
 			Acl acl = new Acl(ACL_DEFAULT);
 			acl = acl.addPermission(DmtConstants.PRINCIPAL, 2005);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}		
@@ -125,14 +124,15 @@ public class AddPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.addPermission(String,int)
 	 */
+	@Test
 	public void testAddPermission004() {
-		log("#testAddPermission004");
+		System.out.println("#testAddPermission004");
 		Acl acl = new Acl(ACL_DEFAULT);
 		try {
 			acl = acl.addPermission(DmtConstants.INVALID, Acl.DELETE);
 			failException("#", IllegalArgumentException.class);
 		} catch (IllegalArgumentException e) {
-			pass("IllegalArgumentException correctly thrown");
+			System.out.println("IllegalArgumentException correctly thrown");
 		} catch (Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -142,20 +142,19 @@ public class AddPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.addPermission(String,int)
 	 */
+	@Test
 	public void testAddPermission005() {
 		try {
-			log("#testAddPermission005");
+			System.out.println("#testAddPermission005");
 			Acl acl = new Acl(
 					"Add=" + DmtConstants.PRINCIPAL + "&Delete=" + DmtConstants.PRINCIPAL + "&Exec="
 					+ DmtConstants.PRINCIPAL + "&Replace=" + DmtConstants.PRINCIPAL + "&Get=*");
 			
 			acl = acl.addPermission(DmtConstants.PRINCIPAL_2, Acl.GET
 					| Acl.EXEC);
-			assertEquals("Assert " + DmtConstants.PRINCIPAL_2 + " permission",
-					Acl.GET
-							| Acl.EXEC, acl.getPermissions(DmtConstants.PRINCIPAL_2));
-			assertEquals("Assert " + DmtConstants.PRINCIPAL + " permission",
-					Acl.ALL_PERMISSION, acl.getPermissions(DmtConstants.PRINCIPAL));
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL_2)).as("Assert " + DmtConstants.PRINCIPAL_2 + " permission").isEqualTo(Acl.GET
+							| Acl.EXEC);
+			assertThat(acl.getPermissions(DmtConstants.PRINCIPAL)).as("Assert " + DmtConstants.PRINCIPAL + " permission").isEqualTo(Acl.ALL_PERMISSION);
 			
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -167,9 +166,10 @@ public class AddPermission extends DmtTestControl {
 	 * 
 	 * @spec Acl.addPermission(String,int)
 	 */
+	@Test
 	public void testAddPermission006() {
 		try {
-			log("#testAddPermission006");
+			System.out.println("#testAddPermission006");
 			String[] principal = { DmtConstants.PRINCIPAL ,DmtConstants.PRINCIPAL_2 };
 			int[] perm = { Acl.GET, Acl.EXEC };
 			
@@ -182,8 +182,7 @@ public class AddPermission extends DmtTestControl {
 					passed = true;
 				}
 			}
-			assertTrue("Asserts if '*' grants permissions to all principals.",
-					passed);
+			assertThat(passed).as("Asserts if '*' grants permissions to all principals.").isTrue();
 			
 		} catch (Exception e) {
 			failUnexpectedException(e);

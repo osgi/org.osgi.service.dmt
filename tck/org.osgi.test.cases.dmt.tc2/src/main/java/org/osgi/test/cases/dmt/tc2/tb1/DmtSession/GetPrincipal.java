@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
 import org.osgi.service.dmt.security.DmtPrincipalPermission;
@@ -39,9 +41,7 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -73,13 +73,12 @@ public class GetPrincipal implements TestInterface {
 	private void testGetPrincipal001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetPrincipal001");
+			System.out.println("#testGetPrincipal001");
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
 			session = tbc.getDmtAdmin().getSession(DmtConstants.PRINCIPAL,
 					".", DmtSession.LOCK_TYPE_ATOMIC);
 
-			TestCase.assertEquals("Asserts that getPrincipal returns the principal passed in the DmtSession's constructor",
-					DmtConstants.PRINCIPAL, session.getPrincipal());
+			assertThat(session.getPrincipal()).as("Asserts that getPrincipal returns the principal passed in the DmtSession's constructor").isEqualTo(DmtConstants.PRINCIPAL);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -95,14 +94,14 @@ public class GetPrincipal implements TestInterface {
 	private void testGetPrincipal002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetPrincipal002");
+			System.out.println("#testGetPrincipal002");
             tbc.setPermissions(new PermissionInfo[] {
                     new PermissionInfo(DmtPermission.class.getName(), ".", DmtPermission.GET)});
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_ATOMIC);
-			TestCase.assertNull("Asserts that getPrincipal returns null when the session is local", session
-					.getPrincipal());
+			assertThat(session
+					.getPrincipal()).as("Asserts that getPrincipal returns null when the session is local").isNull();
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {

@@ -17,22 +17,27 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtAdmin;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.spi.DataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.GenericDataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.Node;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
 /**
  * This class tests ... TODO
  * @author steffen
  *
  */
-public class TestBug1746_UriProperties extends DefaultTestBundleControl {
+public class TestBug1746_UriProperties extends DmtTestSupport {
 
 	static final String PROP_MAX_SEGMENT_NAME_LENGTH = "org.osgi.dmtree.max.segment.name.length";
 	static final String PROP_MAX_URI_LENGTH = "org.osgi.dmtree.max.uri.length";
@@ -46,16 +51,14 @@ public class TestBug1746_UriProperties extends DefaultTestBundleControl {
 	DmtSession session;
 	GenericDataPlugin dataPlugin;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 		System.out.println("setting up");
 		dmtAdmin = getService(DmtAdmin.class);
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println("tearing down");
 		if (session != null && session.getState() == DmtSession.STATE_OPEN)
 			session.close();
@@ -68,6 +71,7 @@ public class TestBug1746_UriProperties extends DefaultTestBundleControl {
 	 * tests whether the property values are read correctly from the system
 	 * props
 	 */
+	@Test
 	public void testPropertyValues() throws Exception {
 		// properties have been set via bnd-file
 		// TODO (S. Druesedow) fix implementation because Uri length limits are removed (see bug 2144)

@@ -30,8 +30,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtData;
 
-import org.osgi.service.dmt.DmtData;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.DmtData;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 /**
@@ -45,9 +47,10 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec DmtData.equals(Object)
 	 */
+	@Test
 	public void testEquals001() {
 		try {
-			log("#testEquals001");
+			System.out.println("#testEquals001");
 
 			for (int i=DmtData.FORMAT_INTEGER;i<=DmtData.FORMAT_RAW_BINARY;i=i<<1){
 				//A DmtData instance can not have FORMAT_NODE,
@@ -56,35 +59,29 @@ public class Equals extends DmtTestControl {
 					String baseName = DmtConstants.getDmtDataCodeText(i);
 					for (int j=DmtData.FORMAT_INTEGER;j<=DmtData.FORMAT_RAW_BINARY;j=j<<1){
 						if (i==j) {
-							assertEquals(
-									"Asserts that two DmtData with the same format ("
+							assertThat(DmtConstants.getDmtData(j)).as("Asserts that two DmtData with the same format ("
 											+ baseName
-											+ ") and value are equal",
-									baseData, DmtConstants.getDmtData(j));
+											+ ") and value are equal").isEqualTo(baseData);
 							//Obviously format null cannot have a different value 
 							if (i!=org.osgi.service.dmt.DmtData.FORMAT_NULL) {
 							    DmtData variantDataDifferentValue = DmtConstants.getDmtData(j,true);
-								assertTrue(
-										"Asserts that two DmtData with the same format ("
+								assertThat(!baseData
+												.equals(variantDataDifferentValue)).as("Asserts that two DmtData with the same format ("
 												+ baseName
 												+ ") but different values (\""
 												+ baseData.toString()
 												+ "\" x \""
 												+ variantDataDifferentValue
 														.toString()
-												+ "\") are different",
-										!baseData
-												.equals(variantDataDifferentValue));
+												+ "\") are different").isTrue();
 							}
 						} else {
-							assertTrue(
-									"Asserts that two DmtData with the different formats ("
+							assertThat(!baseData.equals(DmtConstants.getDmtData(j))).as("Asserts that two DmtData with the different formats ("
 											+ baseName
 											+ " x "
 											+ DmtConstants
 													.getDmtDataCodeText(j)
-											+ ") are different",
-							    !baseData.equals(DmtConstants.getDmtData(j)));
+											+ ") are different").isTrue();
 						}
 					}
 				}

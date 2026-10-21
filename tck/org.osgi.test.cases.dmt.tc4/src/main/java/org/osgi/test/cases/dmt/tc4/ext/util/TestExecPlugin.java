@@ -17,7 +17,7 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.ext.util;
 
-import static junit.framework.TestCase.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
@@ -54,7 +54,7 @@ public class TestExecPlugin implements ExecPlugin {
     public boolean wasExecuteCalled() {
         synchronized (this) {
             if (failed) {
-				fail();
+				fail("");
             }
         }
 
@@ -68,7 +68,7 @@ public class TestExecPlugin implements ExecPlugin {
     public DmtSession getSession() {
         synchronized (this) {
             if (failed) {
-				fail();
+				fail("");
             }
         }
         return session;
@@ -77,7 +77,7 @@ public class TestExecPlugin implements ExecPlugin {
     public String[] getNodePath() {
         synchronized (this) {
             if (failed) {
-				fail();
+				fail("");
             }
         }
         return nodePath;
@@ -86,7 +86,7 @@ public class TestExecPlugin implements ExecPlugin {
     public String getCorrelator() {
         synchronized (this) {
             if (failed) {
-				fail();
+				fail("");
             }
         }
         return correlator;
@@ -95,7 +95,7 @@ public class TestExecPlugin implements ExecPlugin {
     public String getData() {
         synchronized (this) {
             if (failed) {
-				fail();
+				fail("");
             }
         }
         return data;

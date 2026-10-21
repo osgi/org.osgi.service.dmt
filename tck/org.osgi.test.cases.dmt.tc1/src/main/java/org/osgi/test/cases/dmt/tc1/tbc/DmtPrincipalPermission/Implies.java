@@ -28,8 +28,10 @@
  */
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPrincipalPermission;
 
-import org.osgi.service.dmt.security.DmtPrincipalPermission;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -43,15 +45,14 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies001() {
 		try {
-			log("#testImplies001");
+			System.out.println("#testImplies001");
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission("*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission("*");
 
-			assertTrue(
-							"Asserts that an object implies other object using the same target",
-							d1.implies(d2));
+			assertThat(d1.implies(d2)).as("Asserts that an object implies other object using the same target").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -63,18 +64,17 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies002() {
 		try {
-			log("#testImplies002");
+			System.out.println("#testImplies002");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission(
 					DmtConstants.PRINCIPAL, "*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission(
 					DmtConstants.PRINCIPAL, "*");
 
-			assertTrue(
-							"Asserts that an object implies other object using the same target and actions",
-							d1.implies(d2));
+			assertThat(d1.implies(d2)).as("Asserts that an object implies other object using the same target and actions").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -86,17 +86,16 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec DmtPrincipalPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies003() {
 		try {
-			log("#testImplies003");
+			System.out.println("#testImplies003");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission(
 					DmtConstants.PRINCIPAL, "*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission("*", "*");
 
-			assertTrue(
-							"Asserts that an object does not imply other object using the different target and actions",
-							!d1.implies(d2));
+			assertThat(!d1.implies(d2)).as("Asserts that an object does not imply other object using the different target and actions").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -108,18 +107,17 @@ public class Implies extends DmtTestControl {
      * 
      * @spec DmtPrincipalPermission.implies(Permission)
      */
+    @Test
     public void testImplies004() {
         try {
-            log("#testImplies004");
+            System.out.println("#testImplies004");
 
 
             DmtPrincipalPermission d1 = new DmtPrincipalPermission(DmtConstants.PRINCIPAL + "*", "*");
             DmtPrincipalPermission d2 = new DmtPrincipalPermission(
                 DmtConstants.PRINCIPAL +"a", "*");
 
-            assertTrue(
-                            "Asserts that an object implies other object using a wildcard",
-                            d1.implies(d2));
+            assertThat(d1.implies(d2)).as("Asserts that an object implies other object using a wildcard").isTrue();
 
         } catch (Exception e) {
             failUnexpectedException(e);

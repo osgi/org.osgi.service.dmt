@@ -17,9 +17,16 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.ext.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.DmtConstants;
@@ -33,7 +40,6 @@ import org.osgi.test.cases.dmt.tc4.ext.util.ArrayAssert;
 import org.osgi.test.cases.dmt.tc4.ext.util.TestDataMountPlugin;
 import org.osgi.test.cases.dmt.tc4.ext.util.TestDmtEventListener;
 import org.osgi.test.cases.dmt.tc4.ext.util.TestEventHandler;
-import org.osgi.test.support.sleep.Sleep;
 
 public class InternalChangedEventTest extends DmtAdminTestCase {
 
@@ -47,15 +53,15 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 
 	private ServiceRegistration<EventHandler>	eventHandlerRegistration;
 
-	@Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		super.setUp();
-		Sleep.sleep(250L);
+		Thread.sleep(250L);
 		getDmtAdmin();
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
 		unregisterPlugins();
 		closeDmtSession();
 
@@ -70,28 +76,25 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		super.tearDown();
 	}
 
+	@Test
 	public void testPostEventNullTypeWithNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, null, "B1", null);
-			fail();
-		} catch (IllegalArgumentException npe) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, null, "B1", null));
 	}
 
+	@Test
 	public void testPostEventNullTypeWithNodesAndNewNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, null, "B1", "C1", null);
-			fail();
-		} catch (IllegalArgumentException npe) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, null, "B1", "C1", null));
 	}
 
+	@Test
 	public void testPostEventWithNullNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -111,10 +114,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		assertEvent(event, DmtConstants.EVENT_TOPIC_ADDED, new String[0],
 				timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostEventWithEmptyNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -134,10 +138,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		assertEvent(event, DmtConstants.EVENT_TOPIC_ADDED, new String[0],
 				timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostEventWithNodesContainsNull() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -145,12 +150,13 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		try {
 			mountPoint.postEvent(DmtConstants.EVENT_TOPIC_ADDED, new String[] {
 					"B1", null }, null);
-			fail();
+			fail("");
 		} catch (IllegalArgumentException npe) {
 		} catch (NullPointerException e) {
 		}
 	}
 
+	@Test
 	public void testPostEventWithNodesContainsAbsoluteURI() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -158,11 +164,12 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		try {
 			mountPoint.postEvent(DmtConstants.EVENT_TOPIC_ADDED,
 					new String[] { "./B1" }, null);
-			fail();
+			fail("");
 		} catch (IllegalArgumentException npe) {
 		}
 	}
 
+	@Test
 	public void testPostEventWithNodesContainsInvalidURI() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -170,11 +177,12 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		try {
 			mountPoint.postEvent(DmtConstants.EVENT_TOPIC_ADDED,
 					new String[] { "/" }, null);
-			fail();
+			fail("");
 		} catch (IllegalArgumentException npe) {
 		}
 	}
 
+	@Test
 	public void testPostEventWithNullNewNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -195,10 +203,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		assertEvent(event, DmtConstants.EVENT_TOPIC_RENAMED, new String[0],
 				new String[0], timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostEventWithEmptyNewNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -219,10 +228,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		assertEvent(event, DmtConstants.EVENT_TOPIC_RENAMED, new String[0],
 				new String[0], timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostEventWithNewNodesContainsNull() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -230,12 +240,13 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		try {
 			mountPoint.postEvent(DmtConstants.EVENT_TOPIC_RENAMED,
 					new String[] { "B1" }, new String[] { "B2", null }, null);
-			fail();
+			fail("");
 		} catch (IllegalArgumentException npe) {
 		} catch (NullPointerException e) {
 		}
 	}
 
+	@Test
 	public void testPostEventWithNewNodesContainsAbosluteURI() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -243,11 +254,12 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		try {
 			mountPoint.postEvent(DmtConstants.EVENT_TOPIC_RENAMED,
 					new String[] { "B1" }, new String[] { "./B2" }, null);
-			fail();
+			fail("");
 		} catch (IllegalArgumentException npe) {
 		}
 	}
 
+	@Test
 	public void testPostEventWithNewNodesContainsInvalidURI() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -255,11 +267,12 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		try {
 			mountPoint.postEvent(DmtConstants.EVENT_TOPIC_RENAMED,
 					new String[] { "B1" }, new String[] { "/" }, null);
-			fail();
+			fail("");
 		} catch (IllegalArgumentException npe) {
 		}
 	}
 
+	@Test
 	public void testPostEventWithNodesAndNewNodesDifferentLength()
 			throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
@@ -268,11 +281,12 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		try {
 			mountPoint.postEvent(DmtConstants.EVENT_TOPIC_RENAMED,
 					new String[] { "B1" }, new String[] { "B2", "B3" }, null);
-			fail();
+			fail("");
 		} catch (IllegalArgumentException npe) {
 		}
 	}
 
+	@Test
 	public void testPostEventWithNodesToRemovedMountPoint() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		ServiceRegistration<DataPlugin> regigstartionA1 = registerMountDataPlugin(
@@ -291,8 +305,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		// }
 		TestDmtEventListener listener = addEventListener();
 		TestEventHandler handler = registerEventHandler();
-		assertEquals("initial event list of TestEventHandler must be empty!",
-				0, handler.getEventListSize());
+		assertThat(handler.getEventListSize()).as("initial event list of TestEventHandler must be empty!").isZero();
 
 		mountPoint.postEvent(DmtConstants.EVENT_TOPIC_ADDED,
 				new String[] { "./A1" }, null);
@@ -304,14 +317,14 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		} catch (Exception e) {
 			// can be ignored
 		}
-		assertNull("No event are expeced when mount point is removed!", event);
+		assertThat(event).as("No event are expeced when mount point is removed!").isNull();
 
 		// just check the size, the waiting is on the previous call
-		assertEquals("No events are expected when mount point is removed.", 0,
-				listener.getEventListSize());
+		assertThat(listener.getEventListSize()).as("No events are expected when mount point is removed.").isZero();
 
 	}
 
+	@Test
 	public void testPostEventWithNodesAndNewNodesToRemovedMountPoint()
 			throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
@@ -333,8 +346,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 
 		TestDmtEventListener listener = addEventListener();
 		TestEventHandler handler = registerEventHandler();
-		assertEquals("initial event list of TestEventHandler must be empty!",
-				0, handler.getEventListSize());
+		assertThat(handler.getEventListSize()).as("initial event list of TestEventHandler must be empty!").isZero();
 
 		mountPoint.postEvent(DmtConstants.EVENT_TOPIC_RENAMED, new String[] {
 				"./A1", "./A2" }, new String[] { "./B1", "./B2" }, null);
@@ -346,147 +358,114 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		} catch (Exception e) {
 			// can be ignored
 		}
-		assertNull("No event are expeced when mount point is removed!", event);
+		assertThat(event).as("No event are expeced when mount point is removed!").isNull();
 
 		// just check the size, the waiting is on the previous call
-		assertEquals("No events are expected when mount point is removed.", 0,
-				listener.getEventListSize());
+		assertThat(listener.getEventListSize()).as("No events are expected when mount point is removed.").isZero();
 	}
 
+	@Test
 	public void testPostAddedEventWithNodesAndNewNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, DmtConstants.EVENT_TOPIC_ADDED, "B1", "C1",
-					null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, DmtConstants.EVENT_TOPIC_ADDED, "B1", "C1", null));
 	}
 
+	@Test
 	public void testPostDeletedEventWithNodesAndNewNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, DmtConstants.EVENT_TOPIC_DELETED, "B1", "C1",
-					null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, DmtConstants.EVENT_TOPIC_DELETED, "B1", "C1", null));
 	}
 
+	@Test
 	public void testPostSessionOpenedEventWithNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint,
-					"org/osgi/service/dmt/DmtEvent/SESSION_OPENED", "B1", null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/SESSION_OPENED", "B1", null));
 	}
 
+	@Test
 	public void testPostSessionClosedEventWithNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint,
-					"org/osgi/service/dmt/DmtEvent/SESSION_CLOSED", "B1", null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/SESSION_CLOSED", "B1", null));
 	}
 
+	@Test
 	public void testPostUndefinedEventWithNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/UNDEFINED",
-					"B1", null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/UNDEFINED", "B1", null));
 	}
 
+	@Test
 	public void testPostReplacedEventWithNodesAndNewNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, DmtConstants.EVENT_TOPIC_REPLACED, "B1",
-					"C1", null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, DmtConstants.EVENT_TOPIC_REPLACED, "B1", "C1", null));
 	}
 
+	@Test
 	public void testPostCopiedEventWithNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, DmtConstants.EVENT_TOPIC_COPIED, "B1", null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, DmtConstants.EVENT_TOPIC_COPIED, "B1", null));
 	}
 
+	@Test
 	public void testPostRenamedEventWithNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, DmtConstants.EVENT_TOPIC_RENAMED, "B1", null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, DmtConstants.EVENT_TOPIC_RENAMED, "B1", null));
 	}
 
+	@Test
 	public void testPostSessionOpenedEventWithNodesAndNewNodes()
 			throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint,
-					"org/osgi/service/dmt/DmtEvent/SESSION_OPENED", "B1", "C1",
-					null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/SESSION_OPENED", "B1", "C1", null));
 	}
 
+	@Test
 	public void testPostSessionClosedEventWithNodesAndNewNodes()
 			throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint,
-					"org/osgi/service/dmt/DmtEvent/SESSION_CLOSED", "B1", "C1",
-					null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/SESSION_CLOSED", "B1", "C1", null));
 	}
 
+	@Test
 	public void testPostUndefinedEventWithNodesAndNewNodes() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
 		MountPoint mountPoint = pluginA1.getMountPointEvent(0).getMountPoint();
-		try {
-			postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/UNDEFINED",
-					"B1", "C1", null);
-			fail();
-		} catch (IllegalArgumentException iae) {
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> postEvent(mountPoint, "org/osgi/service/dmt/DmtEvent/UNDEFINED", "B1", "C1", null));
 	}
 
+	@Test
 	public void testMultiMountPoints() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, new String[] { "./A0", "./A1",
@@ -565,10 +544,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"./A4/B4", "./A4/C4" }, new String[] { "./A4/D4", "./A4/E4" },
 				timeStamp4);
 
-		assertEquals(5, listener.getEventListSize());
-		assertEquals(5, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isEqualTo(5);
+		assertThat(handler.getEventListSize()).isEqualTo(5);
 	}
 
+	@Test
 	public void testPostAddedEvent() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -591,10 +571,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		assertEvent(event, DmtConstants.EVENT_TOPIC_ADDED, new String[] {
 				"./A1/B1", "./A1/C1" }, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostDeletedEvent() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -617,10 +598,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		assertEvent(event, DmtConstants.EVENT_TOPIC_DELETED, new String[] {
 				"./A1/B1", "./A1/C1" }, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostRepalcedEvent() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -643,10 +625,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		assertEvent(event, DmtConstants.EVENT_TOPIC_DELETED, new String[] {
 				"./A1/B1", "./A1/C1" }, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostRenamedEvent() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -671,10 +654,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"./A1/B1", "./A1/C1" }, new String[] { "./A1/B2", "./A1/C2" },
 				timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostCopiedEvent() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -699,10 +683,11 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"./A1/B1", "./A1/C1" }, new String[] { "./A1/B2", "./A1/C2" },
 				timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostAddedEventWithOptionalProperties() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -718,7 +703,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"B1", "C1" }, eventProps);
 
 		DmtEvent dmtEvent = listener.getDmtEvent(0);
-		assertEquals(DmtEvent.ADDED, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(DmtEvent.ADDED);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, dmtEvent.getNodes());
@@ -735,14 +720,13 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 						EventConstants.BUNDLE_SIGNER, //
 						EventConstants.TIMESTAMP, "key1" },
 						dmtEvent.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_ADDED,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_ADDED);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(null, (String[]) dmtEvent
 				.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", dmtEvent.getProperty("key1"));
+		assertThat(dmtEvent.getProperty("key1")).isEqualTo("value1");
 		assertEventBundle(dmtEvent);
 		assertTimeStamp(dmtEvent, timeStamp);
 
@@ -755,22 +739,22 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				EventConstants.BUNDLE_SYMBOLICNAME,
 				EventConstants.BUNDLE_VERSION, EventConstants.BUNDLE_SIGNER, //
 				EventConstants.TIMESTAMP, "key1" }, event.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_ADDED,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_ADDED);
 		ArrayAssert
 				.assertEquivalenceArrays(new String[] { "./A1/B1", "./A1/C1" },
 						(String[]) event
 								.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(null, (String[]) event
 				.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", event.getProperty("key1"));
+		assertThat(event.getProperty("key1")).isEqualTo("value1");
 		assertEventBundle(event);
 		assertTimeStamp(event, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostDeletedEventWithOptionalProperties() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -786,7 +770,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"B1", "C1" }, eventProps);
 
 		DmtEvent dmtEvent = listener.getDmtEvent(0);
-		assertEquals(DmtEvent.DELETED, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(DmtEvent.DELETED);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, dmtEvent.getNodes());
@@ -803,14 +787,13 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 						EventConstants.BUNDLE_SIGNER, //
 						EventConstants.TIMESTAMP, "key1" },
 						dmtEvent.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_DELETED,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_DELETED);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(null, (String[]) dmtEvent
 				.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", dmtEvent.getProperty("key1"));
+		assertThat(dmtEvent.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(dmtEvent);
 		assertTimeStamp(dmtEvent, timeStamp);
@@ -824,22 +807,22 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				EventConstants.BUNDLE_SYMBOLICNAME,
 				EventConstants.BUNDLE_VERSION, EventConstants.BUNDLE_SIGNER, //
 				EventConstants.TIMESTAMP, "key1" }, event.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_DELETED,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_DELETED);
 		ArrayAssert
 				.assertEquivalenceArrays(new String[] { "./A1/B1", "./A1/C1" },
 						(String[]) event
 								.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(null, (String[]) event
 				.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", event.getProperty("key1"));
+		assertThat(event.getProperty("key1")).isEqualTo("value1");
 		assertEventBundle(event);
 		assertTimeStamp(event, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostReplacedEventWithOptionalProperties() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -855,7 +838,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"B1", "C1" }, eventProps);
 
 		DmtEvent dmtEvent = listener.getDmtEvent(0);
-		assertEquals(DmtEvent.REPLACED, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(DmtEvent.REPLACED);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, dmtEvent.getNodes());
@@ -872,14 +855,13 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 						EventConstants.TIMESTAMP, "key1" },
 						dmtEvent.getPropertyNames());
 
-		assertEquals(DmtConstants.EVENT_TOPIC_REPLACED,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_REPLACED);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(null, (String[]) dmtEvent
 				.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", dmtEvent.getProperty("key1"));
+		assertThat(dmtEvent.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(dmtEvent);
 		assertTimeStamp(dmtEvent, timeStamp);
@@ -894,23 +876,23 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				EventConstants.BUNDLE_VERSION, EventConstants.BUNDLE_SIGNER, //
 				EventConstants.TIMESTAMP, "key1" }, event.getPropertyNames());
 
-		assertEquals(DmtConstants.EVENT_TOPIC_REPLACED,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_REPLACED);
 		ArrayAssert
 				.assertEquivalenceArrays(new String[] { "./A1/B1", "./A1/C1" },
 						(String[]) event
 								.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(null, (String[]) event
 				.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", event.getProperty("key1"));
+		assertThat(event.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(event);
 		assertTimeStamp(event, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostRenamedEventWithOptionalProperties() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -926,7 +908,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"B1", "C1" }, new String[] { "B2", "C2" }, eventProps);
 
 		DmtEvent dmtEvent = listener.getDmtEvent(0);
-		assertEquals(DmtEvent.RENAMED, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(DmtEvent.RENAMED);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, dmtEvent.getNodes());
@@ -945,15 +927,14 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 						EventConstants.TIMESTAMP, "key1" },
 						dmtEvent.getPropertyNames());
 
-		assertEquals(DmtConstants.EVENT_TOPIC_RENAMED,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_RENAMED);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B2", "./A1/C2" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", dmtEvent.getProperty("key1"));
+		assertThat(dmtEvent.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(dmtEvent);
 		assertTimeStamp(dmtEvent, timeStamp);
@@ -968,8 +949,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				EventConstants.BUNDLE_SYMBOLICNAME,
 				EventConstants.BUNDLE_VERSION, EventConstants.BUNDLE_SIGNER, //
 				EventConstants.TIMESTAMP, "key1" }, event.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_RENAMED,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_RENAMED);
 		ArrayAssert
 				.assertEquivalenceArrays(new String[] { "./A1/B1", "./A1/C1" },
 						(String[]) event
@@ -977,15 +957,16 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B2", "./A1/C2" }, (String[]) event
 						.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", event.getProperty("key1"));
+		assertThat(event.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(event);
 		assertTimeStamp(event, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostCopiedEventWithOptionalProperties() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -1001,7 +982,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"B1", "C1" }, new String[] { "B2", "C2" }, eventProps);
 
 		DmtEvent dmtEvent = listener.getDmtEvent(0);
-		assertEquals(DmtEvent.COPIED, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(DmtEvent.COPIED);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, dmtEvent.getNodes());
@@ -1020,15 +1001,14 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 						EventConstants.BUNDLE_SIGNER, //
 						EventConstants.TIMESTAMP, "key1" },
 						dmtEvent.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_COPIED,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_COPIED);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B2", "./A1/C2" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", dmtEvent.getProperty("key1"));
+		assertThat(dmtEvent.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(dmtEvent);
 		assertTimeStamp(dmtEvent, timeStamp);
@@ -1043,8 +1023,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				EventConstants.BUNDLE_SYMBOLICNAME,
 				EventConstants.BUNDLE_VERSION, EventConstants.BUNDLE_SIGNER, //
 				EventConstants.TIMESTAMP, "key1" }, event.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_COPIED,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_COPIED);
 		ArrayAssert
 				.assertEquivalenceArrays(new String[] { "./A1/B1", "./A1/C1" },
 						(String[]) event
@@ -1052,15 +1031,16 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B2", "./A1/C2" }, (String[]) event
 						.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", event.getProperty("key1"));
+		assertThat(event.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(event);
 		assertTimeStamp(event, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostEventWithNodesOverlappedProperties() throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
 		registerMountDataPlugin(pluginA1, "./A1");
@@ -1079,7 +1059,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"B1", "C1" }, eventProps);
 
 		DmtEvent dmtEvent = listener.getDmtEvent(0);
-		assertEquals(DmtEvent.ADDED, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(DmtEvent.ADDED);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, dmtEvent.getNodes());
@@ -1096,14 +1076,12 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 						EventConstants.BUNDLE_SIGNER, //
 						EventConstants.TIMESTAMP, "key1" },
 						dmtEvent.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_ADDED,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_ADDED);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
-		assertEquals(null,
-				dmtEvent.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", dmtEvent.getProperty("key1"));
+		assertThat(dmtEvent.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES)).isNull();
+		assertThat(dmtEvent.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(dmtEvent);
 		assertTimeStamp(dmtEvent, timeStamp);
@@ -1117,23 +1095,22 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				EventConstants.BUNDLE_SYMBOLICNAME,
 				EventConstants.BUNDLE_VERSION, EventConstants.BUNDLE_SIGNER, //
 				EventConstants.TIMESTAMP, "key1" }, event.getPropertyNames());
-		assertEquals(DmtConstants.EVENT_TOPIC_ADDED,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_ADDED);
 		ArrayAssert
 				.assertEquivalenceArrays(new String[] { "./A1/B1", "./A1/C1" },
 						(String[]) event
 								.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
-		assertEquals(null,
-				event.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", event.getProperty("key1"));
+		assertThat(event.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES)).isNull();
+		assertThat(event.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(event);
 		assertTimeStamp(event, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
+	@Test
 	public void testPostEventWithNodesNewNodesAndOverlappedProperties()
 			throws Exception {
 		TestDataMountPlugin pluginA1 = new TestDataMountPlugin();
@@ -1153,7 +1130,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				"B1", "C1" }, new String[] { "B2", "C2" }, eventProps);
 
 		DmtEvent dmtEvent = listener.getDmtEvent(0);
-		assertEquals(DmtEvent.RENAMED, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(DmtEvent.RENAMED);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, dmtEvent.getNodes());
@@ -1172,15 +1149,14 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 						EventConstants.TIMESTAMP, "key1" },
 						dmtEvent.getPropertyNames());
 
-		assertEquals(DmtConstants.EVENT_TOPIC_RENAMED,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_RENAMED);
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B1", "./A1/C1" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B2", "./A1/C2" }, (String[]) dmtEvent
 						.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", dmtEvent.getProperty("key1"));
+		assertThat(dmtEvent.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(dmtEvent);
 		assertTimeStamp(dmtEvent, timeStamp);
@@ -1196,8 +1172,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 				EventConstants.BUNDLE_VERSION, EventConstants.BUNDLE_SIGNER, //
 				EventConstants.TIMESTAMP, "key1" }, event.getPropertyNames());
 
-		assertEquals(DmtConstants.EVENT_TOPIC_RENAMED,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(DmtConstants.EVENT_TOPIC_RENAMED);
 		ArrayAssert
 				.assertEquivalenceArrays(new String[] { "./A1/B1", "./A1/C1" },
 						(String[]) event
@@ -1205,13 +1180,13 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(
 				new String[] { "./A1/B2", "./A1/C2" }, (String[]) event
 						.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
-		assertEquals("value1", event.getProperty("key1"));
+		assertThat(event.getProperty("key1")).isEqualTo("value1");
 
 		assertEventBundle(event);
 		assertTimeStamp(event, timeStamp);
 
-		assertEquals(1, listener.getEventListSize());
-		assertEquals(1, handler.getEventListSize());
+		assertThat(listener.getEventListSize()).isOne();
+		assertThat(handler.getEventListSize()).isOne();
 	}
 
 	private TestDmtEventListener addEventListener() {
@@ -1231,7 +1206,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 	}
 
 	private static void assertEvent(DmtEvent dmtEvent, int type, String[] nodes) {
-		assertEquals(type, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(type);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(nodes, dmtEvent.getNodes());
 		ArrayAssert.assertEquivalenceArrays(null, dmtEvent.getNewNodes());
@@ -1250,8 +1225,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(expectedPropertyNames,
 				dmtEvent.getPropertyNames());
 
-		assertEquals(topic,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(topic);
 		ArrayAssert.assertEquivalenceArrays(nodes, (String[]) dmtEvent
 				.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(null, (String[]) dmtEvent
@@ -1275,7 +1249,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(expectedPropertyNames,
 				dmtEvent.getPropertyNames());
 
-		assertEquals(type, dmtEvent.getType());
+		assertThat(dmtEvent.getType()).isEqualTo(type);
 		assertInternalEventSessionId(dmtEvent);
 		ArrayAssert.assertEquivalenceArrays(nodes, dmtEvent.getNodes());
 		ArrayAssert.assertEquivalenceArrays(newNodes, dmtEvent.getNewNodes());
@@ -1295,8 +1269,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(expectedPropertyNames,
 				dmtEvent.getPropertyNames());
 
-		assertEquals(topic,
-				(String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) dmtEvent.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(topic);
 		ArrayAssert.assertEquivalenceArrays(nodes, (String[]) dmtEvent
 				.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
 		ArrayAssert.assertEquivalenceArrays(newNodes, (String[]) dmtEvent
@@ -1308,22 +1281,19 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 
 	private static void assertEventBundle(DmtEvent dmtEvent) {
 		Bundle bundle = context.getBundle();
-		assertEquals(bundle, dmtEvent.getProperty(EventConstants.BUNDLE));
-		assertEquals(Long.valueOf(bundle.getBundleId()),
-				dmtEvent.getProperty(EventConstants.BUNDLE_ID));
-		assertEquals(bundle.getSymbolicName(),
-				dmtEvent.getProperty(EventConstants.BUNDLE_SYMBOLICNAME));
-		assertEquals(bundle.getVersion(),
-				dmtEvent.getProperty(EventConstants.BUNDLE_VERSION));
+		assertThat(dmtEvent.getProperty(EventConstants.BUNDLE)).isEqualTo(bundle);
+		assertThat(dmtEvent.getProperty(EventConstants.BUNDLE_ID)).isEqualTo(Long.valueOf(bundle.getBundleId()));
+		assertThat(dmtEvent.getProperty(EventConstants.BUNDLE_SYMBOLICNAME)).isEqualTo(bundle.getSymbolicName());
+		assertThat(dmtEvent.getProperty(EventConstants.BUNDLE_VERSION)).isEqualTo(bundle.getVersion());
 	}
 
 	private static void assertTimeStamp(DmtEvent dmtEvent, long eventTime) {
 		long timeStamp = ((Long) dmtEvent.getProperty(EventConstants.TIMESTAMP))
 				.longValue();
-		assertTrue(eventTime <= timeStamp);
+		assertThat(eventTime).isLessThanOrEqualTo(timeStamp);
 
 		long currentTime = System.currentTimeMillis();
-		assertTrue(timeStamp <= currentTime);
+		assertThat(timeStamp).isLessThanOrEqualTo(currentTime);
 	}
 
 	private static void assertEvent(Event event, String topic, String[] nodes,
@@ -1339,8 +1309,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(expectedPropertyNames,
 				event.getPropertyNames());
 
-		assertEquals(topic,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(topic);
 		ArrayAssert
 				.assertEquivalenceArrays(nodes, (String[]) event
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
@@ -1365,8 +1334,7 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 		ArrayAssert.assertEquivalenceArrays(expectedPropertyNames,
 				event.getPropertyNames());
 
-		assertEquals(topic,
-				(String) event.getProperty(EventConstants.EVENT_TOPIC));
+		assertThat((String) event.getProperty(EventConstants.EVENT_TOPIC)).isEqualTo(topic);
 		ArrayAssert
 				.assertEquivalenceArrays(nodes, (String[]) event
 						.getProperty(DmtConstants.EVENT_PROPERTY_NODES));
@@ -1379,22 +1347,19 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 
 	private static void assertEventBundle(Event event) {
 		Bundle bundle = context.getBundle();
-		assertEquals(bundle, event.getProperty(EventConstants.BUNDLE));
-		assertEquals(Long.valueOf(bundle.getBundleId()),
-				event.getProperty(EventConstants.BUNDLE_ID));
-		assertEquals(bundle.getSymbolicName(),
-				event.getProperty(EventConstants.BUNDLE_SYMBOLICNAME));
-		assertEquals(bundle.getVersion(),
-				event.getProperty(EventConstants.BUNDLE_VERSION));
+		assertThat(event.getProperty(EventConstants.BUNDLE)).isEqualTo(bundle);
+		assertThat(event.getProperty(EventConstants.BUNDLE_ID)).isEqualTo(Long.valueOf(bundle.getBundleId()));
+		assertThat(event.getProperty(EventConstants.BUNDLE_SYMBOLICNAME)).isEqualTo(bundle.getSymbolicName());
+		assertThat(event.getProperty(EventConstants.BUNDLE_VERSION)).isEqualTo(bundle.getVersion());
 	}
 
 	private static void assertTimeStamp(Event event, long eventTime) {
 		long timeStamp = ((Long) event.getProperty(EventConstants.TIMESTAMP))
 				.longValue();
-		assertTrue(eventTime <= timeStamp);
+		assertThat(eventTime).isLessThanOrEqualTo(timeStamp);
 
 		long currentTime = System.currentTimeMillis();
-		assertTrue(timeStamp <= currentTime);
+		assertThat(timeStamp).isLessThanOrEqualTo(currentTime);
 	}
 
 	private void postEvent(MountPoint mountPoint, String topic, String node,
@@ -1409,6 +1374,6 @@ public class InternalChangedEventTest extends DmtAdminTestCase {
 	}
 
 	private static void assertInternalEventSessionId(DmtEvent event) {
-		assertEquals(-1, event.getSessionId());
+		assertThat(event.getSessionId()).isEqualTo(-1);
 	}
 }

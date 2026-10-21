@@ -38,6 +38,12 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.dmt.DmtAdmin;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
@@ -64,9 +70,9 @@ import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.IsLeaf;
 import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.IsValidName;
 import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.IsValidValue;
 import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.IsZeroOccurrenceAllowed;
-import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.TestMetaNodeDataPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.MetaData.MetaData;
 import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.MetaData.TestPluginMetaDataActivator;
+import org.osgi.test.cases.dmt.tc3.tbc.MetaNode.TestMetaNodeDataPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Others.DmtSessionConstraints;
 import org.osgi.test.cases.dmt.tc3.tbc.Others.OpenSession;
 import org.osgi.test.cases.dmt.tc3.tbc.Others.UseCases;
@@ -76,9 +82,12 @@ import org.osgi.test.cases.dmt.tc3.tbc.Plugins.OverlappingDataPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.OverlappingExecPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.OverlappingSubtreeDataPluginActivator;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.ToBeOverlappedDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.common.annotation.InjectBundleContext;
 
-public class DmtTestControl extends DefaultTestBundleControl {
+public class DmtTestControl {
+
+	@InjectBundleContext
+	BundleContext		context;
 
 	private static boolean									inited;
 
@@ -112,7 +121,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 
 	private static ConfigPluginActivator					configPluginActivator;
 
-	@Override
+	@BeforeEach
 	public void setUp() {
 		if (!inited) {
 			inited = true;
@@ -122,7 +131,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 								DmtAdmin.class.getName()));
 			}
 			catch (NullPointerException e) {
-				log("There is no DmtAdmin service in the service registry, tests will not be executed correctly");
+				System.out.println("There is no DmtAdmin service in the service registry, tests will not be executed correctly");
 			}
 
 			registerTestPlugins();
@@ -185,7 +194,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 
 		}
 		catch (Exception e) {
-			log("#TestControl: Fail to register a TestPlugin");
+			System.out.println("#TestControl: Fail to register a TestPlugin");
 		}
 	}
 
@@ -196,194 +205,236 @@ public class DmtTestControl extends DefaultTestBundleControl {
 //	}
 
 	// DataPlugin methods
+	@Test
 	public void testDataPluginClose() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.Close(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetChildNodeNames() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetChildNodeNames(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetMetaNode() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetMetaNode(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetNodeSize() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetNodeSize(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetNodeTimestamp() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetNodeTimestamp(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetNodeTitle() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetNodeTitle(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetNodeType() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetNodeType(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetNodeValue() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetNodeValue(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginGetNodeVersion() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.GetNodeVersion(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginIsNodeUri() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.IsNodeUri(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginIsLeafNode() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.IsLeafNode(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginNodeChanged() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.NodeChanged(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginCommit() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.Commit(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginCopy() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.Copy(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginCreateInteriorNode() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.CreateInteriorNode(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginCreateLeafNode() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.CreateLeafNode(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginDeleteNode() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.DeleteNode(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginRenameNode() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.RenameNode(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginRollback() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.Rollback(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginSetNodeTitle() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.SetNodeTitle(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginSetNodeType() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.SetNodeType(
 				this).run();
 	}
 
+	@Test
 	public void testDataPluginSetNodeValue() {
 		new org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession.SetNodeValue(
 				this).run();
 	}
 
 	// ExecPlugin Method
+	@Test
 	public void testExecPluginExecute() {
 		new org.osgi.test.cases.dmt.tc3.tbc.ExecPlugin.Execute(this).run();
 	}
 
 	// DmtMetaNode
+	@Test
 	public void testDmtMetaNodeConstants() {
 		new DmtMetaNodeConstants(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeCan() {
 		new Can(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetDefault() {
 		new GetDefault(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetDescription() {
 		new GetDescription(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetFormat() {
 		new GetFormat(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetMax() {
 		new GetMax(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetMaxOccurrence() {
 		new GetMaxOccurrence(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetMimeTypes() {
 		new GetMimeTypes(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetMin() {
 		new GetMin(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeisValidName() {
 		new IsValidName(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeisValidValue() {
 		new IsValidValue(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetValidValues() {
 		new GetValidValues(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetValidNames() {
 		new GetValidNames(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeIsLeaf() {
 		new IsLeaf(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetScope() {
 		new GetScope(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeIsZeroOccurrenceAllowed() {
 		new IsZeroOccurrenceAllowed(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetExtensionProperty() {
 		new GetExtensionProperty(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetExtensionPropertyKeys() {
 		new GetExtensionPropertyKeys(this).run();
 	}
 
+	@Test
 	public void testDmtMetaNodeGetRawFormatNames() {
 		new GetRawFormatNames(this).run();
 	}
@@ -401,28 +452,51 @@ public class DmtTestControl extends DefaultTestBundleControl {
 //	}
 
 	// Use cases test cases
+	@Test
 	public void testUseCases() {
 		new UseCases(this).run();
 	}
 
 	// Meta data test cases
+	@Test
 	public void testMetaData() {
 		new MetaData(this).run();
 	}
 
+	@Test
 	public void testDmtSessionConstraints() {
 		new DmtSessionConstraints(this).run();
 	}
 
+	@Test
 	public void testOpenSession() {
 		new OpenSession(this).run();
+	}
+
+	/**
+	 * The real BundleContext of the test bundle, as getContext() of
+	 * DefaultTestBundleControl: the plugins are registered once for all tests
+	 * and UseCases stops and starts one of them again, so nothing may go with
+	 * the end of a test as with the osgi-test context.
+	 */
+	public BundleContext getContext() {
+		return context.getBundle().getBundleContext();
+	}
+
+	/**
+	 * From DefaultTestBundleControl, unchanged.
+	 */
+	public static void failException(String message,
+			Class< ? > expectedExceptionClass) {
+		fail(message + " expected:[" + expectedExceptionClass.getName()
+				+ "] and got nothing");
 	}
 
 	/**
 	 * @return Returns the factory.
 	 */
 	public DmtAdmin getDmtAdmin() {
-		assertNotNull(dmtAdmin);
+		assertThat(dmtAdmin).isNotNull();
 		return dmtAdmin;
 	}
 
@@ -441,7 +515,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 						session.deleteNode(nodeUri[i]);
 					}
 					catch (Throwable e) {
-						log("#Exception at cleanUp: " + e.getClass().getName()
+						System.out.println("#Exception at cleanUp: " + e.getClass().getName()
 								+ " [Message: " + e.getMessage() + "]");
 					}
 				}
@@ -467,7 +541,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 					session.close();
 				}
 				catch (DmtException e) {
-					log("#Exception closing the session: "
+					System.out.println("#Exception closing the session: "
 							+ e.getClass().getName() + ". Message: ["
 							+ e.getMessage() + "]");
 				}
@@ -504,7 +578,7 @@ public class DmtTestControl extends DefaultTestBundleControl {
 			session.setNodeAcl(nodeUri, null);
 		}
 		catch (Exception e) {
-			log("#Exception cleaning the acl from " + nodeUri + " : "
+			System.out.println("#Exception cleaning the acl from " + nodeUri + " : "
 					+ e.getClass().getName() + "Message: [" + e.getMessage()
 					+ "]");
 		}

@@ -17,10 +17,15 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.DmtAdmin;
 import org.osgi.service.dmt.DmtConstants;
@@ -33,27 +38,22 @@ import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.GenericDataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.Node;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
-import org.osgi.test.support.sleep.Sleep;
 
-public class TestBug1732_MountPluginEventing extends
-		DefaultTestBundleControl {
+public class TestBug1732_MountPluginEventing extends DmtTestSupport {
 
 	DmtAdmin dmtAdmin;
 	DmtSession session;
 	ServiceRegistration< ? >	pluginRegistration;
 
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 		System.out.println("setting up");
 		dmtAdmin = getService(DmtAdmin.class);
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println("tearing down");
 		if (session != null && session.getState() == DmtSession.STATE_OPEN)
 			session.close();
@@ -63,22 +63,27 @@ public class TestBug1732_MountPluginEventing extends
 		ungetAllServices();
 	}
 
+	@Test
 	public void testAddedEvent() throws Exception {
 		checkPostEvent(DmtConstants.EVENT_TOPIC_ADDED, false);
 	}
 
+	@Test
 	public void testDeletedEvent() throws Exception {
 		checkPostEvent(DmtConstants.EVENT_TOPIC_DELETED, false);
 	}
 
+	@Test
 	public void testReplacedEvent() throws Exception {
 		checkPostEvent(DmtConstants.EVENT_TOPIC_REPLACED, false);
 	}
 
+	@Test
 	public void testCopiedEvent() throws Exception {
 		checkPostEvent(DmtConstants.EVENT_TOPIC_COPIED, true);
 	}
 
+	@Test
 	public void testRenamedEvent() throws Exception {
 		checkPostEvent(DmtConstants.EVENT_TOPIC_RENAMED, true);
 	}
@@ -104,7 +109,7 @@ public class TestBug1732_MountPluginEventing extends
 
 		registerService(EventHandler.class.getName(), plugin, props);
 
-		assertNull(plugin.lastReceivedEvent);
+		assertThat(plugin.lastReceivedEvent).isNull();
 
 		MountPoint mountPoint = plugin.lastAddedMountPoints.get(0);
 		Dictionary<String,Object> additionalProperties = new Hashtable<>();
@@ -121,30 +126,30 @@ public class TestBug1732_MountPluginEventing extends
 		else
 			mountPoint.postEvent(topic, nodes, additionalProperties );
 
-		Sleep.sleep(200);
+		Thread.sleep(200);
 
 		Event event = plugin.lastReceivedEvent;
 		System.out.println("############# plugin: " + plugin);
-		assertNotNull(event);
-		assertEquals(topic, event.getTopic() );
+		assertThat(event).isNotNull();
+		assertThat(event.getTopic()).isEqualTo(topic);
 
 		// check that given props are there (if they have non-conflicting names)
-		assertEquals( "testValue1", event.getProperty("testKey1"));
-		assertEquals( "testValue2", event.getProperty("testKey2"));
+		assertThat(event.getProperty("testKey1")).isEqualTo("testValue1");
+		assertThat(event.getProperty("testKey2")).isEqualTo("testValue2");
 
 		// check that protected properties where not overwritten
 		String[] eventNodes = (String[]) event.getProperty(DmtConstants.EVENT_PROPERTY_NODES);
-		assertEquals(Arrays.asList(new String[] {"./A/X", "./A/Y"}), Arrays.asList( eventNodes ));
+		assertThat(Arrays.asList( eventNodes )).isEqualTo(Arrays.asList(new String[] {"./A/X", "./A/Y"}));
 
 		if ( withNewNodes ) {
 			String[] eventNewNodes = (String[]) event.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES);
-			assertEquals(Arrays.asList(new String[] {"./A/X1", "./A/Y1"}), Arrays.asList( eventNewNodes ));
+			assertThat(Arrays.asList( eventNewNodes )).isEqualTo(Arrays.asList(new String[] {"./A/X1", "./A/Y1"}));
 		}
 		else
-			assertNull(event.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES));
+			assertThat(event.getProperty(DmtConstants.EVENT_PROPERTY_NEW_NODES)).isNull();
 
 		// sessionID must be -1 for internal events
-		assertEquals("the session.id property must be -1 for internal events", Integer.valueOf(-1), event.getProperty(DmtConstants.EVENT_PROPERTY_SESSION_ID));
+		assertThat(event.getProperty(DmtConstants.EVENT_PROPERTY_SESSION_ID)).as("the session.id property must be -1 for internal events").isEqualTo(Integer.valueOf(-1));
 	}
 
 
@@ -162,7 +167,7 @@ public class TestBug1732_MountPluginEventing extends
 
 		props.put(DataPlugin.DATA_ROOT_URIS, dataRootURIs);
 
-		pluginRegistration = getContext().registerService(new String[] {DataPlugin.class.getName(), MountPlugin.class.getName() }, mountingPlugin, props);
+		pluginRegistration = context.registerService(new String[] {DataPlugin.class.getName(), MountPlugin.class.getName() }, mountingPlugin, props);
 		return mountingPlugin;
 	}
 }

@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
@@ -40,11 +42,9 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -85,17 +85,15 @@ public class GetNodeTimestamp implements TestInterface {
 	private void testGetNodeTimestamp001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeTimestamp001");
+			System.out.println("#testGetNodeTimestamp001");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
 			session.getNodeTimestamp(TestExecPluginActivator.INEXISTENT_NODE);
 
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException's code is NODE_NOT_FOUND",
-					DmtException.NODE_NOT_FOUND, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException's code is NODE_NOT_FOUND").isEqualTo(DmtException.NODE_NOT_FOUND);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -112,7 +110,7 @@ public class GetNodeTimestamp implements TestInterface {
 	private void testGetNodeTimestamp002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeTimestamp002");
+			System.out.println("#testGetNodeTimestamp002");
 
             tbc.openSessionAndSetNodeAcl(TestExecPluginActivator.INTERIOR_NODE, DmtConstants.PRINCIPAL, Acl.GET );
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
@@ -121,7 +119,7 @@ public class GetNodeTimestamp implements TestInterface {
 
 			session.getNodeTimestamp(TestExecPluginActivator.INTERIOR_NODE);
 
-			DefaultTestBundleControl.pass("getNodeTimestamp correctly executed");
+			System.out.println("getNodeTimestamp correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -140,7 +138,7 @@ public class GetNodeTimestamp implements TestInterface {
 	private void testGetNodeTimestamp003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeTimestamp003");
+			System.out.println("#testGetNodeTimestamp003");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
@@ -150,7 +148,7 @@ public class GetNodeTimestamp implements TestInterface {
 			
 			session.getNodeTimestamp(TestExecPluginActivator.INTERIOR_NODE);
 			
-			DefaultTestBundleControl.pass("getNodeTimestamp correctly executed");
+			System.out.println("getNodeTimestamp correctly executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 			
@@ -169,14 +167,14 @@ public class GetNodeTimestamp implements TestInterface {
 	private void testGetNodeTimestamp004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeTimestamp004");
+			System.out.println("#testGetNodeTimestamp004");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.getNodeTimestamp(TestExecPluginActivator.INTERIOR_NODE_NAME);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with getNodeTimestamp.");
+			System.out.println("A relative URI can be used with getNodeTimestamp.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -193,14 +191,14 @@ public class GetNodeTimestamp implements TestInterface {
 	private void testGetNodeTimestamp005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetNodeTimestamp005");
+			System.out.println("#testGetNodeTimestamp005");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.INTERIOR_NODE, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.getNodeTimestamp("");
 
-			DefaultTestBundleControl.pass("Asserts that an empty string as relative URI means the root " +
+			System.out.println("Asserts that an empty string as relative URI means the root " +
 				"URI the session was opened with");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -217,17 +215,15 @@ public class GetNodeTimestamp implements TestInterface {
     private void testGetNodeTimestampFeatureNotSupported001() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testGetNodeTimestampFeatureNotSupported001");
+            System.out.println("#testGetNodeTimestampFeatureNotSupported001");
 
             session = tbc.getDmtAdmin().getSession(".",
                     DmtSession.LOCK_TYPE_SHARED);
             session.getNodeTimestamp(TestExecPluginActivator.INTERIOR_NODE);
 
-            DefaultTestBundleControl.failException("", DmtException.class);
+            DmtTestControl.failException("", DmtException.class);
         } catch (DmtException e) {
-            TestCase.assertEquals(
-                    "Asserting that DmtException's code is FEATURE_NOT_SUPPORTED",
-                    DmtException.FEATURE_NOT_SUPPORTED, e.getCode());
+            assertThat(e.getCode()).as("Asserting that DmtException's code is FEATURE_NOT_SUPPORTED").isEqualTo(DmtException.FEATURE_NOT_SUPPORTED);
         } catch (Exception e) {
         	tbc.failExpectedOtherException(DmtException.class, e);
         } finally {

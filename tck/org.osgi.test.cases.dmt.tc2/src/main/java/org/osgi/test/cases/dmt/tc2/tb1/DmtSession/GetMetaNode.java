@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
@@ -40,13 +42,11 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestMetaNode;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.NonAtomic.TestNonAtomicPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -84,14 +84,13 @@ public class GetMetaNode implements TestInterface {
 	private void testGetMetaNode001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode001");
+			System.out.println("#testGetMetaNode001");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
 
 			MetaNode metaNode = session.getMetaNode(TestExecPluginActivator.INTERIOR_NODE);
-			TestCase.assertTrue("Asserts that the metanode was correctly returned.",
-					metaNode instanceof TestMetaNode);
+			assertThat(metaNode instanceof TestMetaNode).as("Asserts that the metanode was correctly returned.").isTrue();
 			
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -108,7 +107,7 @@ public class GetMetaNode implements TestInterface {
 	private void testGetMetaNode002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode002");
+			System.out.println("#testGetMetaNode002");
 
             tbc.openSessionAndSetNodeAcl(TestExecPluginActivator.INTERIOR_NODE, DmtConstants.PRINCIPAL, Acl.GET );
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
@@ -117,7 +116,7 @@ public class GetMetaNode implements TestInterface {
 
 			session.getMetaNode(TestExecPluginActivator.INTERIOR_NODE);
 
-			DefaultTestBundleControl.pass("getMetaNode was successfully executed");
+			System.out.println("getMetaNode was successfully executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -135,7 +134,7 @@ public class GetMetaNode implements TestInterface {
 	private void testGetMetaNode003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode003");
+			System.out.println("#testGetMetaNode003");
 
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_LOG,
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
@@ -145,7 +144,7 @@ public class GetMetaNode implements TestInterface {
 
 			session.getMetaNode(DmtConstants.OSGi_LOG);
 
-			DefaultTestBundleControl.pass("getMetaNode was successfully executed");
+			System.out.println("getMetaNode was successfully executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -163,14 +162,14 @@ public class GetMetaNode implements TestInterface {
 	private void testGetMetaNode004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode004");
+			System.out.println("#testGetMetaNode004");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.getMetaNode(TestExecPluginActivator.INTERIOR_NODE_NAME);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with getMetaNode.");
+			System.out.println("A relative URI can be used with getMetaNode.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -186,12 +185,12 @@ public class GetMetaNode implements TestInterface {
 	private void testGetMetaNode005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode005");
+			System.out.println("#testGetMetaNode005");
             
             session = tbc.getDmtAdmin().getSession(TestNonAtomicPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
-            TestCase.assertNull("Asserts that DmtSession.getMetaNode returns null if there is no meta data " +
-                    "available for the given node",session.getMetaNode(TestNonAtomicPluginActivator.INTERIOR_NODE));
+            assertThat(session.getMetaNode(TestNonAtomicPluginActivator.INTERIOR_NODE)).as("Asserts that DmtSession.getMetaNode returns null if there is no meta data " +
+                    "available for the given node").isNull();
             
         } catch (Exception e) {
         	tbc.failUnexpectedException(e);
@@ -208,11 +207,11 @@ public class GetMetaNode implements TestInterface {
 	private void testGetMetaNode006() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode006");
+			System.out.println("#testGetMetaNode006");
             
             session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
-            TestCase.assertNotNull("Asserts that a node does not have to exist for having meta-data associated with it",session.getMetaNode(TestExecPluginActivator.INEXISTENT_LEAF_NODE));
+            assertThat(session.getMetaNode(TestExecPluginActivator.INEXISTENT_LEAF_NODE)).as("Asserts that a node does not have to exist for having meta-data associated with it").isNotNull();
             
         } catch (Exception e) {
         	tbc.failUnexpectedException(e);
@@ -231,14 +230,14 @@ public class GetMetaNode implements TestInterface {
 	private void testGetMetaNode007() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetMetaNode007");
+			System.out.println("#testGetMetaNode007");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.INTERIOR_NODE, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.getMetaNode("");
 
-			DefaultTestBundleControl.pass("Asserts that an empty string as relative URI means the root " +
+			System.out.println("Asserts that an empty string as relative URI means the root " +
 					"URI the session was opened with");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);

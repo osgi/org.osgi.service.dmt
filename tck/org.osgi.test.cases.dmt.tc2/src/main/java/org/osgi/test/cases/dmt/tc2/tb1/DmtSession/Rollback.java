@@ -32,16 +32,15 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtIllegalStateException;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
-
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -77,12 +76,12 @@ public class Rollback implements TestInterface {
 	private void testRollback001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testRollback001");
+			System.out.println("#testRollback001");
 			session = tbc.getDmtAdmin().getSession(".", DmtSession.LOCK_TYPE_EXCLUSIVE);
 			session.rollback();
-			DefaultTestBundleControl.failException("#",DmtIllegalStateException.class);
+			DmtTestControl.failException("#",DmtIllegalStateException.class);
 		} catch (DmtIllegalStateException e) {
-			DefaultTestBundleControl.pass("DmtIllegalStateException correctly thrown");
+			System.out.println("DmtIllegalStateException correctly thrown");
 		} catch (Exception e) {
             tbc.failExpectedOtherException(DmtIllegalStateException.class, e);
 		} finally {
@@ -100,12 +99,12 @@ public class Rollback implements TestInterface {
 	private void testRollback002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testRollback002");
+			System.out.println("#testRollback002");
 			session = tbc.getDmtAdmin().getSession(".", DmtSession.LOCK_TYPE_SHARED);
 			session.rollback();
-			DefaultTestBundleControl.failException("#",DmtIllegalStateException.class);
+			DmtTestControl.failException("#",DmtIllegalStateException.class);
 		} catch (DmtIllegalStateException e) {
-			DefaultTestBundleControl.pass("DmtIllegalStateException correctly thrown");
+			System.out.println("DmtIllegalStateException correctly thrown");
 		} catch (Exception e) {
             tbc.failExpectedOtherException(DmtIllegalStateException.class, e);
 		} finally {
@@ -122,10 +121,10 @@ public class Rollback implements TestInterface {
     private void testRollback003() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testRollback003");
+            System.out.println("#testRollback003");
             session = tbc.getDmtAdmin().getSession(".",DmtSession.LOCK_TYPE_ATOMIC);
             session.rollback();
-            TestCase.assertEquals("Asserting that after a rollback(), the session is not closed.", session.getState(), DmtSession.STATE_OPEN);
+            assertThat(DmtSession.STATE_OPEN).as("Asserting that after a rollback(), the session is not closed.").isEqualTo(session.getState());
         } catch (Exception e) {
         	tbc.failUnexpectedException(e);
         } finally {

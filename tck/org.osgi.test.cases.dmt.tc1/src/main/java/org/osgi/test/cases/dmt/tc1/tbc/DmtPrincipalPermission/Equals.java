@@ -28,8 +28,10 @@
  */
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPrincipalPermission;
 
-import org.osgi.service.dmt.security.DmtPrincipalPermission;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -43,16 +45,15 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * DmtPrincipalPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals001() {
 		try {
-			log("#testEquals001");
+			System.out.println("#testEquals001");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission("*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission("*");
 
-			assertTrue(
-					"Assert if two DmtPrincipalPermission instances are equal",
-					d1.equals(d2));
+			assertThat(d1.equals(d2)).as("Assert if two DmtPrincipalPermission instances are equal").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -65,16 +66,15 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * DmtPrincipalPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals002() {
 		try {
-			log("#testEquals002");
+			System.out.println("#testEquals002");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission("*","*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission("*","*");
 
-			assertTrue(
-					"Assert if two DmtPrincipalPermission instances are equal",
-					d1.equals(d2));
+			assertThat(d1.equals(d2)).as("Assert if two DmtPrincipalPermission instances are equal").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -86,16 +86,15 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * DmtPrincipalPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals003() {
 		try {
-			log("#testEquals003");
+			System.out.println("#testEquals003");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission(DmtConstants.PRINCIPAL);
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission("*");
 
-			assertTrue(
-					"Assert if two DmtPrincipalPermission instances are not equal",
-					!d1.equals(d2));
+			assertThat(!d1.equals(d2)).as("Assert if two DmtPrincipalPermission instances are not equal").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -108,16 +107,15 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * DmtPrincipalPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals004() {
 		try {
-			log("#testEquals004");
+			System.out.println("#testEquals004");
 
 			DmtPrincipalPermission d1 = new DmtPrincipalPermission(DmtConstants.PRINCIPAL,"*");
 			DmtPrincipalPermission d2 = new DmtPrincipalPermission("*","*");
 
-			assertTrue(
-					"Assert if two DmtPrincipalPermission instances are not equal",
-					!d1.equals(d2));
+			assertThat(!d1.equals(d2)).as("Assert if two DmtPrincipalPermission instances are not equal").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -129,16 +127,15 @@ public class Equals extends DmtTestControl {
      * 
      * DmtPrincipalPermission.equals(Object)
      */
+    @Test
     public void testEquals005() {
         try {
-            log("#testEquals005");
+            System.out.println("#testEquals005");
 
             DmtPrincipalPermission d1 = new DmtPrincipalPermission(DmtConstants.PRINCIPAL,"*");
             DmtPrincipalPermission d2 = new DmtPrincipalPermission(DmtConstants.PRINCIPAL);
 
-            assertTrue(
-					"Assert if two DmtPrincipalPermission instances are equal using different constructors",
-					d1.equals(d2));
+            assertThat(d1.equals(d2)).as("Assert if two DmtPrincipalPermission instances are equal using different constructors").isTrue();
 
         } catch (Exception e) {
             failUnexpectedException(e);

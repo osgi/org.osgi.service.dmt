@@ -17,33 +17,34 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.osgi.service.dmt.DmtAdmin;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.spi.DataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.GenericDataPlugin;
 import org.osgi.test.cases.dmt.tc4.rfc141.plugins.Node;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-public abstract class ScaffoldNodeHelper extends DefaultTestBundleControl{
+public abstract class ScaffoldNodeHelper extends DmtTestSupport {
 
 	DmtAdmin dmtAdmin;
 	DmtSession session;
 	GenericDataPlugin dataPlugin;
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 		System.out.println("setting up");
 		dmtAdmin = getService(DmtAdmin.class);
 	}
 
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println( "tearing down");
 		if ( session != null && session.getState() == DmtSession.STATE_OPEN )
 			session.close();
@@ -69,11 +70,11 @@ public abstract class ScaffoldNodeHelper extends DefaultTestBundleControl{
 	}
 	
 	void assertStringArrayEquals( String[] expected, String[] actual ) throws Exception {
-		assertNotNull(expected);
-		assertNotNull(actual);
-		assertEquals(expected.length, actual.length );
+		assertThat(expected).isNotNull();
+		assertThat(actual).isNotNull();
+		assertThat(actual.length).isEqualTo(expected.length);
 		for (int i = 0; i < actual.length; i++) {
-			assertEquals(expected[i], actual[i]);
+			assertThat(actual[i]).isEqualTo(expected[i]);
 		}
 	}
 

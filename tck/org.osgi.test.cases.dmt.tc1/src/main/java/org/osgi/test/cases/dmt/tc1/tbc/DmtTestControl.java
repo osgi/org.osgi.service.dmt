@@ -40,9 +40,34 @@
  */
 
 package org.osgi.test.cases.dmt.tc1.tbc;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-public abstract class DmtTestControl extends DefaultTestBundleControl {
+import static org.assertj.core.api.Assertions.fail;
+
+public abstract class DmtTestControl {
+
+	/**
+	 * From DefaultTestBundleControl, unchanged.
+	 */
+	public static void failException(String message,
+			Class< ? > expectedExceptionClass) {
+		fail(message + " expected:[" + expectedExceptionClass.getName()
+				+ "] and got nothing");
+	}
+
+	/**
+	 * From DefaultTestBundleControl, unchanged.
+	 */
+	public static void assertException(String message,
+			Class< ? extends Throwable> want, Throwable got) {
+		String formatted = "";
+		if (message != null) {
+			formatted = message + " ";
+		}
+		if (!want.isInstance(got)) {
+			fail(formatted + "expected:[" + want.getName() + "] but was:["
+					+ got.getClass().getName() + "]", got);
+		}
+	}
 
 	public static void failUnexpectedException(Exception exception) {
 		fail("Unexpected Exception: " + exception.getClass().getName() + " [Message: " + exception.getMessage() +"]");

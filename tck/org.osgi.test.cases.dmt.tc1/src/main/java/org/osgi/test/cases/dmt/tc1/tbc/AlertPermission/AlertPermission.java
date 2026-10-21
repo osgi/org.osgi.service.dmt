@@ -28,6 +28,9 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.AlertPermission;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -43,13 +46,14 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String)
 	 */
+	@Test
 	public void testAlertPermission001() {
 		try {		
-			log("#testAlertPermission001");
+			System.out.println("#testAlertPermission001");
 			new org.osgi.service.dmt.security.AlertPermission(null);
             failException("", NullPointerException.class);
 		} catch(NullPointerException e) {
-			pass(e.getClass().getName() + " correctly thrown");
+			System.out.println(e.getClass().getName() + " correctly thrown");
 		} catch(Exception e) {
 			failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -60,13 +64,14 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String)
 	 */
+	@Test
 	public void testAlertPermission002() {
 		try {		
-			log("#testAlertPermission002");
+			System.out.println("#testAlertPermission002");
 			new org.osgi.service.dmt.security.AlertPermission("");
             failException("", IllegalArgumentException.class);
 		} catch(IllegalArgumentException e) {
-			pass(e.getClass().getName() + " correctly thrown");
+			System.out.println(e.getClass().getName() + " correctly thrown");
 		} catch(Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -79,13 +84,14 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String,String)
 	 */
+	@Test
 	public void testAlertPermission003() {
 		try {		
-			log("#testAlertPermission003");
+			System.out.println("#testAlertPermission003");
 			new org.osgi.service.dmt.security.AlertPermission(null,"*");
             failException("", NullPointerException.class);
 		} catch(NullPointerException e) {
-			pass(e.getClass().getName() + " correctly thrown");
+			System.out.println(e.getClass().getName() + " correctly thrown");
 		} catch(Exception e) {
 			failExpectedOtherException(NullPointerException.class, e);
 		}
@@ -96,13 +102,14 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String,String)
 	 */
+	@Test
 	public void testAlertPermission004() {
 		try {		
-			log("#testAlertPermission004");
+			System.out.println("#testAlertPermission004");
 			new org.osgi.service.dmt.security.AlertPermission("","*");
             failException("", IllegalArgumentException.class);
 		} catch(IllegalArgumentException e) {
-			pass(e.getClass().getName() + " correctly thrown");
+			System.out.println(e.getClass().getName() + " correctly thrown");
 		} catch(Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -113,13 +120,14 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String,String)
 	 */
+	@Test
 	public void testAlertPermission005() {
 		try {		
-			log("#testAlertPermission005");
+			System.out.println("#testAlertPermission005");
 			new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER,"");
             failException("", IllegalArgumentException.class);
 		} catch(IllegalArgumentException e) {
-			pass(e.getClass().getName() + " correctly thrown");
+			System.out.println(e.getClass().getName() + " correctly thrown");
 		} catch(Exception e) {
 			failExpectedOtherException(IllegalArgumentException.class, e);
 		}
@@ -130,12 +138,13 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String)
 	 */
+	@Test
 	public void testAlertPermission006() {
 		try {		
-			log("#testAlertPermission006");
+			System.out.println("#testAlertPermission006");
 			org.osgi.service.dmt.security.AlertPermission permission = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER);
-			assertEquals("Asserts that getActions returns '*'", "*", permission
-					.getActions());
+			assertThat(permission
+					.getActions()).as("Asserts that getActions returns '*'").isEqualTo("*");
 		} catch (Exception e) {
 			failUnexpectedException(e);	
 		}
@@ -146,12 +155,13 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String,String)
 	 */
+	@Test
 	public void testAlertPermission007() {
 		try {		
-			log("#testAlertPermission007");
+			System.out.println("#testAlertPermission007");
 			org.osgi.service.dmt.security.AlertPermission permission = new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER,"*");
-			assertEquals("Asserts that getActions returns '*'", "*", permission
-					.getActions());
+			assertThat(permission
+					.getActions()).as("Asserts that getActions returns '*'").isEqualTo("*");
 		} catch (Exception e) {
 			failUnexpectedException(e);	
 		}
@@ -162,11 +172,12 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String)
 	 */
+	@Test
 	public void testAlertPermission008() {
 		try {		
-			log("#testAlertPermission008");
+			System.out.println("#testAlertPermission008");
 			new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER + "*");
-			pass("The target can end with '*'");
+			System.out.println("The target can end with '*'");
 		} catch (Exception e) {
 			failUnexpectedException(e);	
 		}
@@ -177,11 +188,12 @@ public class AlertPermission extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.AlertPermission(String,String)
 	 */
+	@Test
 	public void testAlertPermission009() {
 		try {		
-			log("#testAlertPermission009");
+			System.out.println("#testAlertPermission009");
 			new org.osgi.service.dmt.security.AlertPermission(DmtConstants.REMOTE_SERVER + "*","*");
-			pass("The target can end with '*'");
+			System.out.println("The target can end with '*'");
 		} catch (Exception e) {
 			failUnexpectedException(e);	
 		}

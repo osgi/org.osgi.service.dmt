@@ -28,8 +28,10 @@
  */
 package org.osgi.test.cases.dmt.tc1.tbc.AlertPermission;
 
-import org.osgi.service.dmt.security.AlertPermission;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.security.AlertPermission;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -44,16 +46,15 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies001() {
 		try {
-			log("#testImplies001");
+			System.out.println("#testImplies001");
 
 			AlertPermission d1 = new AlertPermission(DmtConstants.REMOTE_SERVER);
 			AlertPermission d2 = new AlertPermission(DmtConstants.REMOTE_SERVER);
 
-			assertTrue(
-							"Asserts that an object implies other object using the same target",
-							d1.implies(d2));
+			assertThat(d1.implies(d2)).as("Asserts that an object implies other object using the same target").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -65,18 +66,17 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies002() {
 		try {
-			log("#testImplies002");
+			System.out.println("#testImplies002");
 
 			AlertPermission d1 = new AlertPermission(
 					DmtConstants.REMOTE_SERVER, "*");
 			AlertPermission d2 = new AlertPermission(
 					DmtConstants.REMOTE_SERVER, "*");
 
-			assertTrue(
-							"Asserts that an object implies other object using the same target and actions",
-							d1.implies(d2));
+			assertThat(d1.implies(d2)).as("Asserts that an object implies other object using the same target and actions").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -88,17 +88,16 @@ public class Implies extends DmtTestControl {
 	 * 
 	 * @spec AlertPermission.implies(Permission)
 	 */
+	@Test
 	public void testImplies003() {
 		try {
-			log("#testImplies003");
+			System.out.println("#testImplies003");
 
 			AlertPermission d1 = new AlertPermission(
 					DmtConstants.REMOTE_SERVER, "*");
 			AlertPermission d2 = new AlertPermission(DmtConstants.REMOTE_SERVER + "a", "*");
 
-			assertTrue(
-							"Asserts that an object does not imply other object using the different target and actions",
-							!d1.implies(d2));
+			assertThat(!d1.implies(d2)).as("Asserts that an object does not imply other object using the different target and actions").isTrue();
 
 		} catch (Exception e) {
 			failUnexpectedException(e);
@@ -110,17 +109,16 @@ public class Implies extends DmtTestControl {
      * 
      * @spec AlertPermission.implies(Permission)
      */
+    @Test
     public void testImplies004() {
         try {
-            log("#testImplies004");
+            System.out.println("#testImplies004");
 
             AlertPermission d1 = new AlertPermission(
                     DmtConstants.REMOTE_SERVER+"*", "*");
             AlertPermission d2 = new AlertPermission(DmtConstants.REMOTE_SERVER + "a", "*");
 
-            assertTrue(
-                            "Asserts that an object implies other object using the '*' wildcard",
-                            d1.implies(d2));
+            assertThat(d1.implies(d2)).as("Asserts that an object implies other object using the '*' wildcard").isTrue();
 
         } catch (Exception e) {
             failUnexpectedException(e);

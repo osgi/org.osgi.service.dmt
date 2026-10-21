@@ -32,8 +32,11 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Vector;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtIllegalStateException;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
@@ -53,25 +56,25 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String,int,String)
 	 * 
 	 */
+	@Test
 	public void testDmtException001() {
-		log("#testDmtException001");
+		System.out.println("#testDmtException001");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException(
 				DmtConstants.OSGi_LOG,
 				org.osgi.service.dmt.DmtException.INVALID_URI,
 				DmtConstants.MESSAGE);
 
-		assertEquals("Asserts getURI() method", DmtConstants.OSGi_LOG, de
-				.getURI());
-		assertEquals("Asserts getMessage() method", "INVALID_URI: '"
-				+ DmtConstants.OSGi_LOG + "': " + DmtConstants.MESSAGE, de
-				.getMessage());
+		assertThat(de
+				.getURI()).as("Asserts getURI() method").isEqualTo(DmtConstants.OSGi_LOG);
+		assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("INVALID_URI: '"
+				+ DmtConstants.OSGi_LOG + "': " + DmtConstants.MESSAGE);
 		
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.INVALID_URI, de.getCode());
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.INVALID_URI);
 		
-		assertEquals("Asserts getCauses() method", 0, de.getCauses().length);
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(de.getCauses().length).as("Asserts getCauses() method").isZero();
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 	}
 	
 	
@@ -83,20 +86,18 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String,int,String)
 	 * 
 	 */
+	@Test
 	public void testDmtException002() {
-		log("#testDmtException002");
+		System.out.println("#testDmtException002");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException((String)null, org.osgi.service.dmt.DmtException.CONCURRENT_ACCESS, null);
-		assertNull("Asserts getURI() method", de.getURI());
+		assertThat(de.getURI()).as("Asserts getURI() method").isNull();
         
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.CONCURRENT_ACCESS, de.getCode());
-		assertEquals("Asserts getMessage() method", "CONCURRENT_ACCESS", de
-				.getMessage());
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue(
-				"Asserts that getCauses() returns an empty array if there is no cause", 
-				de.getCauses().length==0);
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.CONCURRENT_ACCESS);
+		assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("CONCURRENT_ACCESS");
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(de.getCauses().length==0).as("Asserts that getCauses() returns an empty array if there is no cause").isTrue();
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 		
 	}
 	
@@ -108,8 +109,9 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String[],int,String)
 	 * 
 	 */
+	@Test
 	public void testDmtException003() {
-		log("#testDmtException003");
+		System.out.println("#testDmtException003");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException(
 				new String[] {".","a","b","c" },
 				org.osgi.service.dmt.DmtException.COMMAND_NOT_ALLOWED,
@@ -117,17 +119,16 @@ public class DmtException extends DmtTestControl {
 
 		String uri = "./a/b/c";
 
-		assertEquals("Asserts getURI() method", uri, de.getURI());
+		assertThat(de.getURI()).as("Asserts getURI() method").isEqualTo(uri);
 
-        assertEquals("Asserts getMessage() method", "COMMAND_NOT_ALLOWED: '"
-				+ uri + "': " + DmtConstants.MESSAGE, de.getMessage());
+        assertThat(de.getMessage()).as("Asserts getMessage() method").isEqualTo("COMMAND_NOT_ALLOWED: '"
+				+ uri + "': " + DmtConstants.MESSAGE);
 
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.COMMAND_NOT_ALLOWED, de.getCode());
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.COMMAND_NOT_ALLOWED);
 		
-		assertEquals("Asserts getCauses() method", 0, de.getCauses().length);
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(de.getCauses().length).as("Asserts getCauses() method").isZero();
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 
 	}
 	
@@ -140,21 +141,19 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String[],int,String)
 	 * 
 	 */
+	@Test
 	public void testDmtException004() {
-		log("#testDmtException004");
+		System.out.println("#testDmtException004");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException((String[])null, org.osgi.service.dmt.DmtException.ALERT_NOT_ROUTED, null);
 		
-		assertNull("Asserts getURI() method", de.getURI());
+		assertThat(de.getURI()).as("Asserts getURI() method").isNull();
 		
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.ALERT_NOT_ROUTED, de.getCode());
-		assertEquals("Asserts getMessage() method", "ALERT_NOT_ROUTED", de
-				.getMessage());
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue(
-				"Asserts that getCauses() returns an empty array if there is no cause", 
-				de.getCauses().length==0);
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.ALERT_NOT_ROUTED);
+		assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("ALERT_NOT_ROUTED");
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(de.getCauses().length==0).as("Asserts that getCauses() returns an empty array if there is no cause").isTrue();
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 		
 	}
 
@@ -166,32 +165,32 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String,int,String,Throwable)
 	 * 
 	 */
+	@Test
 	public void testDmtException005() {
-		log("#testDmtException005");
+		System.out.println("#testDmtException005");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException(
 				DmtConstants.OSGi_LOG,
 				org.osgi.service.dmt.DmtException.CONCURRENT_ACCESS,
 				DmtConstants.MESSAGE, new Exception());
 
-		assertEquals("Asserts getURI() method", DmtConstants.OSGi_LOG, de
-				.getURI());
+		assertThat(de
+				.getURI()).as("Asserts getURI() method").isEqualTo(DmtConstants.OSGi_LOG);
 		
 
-        assertEquals("Asserts getMessage() method", "CONCURRENT_ACCESS: '"
-				+ DmtConstants.OSGi_LOG + "': " + DmtConstants.MESSAGE, de
-				.getMessage());
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.CONCURRENT_ACCESS, de.getCode());
+        assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("CONCURRENT_ACCESS: '"
+				+ DmtConstants.OSGi_LOG + "': " + DmtConstants.MESSAGE);
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.CONCURRENT_ACCESS);
 		
 		assertException("Asserts getCause() method", Exception.class, de
 				.getCause());
 		
-		assertEquals("Asserts getCauses() method", 1, de.getCauses().length);
+		assertThat(de.getCauses().length).as("Asserts getCauses() method").isOne();
 		
 		assertException("Asserts getCauses() method", Exception.class,
 				de
 				.getCauses()[0]);
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 	}
 	/**
 	 * Tests if the values that are passed as parameters for the constructor are equal 
@@ -201,22 +200,20 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String,int,String,Throwable)
 	 * 
 	 */
+	@Test
 	public void testDmtException006() {
-		log("#testDmtException006");
+		System.out.println("#testDmtException006");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException((String)null, org.osgi.service.dmt.DmtException.COMMAND_FAILED, null,
 				(Throwable)null);
-		assertNull("Asserts getURI() method", de.getURI());
-		assertEquals("Asserts getMessage() method", "COMMAND_FAILED", de
-				.getMessage());
+		assertThat(de.getURI()).as("Asserts getURI() method").isNull();
+		assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("COMMAND_FAILED");
 		
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.COMMAND_FAILED, de.getCode());
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.COMMAND_FAILED);
 		
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue(
-				"Asserts that getCauses() returns an empty array if there is no cause", 
-				de.getCauses().length==0);
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(de.getCauses().length==0).as("Asserts that getCauses() returns an empty array if there is no cause").isTrue();
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 
 	}	
 	/**
@@ -227,31 +224,31 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String[],int,String,Throwable)
 	 * 
 	 */
+	@Test
 	public void testDmtException007() {
-		log("#testDmtException007");
+		System.out.println("#testDmtException007");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException(
 				new String[] {".","d", "e", "f"},
 				org.osgi.service.dmt.DmtException.REMOTE_ERROR,
 				DmtConstants.MESSAGE, new IllegalArgumentException());
 		String uri = "./d/e/f";
 
-		assertEquals("Asserts getURI() method", uri, de.getURI());
+		assertThat(de.getURI()).as("Asserts getURI() method").isEqualTo(uri);
 
-        assertEquals("Asserts getMessage() method", "REMOTE_ERROR: '" + uri
-				+ "': " + DmtConstants.MESSAGE, de.getMessage());
+        assertThat(de.getMessage()).as("Asserts getMessage() method").isEqualTo("REMOTE_ERROR: '" + uri
+				+ "': " + DmtConstants.MESSAGE);
         
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.REMOTE_ERROR, de.getCode());
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.REMOTE_ERROR);
 		
 		assertException("Asserts getCause() method",
 				IllegalArgumentException.class, de.getCause());
 		
-		assertEquals("Asserts getCauses() method", 1, de.getCauses().length);
+		assertThat(de.getCauses().length).as("Asserts getCauses() method").isOne();
 		
 		assertException("Asserts getCauses() method",
 				IllegalArgumentException.class,
 				de.getCauses()[0]);
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 	}
 	/**
 	 * Tests if the values that are passed as parameters for the constructor are equal 
@@ -261,20 +258,18 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String[],int,String,Throwable)
 	 * 
 	 */
+	@Test
 	public void testDmtException008() {
-		log("#testDmtException008");
+		System.out.println("#testDmtException008");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException((String[])null, org.osgi.service.dmt.DmtException.URI_TOO_LONG, null,
 				(Throwable)null);
-		assertNull("Asserts getURI() method", de.getURI());
-		assertEquals("Asserts getMessage() method", "URI_TOO_LONG", de
-				.getMessage());
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.URI_TOO_LONG, de.getCode());
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue(
-				"Asserts that getCauses() returns an empty array if there is no cause", 
-				de.getCauses().length==0);
-		assertTrue("Asserts isFatal() method", !de.isFatal());
+		assertThat(de.getURI()).as("Asserts getURI() method").isNull();
+		assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("URI_TOO_LONG");
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.URI_TOO_LONG);
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(de.getCauses().length==0).as("Asserts that getCauses() returns an empty array if there is no cause").isTrue();
+		assertThat(!de.isFatal()).as("Asserts isFatal() method").isTrue();
 
 	}
 	/**
@@ -285,8 +280,9 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String,int,String,Vector,boolean)
 	 * 
 	 */
+	@Test
 	public void testDmtException009() {
-		log("#testDmtException009");
+		System.out.println("#testDmtException009");
 		Vector<Exception> causes = new Vector<>();
 		causes.add(0, new DmtIllegalStateException(EXCEPTION_MSG));
 		causes.add(1, new Exception(EXCEPTION_MSG));
@@ -296,23 +292,20 @@ public class DmtException extends DmtTestControl {
 				org.osgi.service.dmt.DmtException.COMMAND_NOT_ALLOWED,
 				DmtConstants.MESSAGE, causes,true);
 
-		assertEquals("Asserts getURI() method",
-				DmtConstants.OSGi_CONFIGURATION, de.getURI());
+		assertThat(de.getURI()).as("Asserts getURI() method").isEqualTo(DmtConstants.OSGi_CONFIGURATION);
 		
-        assertEquals("Asserts getMessage() method", "COMMAND_NOT_ALLOWED: '"
+        assertThat(de.getMessage()).as("Asserts getMessage() method").isEqualTo("COMMAND_NOT_ALLOWED: '"
 				+ DmtConstants.OSGi_CONFIGURATION + "': "
-				+ DmtConstants.MESSAGE, de.getMessage());
+				+ DmtConstants.MESSAGE);
         
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.COMMAND_NOT_ALLOWED, de.getCode());
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.COMMAND_NOT_ALLOWED);
 		
 		assertException(
 				"Asserts that getCause returns the first exception in case of more than one exception", 
 				DmtIllegalStateException.class, de.getCause());
 		
 		Throwable[] causesReturned = de.getCauses();
-		assertEquals("Asserts the size of getCauses() method", causes.size(),
-				causesReturned.length);
+		assertThat(causesReturned.length).as("Asserts the size of getCauses() method").isEqualTo(causes.size());
 		
 		int found=0;
 		int expected = causes.size();
@@ -333,10 +326,8 @@ public class DmtException extends DmtTestControl {
             }           
             
 		}
-		assertEquals(
-				"Asserts the all of the exceptions were returned correctly",
-				expected, found);
-		assertTrue("Asserts isFatal() method", de.isFatal());
+		assertThat(found).as("Asserts the all of the exceptions were returned correctly").isEqualTo(expected);
+		assertThat(de.isFatal()).as("Asserts isFatal() method").isTrue();
 	}
 
 	/**
@@ -347,22 +338,20 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String,int,String,Vector,boolean)
 	 * 
 	 */
+	@Test
 	public void testDmtException010() {
-		log("#testDmtException010");
+		System.out.println("#testDmtException010");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException(
 				(String) null,
 				org.osgi.service.dmt.DmtException.TRANSACTION_ERROR, null, null,
 				true);
-		assertNull("Asserts getURI() method", de.getURI());
-		assertEquals("Asserts getMessage() method", "TRANSACTION_ERROR", de
-				.getMessage());
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.TRANSACTION_ERROR, de.getCode());
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue(
-				"Asserts that getCauses() returns an empty array if there is no cause",
-				de.getCauses().length == 0);
-		assertTrue("Asserts isFatal() method", de.isFatal());
+		assertThat(de.getURI()).as("Asserts getURI() method").isNull();
+		assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("TRANSACTION_ERROR");
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.TRANSACTION_ERROR);
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(de.getCauses().length == 0).as("Asserts that getCauses() returns an empty array if there is no cause").isTrue();
+		assertThat(de.isFatal()).as("Asserts isFatal() method").isTrue();
 	}
 	
 	/**
@@ -373,8 +362,9 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String[],int,String,Vector,boolean)
 	 * 
 	 */
+	@Test
 	public void testDmtException011() {
-		log("#testDmtException011");
+		System.out.println("#testDmtException011");
 		Vector<Exception> causes = new Vector<>();
 		causes.add(0, new IllegalArgumentException(EXCEPTION_MSG));
 		causes.add(1, new Exception(EXCEPTION_MSG));
@@ -386,20 +376,18 @@ public class DmtException extends DmtTestControl {
 
 		String uri = "./g/h/i";
 
-		assertEquals("Asserts getURI() method", uri, de.getURI());
+		assertThat(de.getURI()).as("Asserts getURI() method").isEqualTo(uri);
 
-        assertEquals("Asserts getMessage() method", "FEATURE_NOT_SUPPORTED: '"
-				+ uri + "': " + DmtConstants.MESSAGE, de.getMessage());
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.FEATURE_NOT_SUPPORTED, de.getCode());
+        assertThat(de.getMessage()).as("Asserts getMessage() method").isEqualTo("FEATURE_NOT_SUPPORTED: '"
+				+ uri + "': " + DmtConstants.MESSAGE);
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.FEATURE_NOT_SUPPORTED);
 
 		assertException(
 				"Asserts that getCause returns the first exception in case of more than one exception", 
 				IllegalArgumentException.class, de.getCause());
 		
 		Throwable[] causesReturned = de.getCauses();
-		assertEquals("Asserts the size of getCauses() method", causes.size(),
-				causesReturned.length);
+		assertThat(causesReturned.length).as("Asserts the size of getCauses() method").isEqualTo(causes.size());
         
         int found=0;
         int expected = causes.size();
@@ -420,10 +408,8 @@ public class DmtException extends DmtTestControl {
             }
 		}
 
-		assertEquals(
-				"Asserts the all of the exceptions were returned correctly",
-				expected, found);
-		assertTrue("Asserts isFatal() method", de.isFatal());
+		assertThat(found).as("Asserts the all of the exceptions were returned correctly").isEqualTo(expected);
+		assertThat(de.isFatal()).as("Asserts isFatal() method").isTrue();
 	}
 
 	/**
@@ -434,24 +420,22 @@ public class DmtException extends DmtTestControl {
 	 * @spec DmtException.DmtException(String[],int,String,Vector,boolean)
 	 * 
 	 */
+	@Test
 	public void testDmtException012() {
-		log("#testDmtException012");
+		System.out.println("#testDmtException012");
 		org.osgi.service.dmt.DmtException de = new org.osgi.service.dmt.DmtException(
 				(String[]) null,
 				org.osgi.service.dmt.DmtException.NODE_ALREADY_EXISTS, null,
 				null, true);
 		
-		assertNull("Asserts getURI() method", de.getURI());
-		assertEquals("Asserts getMessage() method", "NODE_ALREADY_EXISTS", de
-				.getMessage());
-		assertEquals("Asserts getCode() method",
-				org.osgi.service.dmt.DmtException.NODE_ALREADY_EXISTS, de.getCode());
-		assertNull("Asserts getCause() method", de.getCause());
-		assertTrue(
-				"Asserts that getCauses() returns an empty Vector if there is no cause", 
-				de.getCauses().length==0);
+		assertThat(de.getURI()).as("Asserts getURI() method").isNull();
+		assertThat(de
+				.getMessage()).as("Asserts getMessage() method").isEqualTo("NODE_ALREADY_EXISTS");
+		assertThat(de.getCode()).as("Asserts getCode() method").isEqualTo(org.osgi.service.dmt.DmtException.NODE_ALREADY_EXISTS);
+		assertThat(de.getCause()).as("Asserts getCause() method").isNull();
+		assertThat(de.getCauses().length==0).as("Asserts that getCauses() returns an empty Vector if there is no cause").isTrue();
 		
-		assertTrue("Asserts isFatal() method", de.isFatal());
+		assertThat(de.isFatal()).as("Asserts isFatal() method").isTrue();
 	}
 	
 

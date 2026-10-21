@@ -32,16 +32,16 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>isNodeUri</code> method of DmtSession, 
@@ -73,12 +73,12 @@ public class IsNodeUri implements TestInterface {
 	private void testIsNodeUri001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsNodeUri001");
+			System.out.println("#testIsNodeUri001");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
-			TestCase.assertTrue("Assert isNodeUri", session
-					.isNodeUri(DmtConstants.OSGi_LOG));
+			assertThat(session
+					.isNodeUri(DmtConstants.OSGi_LOG)).as("Assert isNodeUri").isTrue();
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -94,12 +94,12 @@ public class IsNodeUri implements TestInterface {
 	private void testIsNodeUri002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsNodeUri002");
+			System.out.println("#testIsNodeUri002");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
-			TestCase.assertTrue("Assert isNodeUri", !session
-					.isNodeUri(TestExecPluginActivator.INEXISTENT_NODE));
+			assertThat(!session
+					.isNodeUri(TestExecPluginActivator.INEXISTENT_NODE)).as("Assert isNodeUri").isTrue();
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -116,7 +116,7 @@ public class IsNodeUri implements TestInterface {
 	private void testIsNodeUri003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsNodeUri003");
+			System.out.println("#testIsNodeUri003");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
@@ -125,7 +125,7 @@ public class IsNodeUri implements TestInterface {
 			
 			session.isNodeUri(TestExecPluginActivator.INTERIOR_NODE_NAME);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with isNodeUri.");
+			System.out.println("A relative URI can be used with isNodeUri.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -143,13 +143,13 @@ public class IsNodeUri implements TestInterface {
 	private void testIsNodeUri004() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testIsNodeUri004");
+			System.out.println("#testIsNodeUri004");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.INTERIOR_NODE, DmtSession.LOCK_TYPE_ATOMIC);
 			
-			TestCase.assertTrue("Asserts that an empty string as relative URI means the root " +
-					"URI the session was opened with",session.isNodeUri(""));
+			assertThat(session.isNodeUri("")).as("Asserts that an empty string as relative URI means the root " +
+					"URI the session was opened with").isTrue();
 			
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);

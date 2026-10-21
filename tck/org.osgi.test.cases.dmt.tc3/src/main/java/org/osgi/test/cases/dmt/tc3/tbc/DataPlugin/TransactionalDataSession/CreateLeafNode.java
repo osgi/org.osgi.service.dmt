@@ -28,16 +28,16 @@
  */
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -71,11 +71,11 @@ public class CreateLeafNode {
 	public void testCreateLeafNode001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCreateLeafNode001");
+			System.out.println("#testCreateLeafNode001");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.createLeafNode(TestDataPluginActivator.INEXISTENT_LEAF_NODE);
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "+ TestDataPlugin.CREATELEAFNODE+" to the correct plugin",TestDataPlugin.CREATELEAFNODE,DmtConstants.TEMPORARY);
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.CREATELEAFNODE+" to the correct plugin").isEqualTo(TestDataPlugin.CREATELEAFNODE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -93,19 +93,19 @@ public class CreateLeafNode {
 	public void testCreateLeafNode002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCreateLeafNode002");
+			System.out.println("#testCreateLeafNode002");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.createLeafNode(TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION);
 			
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ", TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION, e
-					.getURI());			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct code: ", DmtException.INVALID_URI, e
-					.getCode());
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded the DmtException with the correct message. ", e
-					.getMessage().indexOf(TestDataPlugin.CREATELEAFNODE)>-1);
+			assertThat(e
+					.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION);			
+			assertThat(e
+					.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.INVALID_URI);
+			assertThat(e
+					.getMessage().indexOf(TestDataPlugin.CREATELEAFNODE)>-1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -122,12 +122,12 @@ public class CreateLeafNode {
 		DmtSession session = null;
 		DmtData data = new DmtData(8);
 		try {
-			DefaultTestBundleControl.log("#testCreateLeafNode003");
+			System.out.println("#testCreateLeafNode003");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.createLeafNode(TestDataPluginActivator.INEXISTENT_LEAF_NODE,data);
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "+ TestDataPlugin.CREATELEAFNODE+" to the correct plugin",TestDataPlugin.CREATELEAFNODE,DmtConstants.TEMPORARY);
-			TestCase.assertEquals("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification",data.toString(),DmtConstants.PARAMETER_2);
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.CREATELEAFNODE+" to the correct plugin").isEqualTo(TestDataPlugin.CREATELEAFNODE);
+			assertThat(DmtConstants.PARAMETER_2).as("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification").isEqualTo(data.toString());
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -146,19 +146,19 @@ public class CreateLeafNode {
 		DmtSession session = null;
 		DmtData data = new DmtData(5);
 		try {
-			DefaultTestBundleControl.log("#testCreateLeafNode004");
+			System.out.println("#testCreateLeafNode004");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.createLeafNode(TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION,data);
 			
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ", TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION, e
-					.getURI());			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct code: ", DmtException.INVALID_URI, e
-					.getCode());
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded the DmtException with the correct message. ", e
-					.getMessage().indexOf(TestDataPlugin.CREATELEAFNODE)>-1);
+			assertThat(e
+					.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION);			
+			assertThat(e
+					.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.INVALID_URI);
+			assertThat(e
+					.getMessage().indexOf(TestDataPlugin.CREATELEAFNODE)>-1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -176,13 +176,13 @@ public class CreateLeafNode {
 		DmtData data = new DmtData(8);
 		String mimeType = "text/xml";
 		try {
-			DefaultTestBundleControl.log("#testCreateLeafNode005");
+			System.out.println("#testCreateLeafNode005");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.createLeafNode(TestDataPluginActivator.INEXISTENT_LEAF_NODE,data,mimeType);
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded "+ TestDataPlugin.CREATELEAFNODE+" to the correct plugin",TestDataPlugin.CREATELEAFNODE,DmtConstants.TEMPORARY);
-			TestCase.assertEquals("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification",data.toString(),DmtConstants.PARAMETER_2);
-			TestCase.assertEquals("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification",mimeType,DmtConstants.PARAMETER_3);
+			assertThat(DmtConstants.TEMPORARY).as("Asserts that DmtAdmin fowarded "+ TestDataPlugin.CREATELEAFNODE+" to the correct plugin").isEqualTo(TestDataPlugin.CREATELEAFNODE);
+			assertThat(DmtConstants.PARAMETER_2).as("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification").isEqualTo(data.toString());
+			assertThat(DmtConstants.PARAMETER_3).as("Asserts that DmtAdmin the parameter was fowarded to the correct plugin without modification").isEqualTo(mimeType);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {
@@ -202,19 +202,19 @@ public class CreateLeafNode {
 		DmtData data = new DmtData(5);
 		String mimeType = "text/xml";
 		try {
-			DefaultTestBundleControl.log("#testCreateLeafNode006");
+			System.out.println("#testCreateLeafNode006");
 			session = tbc.getDmtAdmin().getSession(TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			session.createLeafNode(TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION,data,mimeType);
 			
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ", TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION, e
-					.getURI());			
-			TestCase.assertEquals("Asserts that DmtAdmin fowarded the DmtException with the correct code: ", DmtException.INVALID_URI, e
-					.getCode());
-			TestCase.assertTrue("Asserts that DmtAdmin fowarded the DmtException with the correct message. ", e
-					.getMessage().indexOf(TestDataPlugin.CREATELEAFNODE)>-1);
+			assertThat(e
+					.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree: ").isEqualTo(TestDataPluginActivator.INEXISTENT_LEAF_NODE_EXCEPTION);			
+			assertThat(e
+					.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.INVALID_URI);
+			assertThat(e
+					.getMessage().indexOf(TestDataPlugin.CREATELEAFNODE)>-1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 		} catch (Exception e) {
 			DmtTestControl.failExpectedOtherException(DmtException.class, e);
 		} finally {

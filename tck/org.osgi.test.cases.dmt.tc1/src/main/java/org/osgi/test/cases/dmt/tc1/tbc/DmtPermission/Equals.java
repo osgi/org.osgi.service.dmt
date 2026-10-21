@@ -29,8 +29,10 @@
 
 package org.osgi.test.cases.dmt.tc1.tbc.DmtPermission;
 
-import org.osgi.service.dmt.security.DmtPermission;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.osgi.service.dmt.security.DmtPermission;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc1.tbc.DmtTestControl;
 
@@ -45,13 +47,12 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals001() {
 		try {
-			log("#testEquals001");
-			assertTrue(
-					"Asserting that two objects initialized with the same dmtUri and actions are equal", 
-					new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS)
-					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS)));
+			System.out.println("#testEquals001");
+			assertThat(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS)
+					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS))).as("Asserting that two objects initialized with the same dmtUri and actions are equal").isTrue();
 		} catch (Exception e) { 
 			failUnexpectedException(e);
 		}
@@ -62,13 +63,12 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals002() {
 		try {
-			log("#testEquals002");
-			assertTrue(
-					"Asserting that two objects initialized with the same dmtUri but different actions are different", 
-					!new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS)
-					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.DIFFERENT_ACTIONS)));
+			System.out.println("#testEquals002");
+			assertThat(!new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS)
+					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.DIFFERENT_ACTIONS))).as("Asserting that two objects initialized with the same dmtUri but different actions are different").isTrue();
 		} catch (Exception e) { 
 			failUnexpectedException(e);
 		}
@@ -79,13 +79,12 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals003() {
 		try {
-			log("#testEquals003");
-			assertTrue(
-					"Asserting that two objects initialized with the same actions but different dmtUri are different", 
-					!new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS)
-					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_CONFIGURATION,DmtConstants.ACTIONS)));
+			System.out.println("#testEquals003");
+			assertThat(!new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ACTIONS)
+					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_CONFIGURATION,DmtConstants.ACTIONS))).as("Asserting that two objects initialized with the same actions but different dmtUri are different").isTrue();
 		} catch (Exception e) { 
 			failUnexpectedException(e);
 		}
@@ -96,15 +95,14 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals004() {
 		try {
-			log("#testEquals004");
+			System.out.println("#testEquals004");
 			String actions = DmtPermission.ADD + "," + DmtPermission.DELETE + "," +DmtPermission.EXEC;
 			String actionsDifferentOrder = DmtPermission.DELETE + "," +DmtPermission.EXEC+"," +DmtPermission.ADD;
-			assertTrue(
-					"Asserting that two objects initialized with the same dmtUri and actions are equal", 
-					new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,actions)
-					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,actionsDifferentOrder)));
+			assertThat(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,actions)
+					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,actionsDifferentOrder))).as("Asserting that two objects initialized with the same dmtUri and actions are equal").isTrue();
 		} catch (Exception e) { 
 			failUnexpectedException(e);
 		}
@@ -115,13 +113,12 @@ public class Equals extends DmtTestControl {
 	 * 
 	 * @spec DmtPermission.equals(Object)
 	 */
+	@Test
 	public void testEquals005() {
 		try {
-			log("#testEquals005");
-			assertTrue(
-					"Asserts that the \"*\" action mask is considered equal to a mask containing all actions.", 
-					new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,"*")
-					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ALL_ACTIONS)));
+			System.out.println("#testEquals005");
+			assertThat(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,"*")
+					.equals(new org.osgi.service.dmt.security.DmtPermission(DmtConstants.OSGi_LOG,DmtConstants.ALL_ACTIONS))).as("Asserts that the \"*\" action mask is considered equal to a mask containing all actions.").isTrue();
 		} catch (Exception e) { 
 			failUnexpectedException(e);
 		}

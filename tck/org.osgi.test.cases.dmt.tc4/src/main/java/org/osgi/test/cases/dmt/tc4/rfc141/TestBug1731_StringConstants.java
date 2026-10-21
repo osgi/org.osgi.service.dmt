@@ -17,28 +17,35 @@
  *******************************************************************************/
 package org.osgi.test.cases.dmt.tc4.rfc141;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.dmt.DmtConstants;
 import org.osgi.service.dmt.spi.DataPlugin;
 import org.osgi.service.dmt.spi.ExecPlugin;
-import org.osgi.test.support.OSGiTestCase;
 
-public class TestBug1731_StringConstants extends OSGiTestCase{
+public class TestBug1731_StringConstants{
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 		System.out.println("setting up");
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 		System.out.println( "tearing down");
 	}
 	
 	/**
 	 * tests existence of specified constants for String literals in org.osgi.service.dmt.spi.DataPlugin
 	 */
+	@Test
 	public void testDataPluginConstants() throws Exception {
 		assertConstant("dataRootURIs", "DATA_ROOT_URIS", DataPlugin.class );
 	}
@@ -46,6 +53,7 @@ public class TestBug1731_StringConstants extends OSGiTestCase{
 	/**
 	 * tests existence of specified constants for String literals in org.osgi.service.dmt.spi.ExecPlugin
 	 */
+	@Test
 	public void testExecPluginConstants() throws Exception {
 		assertConstant( "execRootURIs", "EXEC_ROOT_URIS", ExecPlugin.class);
 	}
@@ -53,6 +61,7 @@ public class TestBug1731_StringConstants extends OSGiTestCase{
 	/**
 	 * tests existence of specified constants for String literals in org.osgi.service.dmt.spi.MountPlugin
 	 */
+	@Test
 	public void testMountPluginConstants() throws Exception {
 		assertConstant( "mountPoints", "MOUNT_POINTS", DataPlugin.class );
 		assertConstant( "mountPoints", "MOUNT_POINTS", ExecPlugin.class );
@@ -61,6 +70,7 @@ public class TestBug1731_StringConstants extends OSGiTestCase{
 	/**
 	 * tests existence of specified constants for String literals in org.osgi.service.dmt.spi.DMTConstants
 	 */
+	@Test
 	public void testDMTConstants() throws Exception {
 		assertConstant( "org.osgi/1.0/LIST", "DDF_LIST", DmtConstants.class );
 		assertConstant( "org.osgi/1.0/MAP", "DDF_MAP", DmtConstants.class );
@@ -87,5 +97,31 @@ public class TestBug1731_StringConstants extends OSGiTestCase{
 		//assertConstant( "list.nodes", "EVENT_PROPERTY_LIST_NODES", DmtConstants.class );
 		//assertConstant( "list.upcoming.event", "EVENT_PROPERTY_LIST_UPCOMING_EVENT", DmtConstants.class );
 		
+	}
+
+	/**
+	 * Assert a constant from class has a specific value; from OSGiTestCase,
+	 * unchanged.
+	 *
+	 * @param expected
+	 *            Expected value.
+	 * @param fieldName
+	 *            Constant field name.
+	 * @param fieldClass
+	 *            Class containing constant.
+	 */
+	private static void assertConstant(Object expected, String fieldName,
+			Class< ? > fieldClass) {
+		try {
+			Field f = fieldClass.getField(fieldName);
+			assertThat(Modifier.isPublic(f.getModifiers())).isTrue();
+			assertThat(Modifier.isStatic(f.getModifiers())).isTrue();
+			assertThat(Modifier.isFinal(f.getModifiers())).isTrue();
+			assertThat(f.get(null)).as(fieldName).isEqualTo(expected);
+		} catch (NoSuchFieldException e) {
+			fail("missing field: " + fieldName, e);
+		} catch (IllegalAccessException e) {
+			fail("bad field: " + fieldName, e);
+		}
 	}
 }

@@ -29,16 +29,16 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TransactionalDataSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtSession;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
-import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPlugin;
 import org.osgi.test.cases.dmt.tc3.tbc.DataPlugin.TestDataPluginActivator;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtConstants;
+import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc3.tbc.Plugins.NewDataPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * @author Luiz Felipe Guimaraes
@@ -68,33 +68,22 @@ public class Commit {
 	public void testCommit001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testCommit001");
+			System.out.println("#testCommit001");
 			session = tbc.getDmtAdmin().getSession(
 					TestDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
 			TestDataPlugin.setCommitThrowsException(true);
 			session.commit();
-			DefaultTestBundleControl.failException("#", DmtException.class);
+			DmtTestControl.failException("#", DmtException.class);
 		} catch (DmtException e) {
-			TestCase
-					.assertEquals(
-							"Asserts that TRANSACTION_ERROR is thrown if an underlying plugin failed to commit:",
-							DmtException.TRANSACTION_ERROR, e.getCode());
+			assertThat(e.getCode()).as("Asserts that TRANSACTION_ERROR is thrown if an underlying plugin failed to commit:").isEqualTo(DmtException.TRANSACTION_ERROR);
 
 			if (e.getCause() instanceof DmtException) {
 				DmtException exception = (DmtException)e.getCause();
-				TestCase
-						.assertNull(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct subtree (null)",exception.getURI());
-				TestCase
-						.assertEquals(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct code: ",
-								DmtException.COMMAND_FAILED, exception.getCode());
-				TestCase
-						.assertTrue(
-								"Asserts that DmtAdmin fowarded the DmtException with the correct message. ",
-								exception.getMessage().indexOf(
-										TestDataPlugin.COMMIT) > -1);
+				assertThat(exception.getURI()).as("Asserts that DmtAdmin fowarded the DmtException with the correct subtree (null)").isNull();
+				assertThat(exception.getCode()).as("Asserts that DmtAdmin fowarded the DmtException with the correct code: ").isEqualTo(DmtException.COMMAND_FAILED);
+				assertThat(exception.getMessage().indexOf(
+										TestDataPlugin.COMMIT) > -1).as("Asserts that DmtAdmin fowarded the DmtException with the correct message. ").isTrue();
 				
 			} else {
 				DmtTestControl.failExpectedOtherException(DmtException.class, e.getCause());
@@ -115,7 +104,7 @@ public class Commit {
     public void testCommit002() {
         DmtSession session = null;
         try {
-            DefaultTestBundleControl.log("#testCommit002");
+            System.out.println("#testCommit002");
             
             session = tbc.getDmtAdmin().getSession(
                     DmtConstants.OSGi_ROOT,
@@ -125,16 +114,10 @@ public class Commit {
             session.getChildNodeNames(NewDataPluginActivator.ROOT);
             TestDataPlugin.setCommitThrowsException(true);
             session.commit();
-            DefaultTestBundleControl.failException("#", DmtException.class);
+            DmtTestControl.failException("#", DmtException.class);
         } catch (DmtException e) {
-            TestCase
-                .assertEquals(
-                    "Asserts that TRANSACTION_ERROR is thrown if an underlying plugin failed to commit:",
-                    DmtException.TRANSACTION_ERROR, e.getCode());
-            TestCase
-                .assertEquals(
-                    "Asserts that if plugin A has committed successfully but plugin B failed, the whole session must fail",
-                    DmtSession.STATE_INVALID, session.getState());
+            assertThat(e.getCode()).as("Asserts that TRANSACTION_ERROR is thrown if an underlying plugin failed to commit:").isEqualTo(DmtException.TRANSACTION_ERROR);
+            assertThat(session.getState()).as("Asserts that if plugin A has committed successfully but plugin B failed, the whole session must fail").isEqualTo(DmtSession.STATE_INVALID);
             
                 
         } catch (Exception e) {

@@ -32,6 +32,8 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Acl;
 import org.osgi.service.dmt.DmtException;
 import org.osgi.service.dmt.DmtIllegalStateException;
@@ -41,12 +43,10 @@ import org.osgi.service.dmt.security.DmtPrincipalPermission;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ReadOnly.TestReadOnlyPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * @author Andre Assad
@@ -98,18 +98,16 @@ public class Execute implements TestInterface {
 	private void testExecute001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute001");
+			System.out.println("#testExecute001");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 
 			session.execute(TestExecPluginActivator.INEXISTENT_NODE, DATA);
 
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException's code is NODE_NOT_FOUND",
-					DmtException.NODE_NOT_FOUND, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException's code is NODE_NOT_FOUND").isEqualTo(DmtException.NODE_NOT_FOUND);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -127,18 +125,16 @@ public class Execute implements TestInterface {
 	private void testExecute002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute002");
+			System.out.println("#testExecute002");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 
 			session.execute(TestReadOnlyPluginActivator.INTERIOR_NODE, DATA);
 			
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException's code is COMMAND_FAILED",
-					DmtException.COMMAND_FAILED, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException's code is COMMAND_FAILED").isEqualTo(DmtException.COMMAND_FAILED);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -155,7 +151,7 @@ public class Execute implements TestInterface {
 	private void testExecute003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute003");
+			System.out.println("#testExecute003");
             tbc.openSessionAndSetNodeAcl(TestExecPluginActivator.INTERIOR_NODE, DmtConstants.PRINCIPAL, Acl.EXEC | Acl.GET );
 			tbc.setPermissions(new PermissionInfo(DmtPrincipalPermission.class.getName(),DmtConstants.PRINCIPAL,"*"));
 			session = tbc.getDmtAdmin().getSession(DmtConstants.PRINCIPAL,
@@ -163,7 +159,7 @@ public class Execute implements TestInterface {
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE, DATA);
 			
-			DefaultTestBundleControl.pass("execute was successfully executed");
+			System.out.println("execute was successfully executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -182,7 +178,7 @@ public class Execute implements TestInterface {
 	private void testExecute004() {
 		DmtSession session = null;	
 		try {
-			DefaultTestBundleControl.log("#testExecute004");
+			System.out.println("#testExecute004");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
@@ -192,9 +188,9 @@ public class Execute implements TestInterface {
 			
 			session.execute(TestExecPluginActivator.INTERIOR_NODE, DATA);
 			
-			DefaultTestBundleControl.pass("execute was successfully executed");
+			System.out.println("execute was successfully executed");
 		} catch (SecurityException e) {
-			DefaultTestBundleControl.pass("The Exception was SecurityException");
+			System.out.println("The Exception was SecurityException");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(SecurityException.class, e);
 		} finally {
@@ -214,14 +210,14 @@ public class Execute implements TestInterface {
 	private void testExecute005() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute005");
+			System.out.println("#testExecute005");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE_NAME, DATA);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with execute.");
+			System.out.println("A relative URI can be used with execute.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -238,18 +234,16 @@ public class Execute implements TestInterface {
 	private void testExecute006() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute006");
+			System.out.println("#testExecute006");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 
 			session.execute(TestExecPluginActivator.INEXISTENT_NODE, CORRELATOR,null);
 
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException's code is NODE_NOT_FOUND",
-					DmtException.NODE_NOT_FOUND, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException's code is NODE_NOT_FOUND").isEqualTo(DmtException.NODE_NOT_FOUND);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -269,18 +263,16 @@ public class Execute implements TestInterface {
 	private void testExecute007() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute007");
+			System.out.println("#testExecute007");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
 
 			session.execute(TestReadOnlyPluginActivator.INTERIOR_NODE,CORRELATOR, null);
 			
-			DefaultTestBundleControl.failException("", DmtException.class);
+			DmtTestControl.failException("", DmtException.class);
 		} catch (DmtException e) {
-			TestCase.assertEquals(
-					"Asserting that DmtException's code is COMMAND_FAILED",
-					DmtException.COMMAND_FAILED, e.getCode());
+			assertThat(e.getCode()).as("Asserting that DmtException's code is COMMAND_FAILED").isEqualTo(DmtException.COMMAND_FAILED);
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtException.class, e);
 		} finally {
@@ -297,7 +289,7 @@ public class Execute implements TestInterface {
 	private void testExecute008() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute008");
+			System.out.println("#testExecute008");
 
 
             tbc.openSessionAndSetNodeAcl(TestExecPluginActivator.INTERIOR_NODE, DmtConstants.PRINCIPAL, Acl.EXEC | Acl.GET );
@@ -308,7 +300,7 @@ public class Execute implements TestInterface {
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE,CORRELATOR, null);
 			
-			DefaultTestBundleControl.pass("execute was successfully executed");
+			System.out.println("execute was successfully executed");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -326,7 +318,7 @@ public class Execute implements TestInterface {
 	private void testExecute009() {
 		DmtSession session = null;	
 		try {
-			DefaultTestBundleControl.log("#testExecute009");
+			System.out.println("#testExecute009");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_EXCLUSIVE);
@@ -336,9 +328,9 @@ public class Execute implements TestInterface {
 			
 			session.execute(TestExecPluginActivator.INTERIOR_NODE,CORRELATOR, null);
 			
-			DefaultTestBundleControl.pass("execute was successfully executed");
+			System.out.println("execute was successfully executed");
 		} catch (SecurityException e) {
-			DefaultTestBundleControl.pass("The Exception was SecurityException");
+			System.out.println("The Exception was SecurityException");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(SecurityException.class, e);
 		} finally {
@@ -358,14 +350,14 @@ public class Execute implements TestInterface {
 	private void testExecute010() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute010");
+			System.out.println("#testExecute010");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE_NAME,CORRELATOR, null);
 
-			DefaultTestBundleControl.pass("A relative URI can be used with execute.");
+			System.out.println("A relative URI can be used with execute.");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -381,14 +373,14 @@ public class Execute implements TestInterface {
 	private void testExecute011() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute011");
+			System.out.println("#testExecute011");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE_NAME,null);
 
-			DefaultTestBundleControl.pass("Null can be passed on data parameter");
+			System.out.println("Null can be passed on data parameter");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -403,14 +395,14 @@ public class Execute implements TestInterface {
 	private void testExecute012() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute012");
+			System.out.println("#testExecute012");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.ROOT, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE_NAME,null, DATA);
 
-			DefaultTestBundleControl.pass("Null can be passed on correlator parameter");
+			System.out.println("Null can be passed on correlator parameter");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -427,14 +419,14 @@ public class Execute implements TestInterface {
 	private void testExecute013() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute013");
+			System.out.println("#testExecute013");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.INTERIOR_NODE, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.execute("", DATA);
 
-			DefaultTestBundleControl.pass("Asserts that an empty string as relative URI means the root " +
+			System.out.println("Asserts that an empty string as relative URI means the root " +
 					"URI the session was opened with");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -452,14 +444,14 @@ public class Execute implements TestInterface {
 	private void testExecute014() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute014");
+			System.out.println("#testExecute014");
 			
 			session = tbc.getDmtAdmin().getSession(
 					TestExecPluginActivator.INTERIOR_NODE, DmtSession.LOCK_TYPE_ATOMIC);
 
 			session.execute("", CORRELATOR,null);
 
-			DefaultTestBundleControl.pass("Asserts that an empty string as relative URI means the root " +
+			System.out.println("Asserts that an empty string as relative URI means the root " +
 					"URI the session was opened with");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -477,16 +469,16 @@ public class Execute implements TestInterface {
 	private void testExecute015() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute015");
+			System.out.println("#testExecute015");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE, DATA);
 
-			DefaultTestBundleControl.failException("", DmtIllegalStateException.class);
+			DmtTestControl.failException("", DmtIllegalStateException.class);
 		} catch (DmtIllegalStateException e) {
-			DefaultTestBundleControl.pass("DmtIllegalStateException correctly thrown");
+			System.out.println("DmtIllegalStateException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtIllegalStateException.class, e);
 		} finally {
@@ -503,16 +495,16 @@ public class Execute implements TestInterface {
 	private void testExecute016() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testExecute016");
+			System.out.println("#testExecute016");
 
 			session = tbc.getDmtAdmin().getSession(".",
 					DmtSession.LOCK_TYPE_SHARED);
 
 			session.execute(TestExecPluginActivator.INTERIOR_NODE_NAME,CORRELATOR, DATA);
 
-			DefaultTestBundleControl.failException("", DmtIllegalStateException.class);
+			DmtTestControl.failException("", DmtIllegalStateException.class);
 		} catch (DmtIllegalStateException e) {
-			DefaultTestBundleControl.pass("DmtIllegalStateException correctly thrown");
+			System.out.println("DmtIllegalStateException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(DmtIllegalStateException.class, e);
 		} finally {

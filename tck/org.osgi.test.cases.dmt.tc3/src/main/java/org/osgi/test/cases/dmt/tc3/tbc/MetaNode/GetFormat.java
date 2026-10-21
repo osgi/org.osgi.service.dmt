@@ -32,13 +32,13 @@
 
 package org.osgi.test.cases.dmt.tc3.tbc.MetaNode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtData;
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.MetaNode;
 import org.osgi.test.cases.dmt.tc3.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>getFormat</code> method of MetaNode, 
@@ -65,7 +65,7 @@ public class GetFormat {
 	public void testGetFormat001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetFormat001");
+			System.out.println("#testGetFormat001");
 			session = tbc.getDmtAdmin().getSession(
 					TestMetaNodeDataPluginActivator.ROOT,
 					DmtSession.LOCK_TYPE_SHARED);
@@ -73,8 +73,7 @@ public class GetFormat {
 			MetaNode metanode = session
 					.getMetaNode(TestMetaNodeDataPluginActivator.ROOT);
 
-			TestCase.assertEquals("Asserts getFormat method", DmtData.FORMAT_NODE,
-					metanode.getFormat());
+			assertThat(metanode.getFormat()).as("Asserts getFormat method").isEqualTo(DmtData.FORMAT_NODE);
 		} catch (Exception e) {
 			DmtTestControl.failUnexpectedException(e);
 		} finally {

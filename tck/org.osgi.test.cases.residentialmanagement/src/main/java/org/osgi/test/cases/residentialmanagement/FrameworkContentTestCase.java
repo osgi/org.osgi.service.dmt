@@ -18,6 +18,7 @@
 package org.osgi.test.cases.residentialmanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.startlevel.BundleStartLevel;
@@ -81,15 +83,16 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * asserts that StartLevel values from the RMT are the same as the one retrieved from FrameworkStartLevel
 	 * @throws Exception 
 	 */
+	@Test
 	public void testGetFrameworkStartLevels() throws Exception {
 
-		FrameworkStartLevel fwStartLevel = getContext().getBundle(0).adapt(FrameworkStartLevel.class);
+		FrameworkStartLevel fwStartLevel = context.getBundle(0).adapt(FrameworkStartLevel.class);
 		session = dmtAdmin.getSession(FRAMEWORK_ROOT, DmtSession.LOCK_TYPE_SHARED);
 		int startLevel = session.getNodeValue(FRAMEWORK_ROOT + "/" + STARTLEVEL ).getInt();
 		int initialBundleStartLevel = session.getNodeValue(FRAMEWORK_ROOT + "/" + INITIAL_BUNDLE_STARTLEVEL ).getInt();
 		
-		assertEquals("The value of the StartLevel is incorrect.", fwStartLevel.getStartLevel(), startLevel);
-		assertEquals("The value of the InitialBundleStartLevel is incorrect.", fwStartLevel.getInitialBundleStartLevel(), initialBundleStartLevel);
+		assertThat(startLevel).as("The value of the StartLevel is incorrect.").isEqualTo(fwStartLevel.getStartLevel());
+		assertThat(initialBundleStartLevel).as("The value of the InitialBundleStartLevel is incorrect.").isEqualTo(fwStartLevel.getInitialBundleStartLevel());
 
 	}
 	
@@ -100,28 +103,29 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * Only nodes are tested that can be directly matched against bundle properties (i.e. no RequestedState etc.). 
 	 * @throws Exception
 	 */
+	@Test
 	public void testBundleFields() throws Exception {
 		session = dmtAdmin.getSession(FRAMEWORK_ROOT, DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull("Null DMT session for: " + FRAMEWORK_ROOT, session);
+		assertThat(session).as("Null DMT session for: " + FRAMEWORK_ROOT).isNotNull();
 
 		String uri = FRAMEWORK_ROOT + "/" + BUNDLE;
 		String[] bundleKeys = session.getChildNodeNames(uri);
 		for (String bundleKey : bundleKeys) {
 			String bundleUri = uri + "/" + bundleKey;
 			long id = session.getNodeValue(bundleUri + "/" + BUNDLEID).getLong();
-			Bundle bundle = getContext().getBundle(id);
+			Bundle bundle = context.getBundle(id);
 
 			String value = session.getNodeValue(bundleUri + "/" + STATE ).getString();
-			assertEquals("The bundle state doesn't match for bundle: " + id, getBundleStateString(bundle.getState()), value );
+			assertThat(value).as("The bundle state doesn't match for bundle: " + id).isEqualTo(getBundleStateString(bundle.getState()));
 			value = session.getNodeValue(bundleUri + "/" + SYMBOLIC_NAME ).getString();
-			assertEquals("The bundles symbolic name doesn't match for bundle: " + id, bundle.getSymbolicName(), value );
+			assertThat(value).as("The bundles symbolic name doesn't match for bundle: " + id).isEqualTo(bundle.getSymbolicName());
 			value = session.getNodeValue(bundleUri + "/" + VERSION ).getString();
-			assertEquals("The bundles version doesn't match for bundle: " + id, bundle.getVersion().toString(), value );
+			assertThat(value).as("The bundles version doesn't match for bundle: " + id).isEqualTo(bundle.getVersion().toString());
 			int rmtLevel = session.getNodeValue(bundleUri + "/" + STARTLEVEL ).getInt();
 			int realLevel = bundle.adapt(BundleStartLevel.class).getStartLevel();
-			assertEquals("The bundles symbolic name doesn't match for bundle: " + id, realLevel, rmtLevel );
+			assertThat(rmtLevel).as("The bundles symbolic name doesn't match for bundle: " + id).isEqualTo(realLevel);
 			long rmtLastModified = session.getNodeValue(bundleUri + "/" + LAST_MODIFIED ).getDateTime().getTime();
-			assertEquals("The bundles last modification timestamp name doesn't match for bundle: " + id, bundle.getLastModified(), rmtLastModified );
+			assertThat(rmtLastModified).as("The bundles last modification timestamp name doesn't match for bundle: " + id).isEqualTo(bundle.getLastModified());
 		}
 	}
 	
@@ -131,30 +135,31 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * For all other bundles the BundleType node is expected with an empty list.
 	 * @throws Exception
 	 */
+	@Test
 	public void testBundleType() throws Exception {
 		
-		testBundle1 = installBundle(TESTBUNDLE_FRAGMENT, false);
+		testBundle1 = installer.installBundle(context.getBundle().getEntry(TESTBUNDLE_FRAGMENT), false);
 		
 		session = dmtAdmin.getSession(FRAMEWORK_ROOT, DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull("Null DMT session for: " + FRAMEWORK_ROOT, session);
+		assertThat(session).as("Null DMT session for: " + FRAMEWORK_ROOT).isNotNull();
 
 		String uri = FRAMEWORK_ROOT + "/" + BUNDLE;
 		String[] bundleKeys = session.getChildNodeNames(uri);
 		for (String bundleKey : bundleKeys) {
 			String bundleUri = uri + "/" + bundleKey;
 			long id = session.getNodeValue( bundleUri + "/" + BUNDLEID ).getLong();
-			boolean isFragment = getContext().getBundle(id).getHeaders().get("Fragment-Host") != null;
-			assertTrue( "The BundleType node must exist for installed bundles.", session.isNodeUri(bundleUri+"/"+BUNDLETYPE));
+			boolean isFragment = context.getBundle(id).getHeaders().get("Fragment-Host") != null;
+			assertThat(session.isNodeUri(bundleUri+"/"+BUNDLETYPE)).as("The BundleType node must exist for installed bundles.").isTrue();
 			String[] types = session.getChildNodeNames(bundleUri + "/" + BUNDLETYPE );
 			if ( isFragment ) {
-				assertNotNull( "The list of BundleTypes must not be null for a fragment bundle.", types );
-				assertEquals( "The list of BundleTypes must have exactly one entry for a fragment bundle.", 1, types.length );
+				assertThat(types).as("The list of BundleTypes must not be null for a fragment bundle.").isNotNull();
+				assertThat(types.length).as("The list of BundleTypes must have exactly one entry for a fragment bundle.").isOne();
 				String type = session.getNodeValue(bundleUri + "/" + BUNDLETYPE + "/" + types[0]).getString();
-				assertEquals( "The bundle type for a fragment bundle must be 'FRAGMENT'", FRAGMENT, type);
+				assertThat(type).as("The bundle type for a fragment bundle must be 'FRAGMENT'").isEqualTo(FRAGMENT);
 			}
 			else {
-				assertNotNull( "The list of BundleTypes must not be null.", types );
-				assertEquals( "The list of BundleTypes must be empty for a non-fragment bundle.", 0, types.length );
+				assertThat(types).as("The list of BundleTypes must not be null.").isNotNull();
+				assertThat(types.length).as("The list of BundleTypes must be empty for a non-fragment bundle.").isZero();
 			}
 		}
 	}
@@ -165,26 +170,26 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * @throws Exception 
 	 * 
 	 */
+	@Test
 	public void testBundleHeaders() throws Exception {
 
 		session = dmtAdmin.getSession(FRAMEWORK_ROOT, DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull("Null DMT session for: " + FRAMEWORK_ROOT, session);
+		assertThat(session).as("Null DMT session for: " + FRAMEWORK_ROOT).isNotNull();
 
 		String uri = FRAMEWORK_ROOT + "/" + BUNDLE;
 		String[] bundleKeys = session.getChildNodeNames(uri);
 		for (String bundleKey : bundleKeys) {
 			long id = session.getNodeValue(uri + "/" + bundleKey + "/" + BUNDLEID ).getLong();
 			// get headers from real bundle
-			Dictionary<String, String> realHeaders = getContext().getBundle(id).getHeaders();
+			Dictionary<String, String> realHeaders = context.getBundle(id).getHeaders();
 			
 			String headersUri = uri + "/" + bundleKey + "/" + HEADERS;
 			String[] headers = session.getChildNodeNames(headersUri);
 			for (String header : headers ) {
 				String value = session.getNodeValue(headersUri + "/" + header).getString();
-				assertNotNull("Header '" + header
-						+ "' exists in RMT but not in the bundle.",
-						realHeaders.get(header));
-				assertEquals( "Values for header '"+header+"' are different in RMT and bundle.", realHeaders.get(header), value);
+				assertThat(realHeaders.get(header)).as("Header '" + header
+						+ "' exists in RMT but not in the bundle.").isNotNull();
+				assertThat(value).as("Values for header '"+header+"' are different in RMT and bundle.").isEqualTo(realHeaders.get(header));
 			} 
 		}
 	}
@@ -196,17 +201,18 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * Therefore the strategy is to loop through the RMT-Wires and to find matches in the API snapshot by doing a subtree comparision.
 	 * The test is successful, if each RMT wire has exactly one matching counterpart in the snapshot. 
 	 */
+	@Test
 	public void testBundleWires() throws Exception {
 		// make sure, that there is some content in the wiring
 		testBundle1 = installAndStartBundle(TESTBUNDLE_REGISTERING_SERVICES);
 		testBundle2 = installAndStartBundle(TESTBUNDLE_USING_SERVICE2);
 		testBundle3 = installAndStartBundle(TESTBUNDLE_EXPORTPACKAGE);
 		testBundle4 = installAndStartBundle(TESTBUNDLE_IMPORTPACKAGE);
-		testBundle5 = installBundle(TESTBUNDLE_FRAGMENT, false);
+		testBundle5 = installer.installBundle(context.getBundle().getEntry(TESTBUNDLE_FRAGMENT), false);
 		testBundle6 = installAndStartBundle(TESTBUNDLE_REQUIRE);
 		
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull("Null DMT session for the root node", session);
+		assertThat(session).as("Null DMT session for the root node").isNotNull();
 		
 		String uri = FRAMEWORK_ROOT + "/" + BUNDLE;
 		String[] bundleKeys = session.getChildNodeNames(uri);
@@ -228,20 +234,21 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * Asserts that the Bundle.Signers structure is correctly filled.
 	 * @throws Exception
 	 */
+	@Test
 	public void testBundleSigners() throws Exception {
 		
 		testBundle1 = installAndStartBundle(TESTBUNDLE_TRUSTED);
 		testBundle2 = installAndStartBundle(TESTBUNDLE_NON_TRUSTED);
 		
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull("Null DMT session for the root node.", session);
+		assertThat(session).as("Null DMT session for the root node.").isNotNull();
 
 		String uri = FRAMEWORK_ROOT + "/" + BUNDLE;
 		String[] bundleKeys = session.getChildNodeNames(uri);
 		for (String bundleKey : bundleKeys) {
 			String bundleUri = uri + "/" + bundleKey;
 			long id = session.getNodeValue( bundleUri + "/" + BUNDLEID ).getLong();
-			Bundle bundle = getContext().getBundle(id);
+			Bundle bundle = context.getBundle(id);
 			
 			// get real signer DN list from the bundle
 			Map<X509Certificate, List<X509Certificate>> allSignerCerts = bundle.getSignerCertificates(Bundle.SIGNERS_ALL);
@@ -271,14 +278,13 @@ public class FrameworkContentTestCase extends RMTTestBase {
 				matchAndRemoveSignerCertificateChain(session, bundleUri + "/" + SIGNERS, signer, allSignerDNs, trustedSignerDNs, unknownSignerIds);
 			
 			// now both maps should be empty
-			assertEquals("Some signer certificates are missing in the RMT: "
-					+ allSignerDNs, 0, allSignerDNs.size());
-			assertEquals(
-					"Some trusted signer certificates are missing in the RMT: "
-							+ trustedSignerDNs, 0, trustedSignerDNs.size());
+			assertThat(allSignerDNs).as("Some signer certificates are missing in the RMT: "
+					+ allSignerDNs).isEmpty();
+			assertThat(trustedSignerDNs).as("Some trusted signer certificates are missing in the RMT: "
+							+ trustedSignerDNs).isEmpty();
 
-			assertEquals("There are unknown Signers in the RMT: "
-					+ unknownSignerIds, 0, unknownSignerIds.size());
+			assertThat(unknownSignerIds).as("There are unknown Signers in the RMT: "
+					+ unknownSignerIds).isEmpty();
 		}
 	}
 	
@@ -286,17 +292,18 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * Tests that the bundle entries are correctly reflected in the RMT.
 	 * @throws Exception
 	 */
+	@Test
 	public void testFrameworkBundleEntries() throws Exception {
 
 		session = dmtAdmin.getSession(FRAMEWORK_ROOT, DmtSession.LOCK_TYPE_SHARED);
-		assertNotNull("Null DMT session for: " + FRAMEWORK_ROOT, session);
+		assertThat(session).as("Null DMT session for: " + FRAMEWORK_ROOT).isNotNull();
 
 		String uri = FRAMEWORK_ROOT + "/" + BUNDLE;
 		String[] bundleKeys = session.getChildNodeNames(uri);
 		for (String bundleKey : bundleKeys) {
 			String bundleUri = uri + "/" + bundleKey;
 			long id = session.getNodeValue( bundleUri + "/" + BUNDLEID ).getLong();
-			Bundle bundle = getContext().getBundle(id);
+			Bundle bundle = context.getBundle(id);
 			// get encoded pathes of all file entries of the bundle
 			Set<String> expectedPathes = getBundleEntries(bundle, false);
 
@@ -324,9 +331,9 @@ public class FrameworkContentTestCase extends RMTTestBase {
 				else
 					unknownPathes.add(path);
 			}
-			assertEquals("There are Bundle entries missing in the RMT for bundle '" + id + "': " + expectedPathes, 0, expectedPathes.size());
-			assertEquals("There are unknown Bundle entries in the RMT for bundle '" + id + "': " + unknownPathes, 0, unknownPathes.size());
-			assertEquals("There are Bundle entries with wrong values in the RMT for bundle '" + id + "': "+ wrongContent, 0, wrongContent.size());
+			assertThat(expectedPathes).as("There are Bundle entries missing in the RMT for bundle '" + id + "': " + expectedPathes).isEmpty();
+			assertThat(unknownPathes).as("There are unknown Bundle entries in the RMT for bundle '" + id + "': " + unknownPathes).isEmpty();
+			assertThat(wrongContent).as("There are Bundle entries with wrong values in the RMT for bundle '" + id + "': "+ wrongContent).isEmpty();
 		}
 	}
 
@@ -335,6 +342,7 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * reflected in the RMT
 	 * @throws Exception
 	 */
+	@Test
 	public void testFrameworkProperties() throws Exception {
 		// synthesize the framework properties as described in spec 2.8.6
 		// - system properties 
@@ -379,7 +387,7 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	private void assertStandardNameSpaceTree( String nameSpace, long bundleId, DmtSession session, String nameSpaceUri ) throws Exception {
 
 		// first get a snapshot of the wiring for the given bundle 
-		Bundle bundle = getContext().getBundle(bundleId);
+		Bundle bundle = context.getBundle(bundleId);
 		BundleWiring wiring = bundle.adapt(BundleWiring.class);
 		
 		// create a list that holds all wires (provided and required) for the current bundle 
@@ -394,15 +402,15 @@ public class FrameworkContentTestCase extends RMTTestBase {
 			// check for match
 			int matchIndex = matchWireTree(session, wireUri, nameSpace, allApiWires);
 			if ( matchIndex >= 0 ) {
-				pass("Found match for wire: " + wireUri );
+				System.out.println("Found match for wire: " + wireUri);
 				// remove matching wire
 				allApiWires.remove(matchIndex);
 			}
 			else 
-				fail("Found no matching wire in the wiring API snapshot for " + wireUri );
+				fail("Found no matching wire in the wiring API snapshot for " + wireUri);
 		}
 		
-		assertEquals("Did not find all Wires in RMT that are reported by the Wiring API!", 0, allApiWires.size());
+		assertThat(allApiWires).as("Did not find all Wires in RMT that are reported by the Wiring API!").isEmpty();
 		
 	}
 	
@@ -415,7 +423,7 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 * @throws Exception
 	 */
 	private void assertServiceNameSpaceTree( long bundleId, DmtSession session, String nameSpaceUri ) throws Exception {
-		Bundle bundle = getContext().getBundle(bundleId);
+		Bundle bundle = context.getBundle(bundleId);
 		
 		List<ServiceWire> wires = new ArrayList<ServiceWire>();
 
@@ -446,15 +454,15 @@ public class FrameworkContentTestCase extends RMTTestBase {
 			// check for match in providedServices
 			int matchIndex = matchServiceWire(session, wireUri, wires);
 			if ( matchIndex >= 0 ) {
-				pass("Found match for wire: " + wireUri );
+				System.out.println("Found match for wire: " + wireUri);
 				// remove matching wire
 				wires.remove(matchIndex);
 			}
 			else
-				fail("Found no matching wire in the wiring API snapshot for " + wireUri );
+				fail("Found no matching wire in the wiring API snapshot for " + wireUri);
 		}
 		
-		assertEquals("Did not find all service wires in RMT: " + wires, 0, wires.size());
+		assertThat(wires).as("Did not find all service wires in RMT: " + wires).isEmpty();
 		
 	}
 
@@ -676,7 +684,7 @@ public class FrameworkContentTestCase extends RMTTestBase {
 			if ( ! rmtCertChain.equals(trustedSignerDNs.get(cert) )) 
 				continue;
 			matchKeyTrusted = cert;
-			assertTrue( "This signer must have IsTrusted = true.", isTrusted);
+			assertThat(isTrusted).as("This signer must have IsTrusted = true.").isTrue();
 			break;		
 		}
 		if ( matchKeyTrusted != null )
@@ -693,8 +701,8 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 */
 	private void addFrameworkLaunchingProperties(Map<String,String> props) {
 		for (String key : LAUNCHING_PROPS) 
-			if ( getContext().getProperty(key ) != null )
-				props.put( key, getContext().getProperty(key));
+			if ( context.getProperty(key ) != null )
+				props.put( key, context.getProperty(key));
 	}
 
 	/**
@@ -704,7 +712,7 @@ public class FrameworkContentTestCase extends RMTTestBase {
 	 */
 	private void addResidentialProperties(Map<String,String> props) {
 		for (String key : RESIDIENTIAL_PROPS) 
-			if ( getContext().getProperty(key ) != null )
-				props.put( key, getContext().getProperty(key));
+			if ( context.getProperty(key ) != null )
+				props.put( key, context.getProperty(key));
 	}
 }

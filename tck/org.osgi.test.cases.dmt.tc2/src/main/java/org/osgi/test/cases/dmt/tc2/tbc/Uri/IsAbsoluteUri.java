@@ -29,12 +29,11 @@
 
 package org.osgi.test.cases.dmt.tc2.tbc.Uri;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.Uri;
-
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 
 /**
@@ -64,11 +63,11 @@ public class IsAbsoluteUri {
 	private void testIsAbsoluteUri001() {
 
 		try {
-			DefaultTestBundleControl.log("#testIsAbsoluteUri001");
+			System.out.println("#testIsAbsoluteUri001");
 			Uri.isAbsoluteUri(null);
-			DefaultTestBundleControl.failException("", NullPointerException.class);
+			DmtTestControl.failException("", NullPointerException.class);
 		} catch (NullPointerException e) {
-			DefaultTestBundleControl.pass("NullPointerException correctly thrown");
+			System.out.println("NullPointerException correctly thrown");
 		} catch (Exception e) {
 			tbc.failExpectedOtherException(NullPointerException.class,e);
 		}
@@ -82,8 +81,8 @@ public class IsAbsoluteUri {
 	private void testIsAbsoluteUri002() {
 
 		try {
-			DefaultTestBundleControl.log("#testIsAbsoluteUri002");
-			TestCase.assertTrue("Asserts that the specified URI is an absolute URI", Uri.isAbsoluteUri("./Test"));
+			System.out.println("#testIsAbsoluteUri002");
+			assertThat(Uri.isAbsoluteUri("./Test")).as("Asserts that the specified URI is an absolute URI").isTrue();
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		}
@@ -97,8 +96,8 @@ public class IsAbsoluteUri {
 	private void testIsAbsoluteUri003() {
 
 		try {
-			DefaultTestBundleControl.log("#testIsAbsoluteUri003");
-			TestCase.assertTrue("Asserts that the specified URI is not an absolute URI", !Uri.isAbsoluteUri("Test"));
+			System.out.println("#testIsAbsoluteUri003");
+			assertThat(!Uri.isAbsoluteUri("Test")).as("Asserts that the specified URI is not an absolute URI").isTrue();
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		}
@@ -112,16 +111,16 @@ public class IsAbsoluteUri {
 	private void testIsAbsoluteUri004() {
 
 		try {
-			DefaultTestBundleControl.log("#testIsAbsoluteUri004");
+			System.out.println("#testIsAbsoluteUri004");
             //It is from 1 because 0 is 'null' and null throws NullPointerException in this method
 			for (int i = 1; i < DmtTestControl.INVALID_URIS.length; i++) {
 				String uri = null;
 				try {
 					uri = DmtTestControl.INVALID_URIS[i].toString();
 					Uri.isAbsoluteUri(uri);
-					DefaultTestBundleControl.failException("", IllegalArgumentException.class);
+					DmtTestControl.failException("", IllegalArgumentException.class);
 				} catch (IllegalArgumentException e) {
-					DefaultTestBundleControl.pass("IllegalArgumentException correctly thrown when calling Uri.isAbsoluteUri(" + uri + ")");
+					System.out.println("IllegalArgumentException correctly thrown when calling Uri.isAbsoluteUri(" + uri + ")");
 				}
 			}
 		} catch (Exception e) {

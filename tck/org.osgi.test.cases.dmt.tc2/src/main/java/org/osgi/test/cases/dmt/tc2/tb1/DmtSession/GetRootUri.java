@@ -35,17 +35,16 @@
 
 package org.osgi.test.cases.dmt.tc2.tb1.DmtSession;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.osgi.service.dmt.DmtSession;
 import org.osgi.service.dmt.security.DmtPermission;
-
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtConstants;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
-import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.cases.dmt.tc2.tbc.TestInterface;
 
-import junit.framework.TestCase;
 
 /**
  * This test case validates the implementation of <code>getRootUri</code> method of DmtSession, 
@@ -78,11 +77,10 @@ public class GetRootUri implements TestInterface {
 	private void testGetRootUri001() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetRootUri001");
+			System.out.println("#testGetRootUri001");
 			session = tbc.getDmtAdmin().getSession(DmtConstants.OSGi_ROOT,
 					DmtSession.LOCK_TYPE_ATOMIC);
-			TestCase.assertEquals("Asserting root uri", DmtConstants.OSGi_ROOT,
-					session.getRootUri());
+			assertThat(session.getRootUri()).as("Asserting root uri").isEqualTo(DmtConstants.OSGi_ROOT);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -98,10 +96,10 @@ public class GetRootUri implements TestInterface {
 	private void testGetRootUri002() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetRootUri002");
+			System.out.println("#testGetRootUri002");
 			session = tbc.getDmtAdmin().getSession(null,
 					DmtSession.LOCK_TYPE_ATOMIC);
-			TestCase.assertEquals("Asserting root uri", ".", session.getRootUri());
+			assertThat(session.getRootUri()).as("Asserting root uri").isEqualTo(".");
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {
@@ -117,10 +115,10 @@ public class GetRootUri implements TestInterface {
 	private void testGetRootUri003() {
 		DmtSession session = null;
 		try {
-			DefaultTestBundleControl.log("#testGetRootUri003");
+			System.out.println("#testGetRootUri003");
 			session = tbc.getDmtAdmin().getSession(TestExecPluginActivator.LEAF_NODE,
 					DmtSession.LOCK_TYPE_ATOMIC);
-			TestCase.assertEquals("Asserting root uri", TestExecPluginActivator.LEAF_NODE, session.getRootUri());
+			assertThat(session.getRootUri()).as("Asserting root uri").isEqualTo(TestExecPluginActivator.LEAF_NODE);
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
 		} finally {

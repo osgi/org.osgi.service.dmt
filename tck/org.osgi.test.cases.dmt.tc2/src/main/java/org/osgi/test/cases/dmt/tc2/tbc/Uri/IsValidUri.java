@@ -29,13 +29,12 @@
 
 package org.osgi.test.cases.dmt.tc2.tbc.Uri;
 
-import org.osgi.service.dmt.Uri;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.osgi.service.dmt.Uri;
 import org.osgi.test.cases.dmt.tc2.tbc.DmtTestControl;
 import org.osgi.test.cases.dmt.tc2.tbc.Plugin.ExecPlugin.TestExecPluginActivator;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
 
-import junit.framework.TestCase;
 
 
 /**
@@ -65,10 +64,9 @@ public class IsValidUri {
 	private void testIsValidUri001() {
 
 		try {
-			DefaultTestBundleControl.log("#testIsValidUri001");
+			System.out.println("#testIsValidUri001");
 			
-			TestCase.assertTrue("Asserts that Uri.isValidUri(String) returns true if Uri parameter contains a valid uri",
-					Uri.isValidUri(TestExecPluginActivator.INTERIOR_NODE));
+			assertThat(Uri.isValidUri(TestExecPluginActivator.INTERIOR_NODE)).as("Asserts that Uri.isValidUri(String) returns true if Uri parameter contains a valid uri").isTrue();
 			
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -83,7 +81,7 @@ public class IsValidUri {
 	private void testIsValidUri002() {
 
 		try {
-			DefaultTestBundleControl.log("#testIsValidUri002");
+			System.out.println("#testIsValidUri002");
 			
 			for (int i = 0; i < DmtTestControl.INVALID_URIS.length; i++) {
 				String uri = null;
@@ -91,7 +89,7 @@ public class IsValidUri {
 				if (DmtTestControl.INVALID_URIS[i]!=null) {
 					uri = DmtTestControl.INVALID_URIS[i].toString();
 				}
-				TestCase.assertTrue("Asserts that "+ uri +" is not a valid URI", !Uri.isValidUri(uri));
+				assertThat(!Uri.isValidUri(uri)).as("Asserts that "+ uri +" is not a valid URI").isTrue();
 			}
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);
@@ -107,13 +105,12 @@ public class IsValidUri {
 	private void testIsValidUri003() {
 
 		try {
-			DefaultTestBundleControl.log("#testIsValidUri003");
+			System.out.println("#testIsValidUri003");
 			//It covers three cases: if the length of the URI is not more than getMaxUriLength(), 
 			//if the URI doesn't contain more than getMaxUriSegments() segments and if the 
 			//length of each segment of the URI is less than or equal to getMaxSegmentNameLength(). 
 			for (int i = 0; i < DmtTestControl.URIS_TOO_LONG.length; i++) {
-				TestCase.assertTrue("Asserts that "+ DmtTestControl.URIS_TOO_LONG[i] +" is not a valid URI", 
-						!Uri.isValidUri(DmtTestControl.URIS_TOO_LONG[i]));
+				assertThat(!Uri.isValidUri(DmtTestControl.URIS_TOO_LONG[i])).as("Asserts that "+ DmtTestControl.URIS_TOO_LONG[i] +" is not a valid URI").isTrue();
 			}
 		} catch (Exception e) {
 			tbc.failUnexpectedException(e);

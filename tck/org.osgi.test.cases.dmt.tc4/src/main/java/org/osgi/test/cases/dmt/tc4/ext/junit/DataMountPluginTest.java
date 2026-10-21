@@ -18,9 +18,15 @@
 
 package org.osgi.test.cases.dmt.tc4.ext.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.dmt.DmtConstants;
 import org.osgi.service.dmt.DmtData;
@@ -34,19 +40,20 @@ import org.osgi.test.cases.dmt.tc4.ext.util.TestNode;
 
 public class DataMountPluginTest extends DmtAdminTestCase {
 
-	@Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		super.setUp();
 		getDmtAdmin();
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
 		unregisterPlugins();
 		closeDmtSession();
 		super.tearDown();
 	}
 
+	@Test
 	public void testPluginIsNotMappedIfDataRootUrisContainsInvalidTypeObject() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -66,6 +73,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		}
 	}
 
+	@Test
 	public void testPluginIsMappedWhen1DataRootURIAnd0MountPointsAreSpecified() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -90,6 +98,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 	 * Multiple dataRootURIs and zero length mountPoints should succeeds to be
 	 * registered.
 	 */
+	@Test
 	public void testPluginIsIgnoredWhen2DataRootURIsAnd0MountPointsAreSpecified() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -116,6 +125,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 	 * Multiple dataRootURIs and more than one mountPoints should not succeeds
 	 * to be registered.
 	 */
+	@Test
 	public void testPluginIsIgnoredWhen2DataRootURIsAnd1MountPointsAreSpecified() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -144,6 +154,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 	 * If mountPoints contains an invalid URI value such as null, the plugin
 	 * should be ignored.
 	 */
+	@Test
 	public void testPluginIsIgnoredWhenMountPointsContainsNull() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -169,6 +180,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 	/*
 	 * If mountPoints contains an invalid URI, the plugin should be ignored.
 	 */
+	@Test
 	public void testPluginIsIgnoredWhenMountPointsContainsInvalidURI() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -195,6 +207,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 	 * If mountPoints contains an invalid URI such as absolute URI, the plugin
 	 * should be ignored.
 	 */
+	@Test
 	public void testPluginIsIgnoredWhenMountPointsContainsAbsoluteURI() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -220,6 +233,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 	/*
 	 * If mountPoints contains overlapping URIs, the plugin should be ignored.
 	 */
+	@Test
 	public void testPluginIsIgnoredWhenMountPointsContainsOverlappedRelativeURIs() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		setInteriorNode(mountingPlugin, "./A1");
@@ -245,6 +259,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		}
 	}
 
+	@Test
 	public void testTheNodeUnderMountPointNodeIsNotFound() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -260,6 +275,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(mountingPluginRegistration);
 	}
 
+	@Test
 	public void testTheNodeUnderMountedPluginsMountPointNodeIsNotFound() throws DmtException {
 		TestDataPlugin mountingPluginA = new TestDataPlugin();
 		mountingPluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -281,6 +297,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(mountedPluginRegistrationB);
 	}
 
+	@Test
 	public void testGetChildNodeNamesToParentOfMountPointWithNoMountedPlugin0() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -290,12 +307,13 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals(0, session.getChildNodeNames("./A1").length);
+		assertThat(session.getChildNodeNames("./A1")).isEmpty();
 		session.close();
 
 		unregister(mountingPluginRegistration);
 	}
 
+	@Test
 	public void testGetChildNodeNamesToParentOfMountPointWithNoMountedPlugin1() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -307,13 +325,14 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 		String[] childNodeNames = session.getChildNodeNames("./A1");
-		assertEquals(1, childNodeNames.length);
+		assertThat(childNodeNames).hasSize(1);
 		ArrayAssert.assertEquivalenceArrays(new String[] {"B0",}, childNodeNames);
 		session.close();
 
 		unregister(mountingPluginRegistration);
 	}
 
+	@Test
 	public void testGetChildNodeNamesToParentOfMountPointWithMountedPlugin0() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -329,7 +348,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 		String[] childNodeNames = session.getChildNodeNames("./A1");
-		assertEquals(1, childNodeNames.length);
+		assertThat(childNodeNames).hasSize(1);
 		ArrayAssert.assertEquivalenceArrays(new String[] {"B1"}, childNodeNames);
 		session.close();
 
@@ -337,6 +356,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void testGetChildNodeNamesToParentOfMountPointWithMountedPlugin1() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -353,7 +373,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 		String[] childNodeNames = session.getChildNodeNames("./A1");
-		assertEquals(2, childNodeNames.length);
+		assertThat(childNodeNames).hasSize(2);
 		ArrayAssert.assertEquivalenceArrays(new String[] {"B0", "B1"}, childNodeNames);
 		session.close();
 
@@ -361,6 +381,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void testGetChildNodeNamesToParentOfMountPointWithMountedPlugin2() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -382,7 +403,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 		String[] childNodeNames = session.getChildNodeNames("./A1");
-		assertEquals(3, childNodeNames.length);
+		assertThat(childNodeNames).hasSize(3);
 		ArrayAssert.assertEquivalenceArrays(new String[] {"B0", "B1", "B2"}, childNodeNames);
 		session.close();
 
@@ -391,6 +412,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(mountedPluginRegistration2);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern01() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -405,17 +427,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				mountedPlugin, "./A1/B1");
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
 		session.close();
 
 		unregister(mountingPluginRegistration);
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern02() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -430,17 +453,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				mountedPlugin, "./A1/B1");
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		session.close();
 
 		unregister(mountingPluginRegistration);
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern03() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -455,17 +479,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				mountedPlugin, "./A1/B1");
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
 		session.close();
 
 		unregister(mountedPluginRegistration);
 		unregister(mountingPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern04() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -480,17 +505,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				mountedPlugin, "./A1/B1");
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		session.close();
 
 		unregister(mountedPluginRegistration);
 		unregister(mountingPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern05() throws DmtException {
 		TestDataPlugin mountedPlugin = new TestDataPlugin();
 		mountedPlugin.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -505,17 +531,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
 		session.close();
 
 		unregister(mountingPluginRegistration);
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern06() throws DmtException {
 		TestDataPlugin mountedPlugin = new TestDataPlugin();
 		mountedPlugin.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -530,17 +557,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		session.close();
 
 		unregister(mountingPluginRegistration);
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern07() throws DmtException {
 		TestDataPlugin mountedPlugin = new TestDataPlugin();
 		mountedPlugin.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -555,17 +583,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
 		session.close();
 
 		unregister(mountingPluginRegistration);
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern08() throws DmtException {
 		TestDataPlugin mountedPlugin = new TestDataPlugin();
 		mountedPlugin.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -580,17 +609,18 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		session.close();
 
 		unregister(mountingPluginRegistration);
 		unregister(mountedPluginRegistration);
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern09() throws DmtException {
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
@@ -602,14 +632,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		try {
-			assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-			fail();
+			assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+			fail("");
 		} catch (DmtIllegalStateException exception) {
 		} finally {
 			unregister(mountingPluginRegistration);
 		}
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern10() throws DmtException {
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -620,8 +651,8 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 
 		TestDataPlugin mountedPlugin = new TestDataPlugin();
 		mountedPlugin.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -629,8 +660,8 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				mountedPlugin, "./A1/B1");
 
 		try {
-			assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-			fail();
+			assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+			fail("");
 		} catch (DmtIllegalStateException exception) {
 		} finally {
 			unregister(mountingPluginRegistration);
@@ -638,6 +669,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		}
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern11() throws DmtException {
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
@@ -647,14 +679,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				mountedPlugin, "./A1/B1");
 
 		try {
-			assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-			fail();
+			assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+			fail("");
 		} catch (DmtIllegalStateException exception) {
 		} finally {
 			unregister(mountedPluginRegistration);
 		}
 	}
 
+	@Test
 	public void test2PluginsRegisterUnregisterOrderPattern12() throws DmtException {
 		TestDataPlugin mountedPlugin = new TestDataPlugin();
 		mountedPlugin.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -663,9 +696,9 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
 
 		TestDataPlugin mountingPlugin = new TestDataPlugin();
 		mountingPlugin.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -675,8 +708,8 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		try {
-			assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-			fail();
+			assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+			fail("");
 		} catch (DmtIllegalStateException exception) {
 		} finally {
 			unregister(mountingPluginRegistration);
@@ -684,6 +717,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		}
 	}
 
+	@Test
 	public void test3PluginsRegisterUnregisterOrderPattern01() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -706,13 +740,13 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 
 		session.close();
 
@@ -721,6 +755,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC);
 	}
 
+	@Test
 	public void test3PluginsRegisterUnregisterOrderPattern02() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -743,12 +778,12 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
 
 		session.close();
 
@@ -757,6 +792,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC);
 	}
 
+	@Test
 	public void test3PluginsRegisterUnregisterOrderPattern03() throws DmtException {
 		TestDataPlugin pluginB = new TestDataPlugin();
 		pluginB.setNode("./A1/B1", TestNode.newInteriorNode("./A1/B1:Title", "./A1/B1:Type"));
@@ -779,13 +815,13 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 
 		session.close();
 
@@ -794,6 +830,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC);
 	}
 
+	@Test
 	public void test3PluginsRegisterUnregisterOrderPattern04() throws DmtException {
 		TestDataPlugin pluginB = new TestDataPlugin();
 		pluginB.setNode("./A1/B1", TestNode.newInteriorNode("./A1/B1:Title", "./A1/B1:Type"));
@@ -816,13 +853,13 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 
 		session.close();
 
@@ -831,6 +868,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC);
 	}
 
+	@Test
 	public void test3PluginsRegisterUnregisterOrderPattern05() throws DmtException {
 		TestDataPlugin pluginC = new TestDataPlugin();
 		pluginC.setNode("./A1/B1/C1", TestNode.newLeafNode("./A1/B1/C1:Title", "./A1/B1/C1:Type", new DmtData("./A1/B1/C1:Value")));
@@ -853,13 +891,13 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 
 		session.close();
 
@@ -868,6 +906,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC);
 	}
 
+	@Test
 	public void test3PluginsRegisterUnregisterOrderPattern06() throws DmtException {
 		TestDataPlugin pluginC = new TestDataPlugin();
 		pluginC.setNode("./A1/B1/C1", TestNode.newLeafNode("./A1/B1/C1:Title", "./A1/B1/C1:Type", new DmtData("./A1/B1/C1:Value")));
@@ -890,13 +929,13 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
 
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 
 		session.close();
 
@@ -905,6 +944,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC);
 	}
 
+	@Test
 	public void test2MountPoints1MountedPluginsRegisterUnregisterOrderPattrn01() throws DmtException {
 		TestDataPlugin pluginB1 = new TestDataPlugin();
 		pluginB1.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -919,12 +959,12 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
 		assertNodeNotFound("./A1/B2");
 
 		session.close();
@@ -933,6 +973,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationB1);
 	}
 
+	@Test
 	public void test2MountPoints1MountedPluginsRegisterUnregisterOrderPattrn02() throws DmtException {
 		TestDataPlugin pluginB2 = new TestDataPlugin();
 		pluginB2.setNode("./A1/B2", TestNode.newLeafNode("./A1/B2:Title", "./A1/B2:Type", new DmtData("./A1/B2:Value")));
@@ -947,13 +988,13 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
 		assertNodeNotFound("./A1/B1");
-		assertEquals("./A1/B2:Title", session.getNodeTitle("./A1/B2"));
-		assertEquals("./A1/B2:Type", session.getNodeType("./A1/B2"));
-		assertEquals(new DmtData("./A1/B2:Value"), session.getNodeValue("./A1/B2"));
+		assertThat(session.getNodeTitle("./A1/B2")).isEqualTo("./A1/B2:Title");
+		assertThat(session.getNodeType("./A1/B2")).isEqualTo("./A1/B2:Type");
+		assertThat(session.getNodeValue("./A1/B2")).isEqualTo(new DmtData("./A1/B2:Value"));
 
 		session.close();
 
@@ -961,6 +1002,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationB2);
 	}
 
+	@Test
 	public void test2MountPoints2MountedPlugins() throws DmtException {
 		TestDataPlugin pluginB1 = new TestDataPlugin();
 		pluginB1.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -980,15 +1022,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
-		assertEquals("./A1/B2:Title", session.getNodeTitle("./A1/B2"));
-		assertEquals("./A1/B2:Type", session.getNodeType("./A1/B2"));
-		assertEquals(new DmtData("./A1/B2:Value"), session.getNodeValue("./A1/B2"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
+		assertThat(session.getNodeTitle("./A1/B2")).isEqualTo("./A1/B2:Title");
+		assertThat(session.getNodeType("./A1/B2")).isEqualTo("./A1/B2:Type");
+		assertThat(session.getNodeValue("./A1/B2")).isEqualTo(new DmtData("./A1/B2:Value"));
 
 		session.close();
 
@@ -997,6 +1039,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationB2);
 	}
 
+	@Test
 	public void testMountAlgorithmPattern01() throws DmtException {
 		TestDataPlugin pluginB1 = new TestDataPlugin();
 		pluginB1.setNode("./A1/B1", TestNode.newLeafNode("./A1/B1:Title", "./A1/B1:Type", new DmtData("./A1/B1:Value")));
@@ -1021,23 +1064,23 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals(null, session.getNodeTitle("./A1"));
-		assertEquals(DmtConstants.DDF_SCAFFOLD, session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isNull();
+		assertThat(session.getNodeType("./A1")).isEqualTo(DmtConstants.DDF_SCAFFOLD);
 		try {
-			assertEquals(null, session.getNodeValue("./A1"));
+			assertThat(session.getNodeValue("./A1")).isNull();
 		} catch (DmtException dmtException) {
-			assertEquals(DmtException.COMMAND_NOT_ALLOWED, dmtException.getCode());
-			assertEquals("./A1", dmtException.getURI());
+			assertThat(dmtException.getCode()).isEqualTo(DmtException.COMMAND_NOT_ALLOWED);
+			assertThat(dmtException.getURI()).isEqualTo("./A1");
 		}
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
-		assertEquals(new DmtData("./A1/B1:Value"), session.getNodeValue("./A1/B1"));
-		assertEquals("./A1/B2:Title", session.getNodeTitle("./A1/B2"));
-		assertEquals("./A1/B2:Type", session.getNodeType("./A1/B2"));
-		assertEquals(new DmtData("./A1/B2:Value"), session.getNodeValue("./A1/B2"));
-		assertEquals("./A1/B3:Title", session.getNodeTitle("./A1/B3"));
-		assertEquals("./A1/B3:Type", session.getNodeType("./A1/B3"));
-		assertEquals(new DmtData("./A1/B3:Value"), session.getNodeValue("./A1/B3"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
+		assertThat(session.getNodeValue("./A1/B1")).isEqualTo(new DmtData("./A1/B1:Value"));
+		assertThat(session.getNodeTitle("./A1/B2")).isEqualTo("./A1/B2:Title");
+		assertThat(session.getNodeType("./A1/B2")).isEqualTo("./A1/B2:Type");
+		assertThat(session.getNodeValue("./A1/B2")).isEqualTo(new DmtData("./A1/B2:Value"));
+		assertThat(session.getNodeTitle("./A1/B3")).isEqualTo("./A1/B3:Title");
+		assertThat(session.getNodeType("./A1/B3")).isEqualTo("./A1/B3:Type");
+		assertThat(session.getNodeValue("./A1/B3")).isEqualTo(new DmtData("./A1/B3:Value"));
 
 		session.close();
 
@@ -1047,6 +1090,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationB3);
 	}
 
+	@Test
 	public void testMountAlgorithmPattern02() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1070,8 +1114,8 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationB1);
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
 		assertNodeNotFound("./A1/B1");
 		assertNodeNotFound("./A1/B1/C1");
@@ -1081,6 +1125,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC1);
 	}
 
+	@Test
 	public void testMountAlgorithmPattern03() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1111,15 +1156,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
-		assertEquals("./A1/B1:NewTitle", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:NewType", session.getNodeType("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:NewTitle");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:NewType");
 		assertInteriorNodeNoValue("./A1/B1");
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 		session.close();
 
 		unregister(registrationA);
@@ -1127,6 +1172,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC1);
 	}
 
+	@Test
 	public void testMountAlgorithmPattern04() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1157,10 +1203,10 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
 		assertNodeNotFound("./A1/B1/C1");
 		assertNodeNotFound("./A1/B1/C2");
 		session.close();
@@ -1170,6 +1216,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC1);
 	}
 
+	@Test
 	public void testMountAlgorithmPattern05() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1200,15 +1247,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 				});
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
-		assertEquals("./A1/B1:NewTitle", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:NewType", session.getNodeType("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:NewTitle");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:NewType");
 		assertInteriorNodeNoValue("./A1/B1");
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 		assertNodeNotFound("./A1/B1/C2");
 		session.close();
 
@@ -1217,6 +1264,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC1);
 	}
 
+	@Test
 	public void testMountAlgorithmPattern06() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1247,15 +1295,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationB1);
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
-		assertEquals("./A1/B1:NewTitle", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:NewType", session.getNodeType("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:NewTitle");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:NewType");
 		assertInteriorNodeNoValue("./A1/B1");
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 		assertNodeNotFound("./A1/B1/C2");
 		session.close();
 
@@ -1264,6 +1312,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC1);
 	}
 
+	@Test
 	public void testDataPluginModified01() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1290,15 +1339,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		registrationB1.setProperties(modifiedServiceProps);
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
 		assertInteriorNodeNoValue("./A1/B1");
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 		session.close();
 
 		unregister(registrationA);
@@ -1306,6 +1355,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC1);
 	}
 
+	@Test
 	public void testDataPluginModified02() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1332,10 +1382,10 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		registrationB1.setProperties(modifiedServiceProps);
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
 		assertNodeNotFound("./A1/B1/C1");
 		assertNodeNotFound("./A1/B1/C2");
 		session.close();
@@ -1345,6 +1395,7 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		unregister(registrationC1);
 	}
 
+	@Test
 	public void testDataPluginModified03() throws DmtException {
 		TestDataPlugin pluginA = new TestDataPlugin();
 		pluginA.setNode("./A1", TestNode.newInteriorNode("./A1:Title", "./A1:Type"));
@@ -1371,15 +1422,15 @@ public class DataMountPluginTest extends DmtAdminTestCase {
 		registrationB1.setProperties(modifiedServiceProps);
 
 		session = dmtAdmin.getSession(".", DmtSession.LOCK_TYPE_SHARED);
-		assertEquals("./A1:Title", session.getNodeTitle("./A1"));
-		assertEquals("./A1:Type", session.getNodeType("./A1"));
+		assertThat(session.getNodeTitle("./A1")).isEqualTo("./A1:Title");
+		assertThat(session.getNodeType("./A1")).isEqualTo("./A1:Type");
 		assertInteriorNodeNoValue("./A1");
-		assertEquals("./A1/B1:Title", session.getNodeTitle("./A1/B1"));
-		assertEquals("./A1/B1:Type", session.getNodeType("./A1/B1"));
+		assertThat(session.getNodeTitle("./A1/B1")).isEqualTo("./A1/B1:Title");
+		assertThat(session.getNodeType("./A1/B1")).isEqualTo("./A1/B1:Type");
 		assertInteriorNodeNoValue("./A1/B1");
-		assertEquals("./A1/B1/C1:Title", session.getNodeTitle("./A1/B1/C1"));
-		assertEquals("./A1/B1/C1:Type", session.getNodeType("./A1/B1/C1"));
-		assertEquals(new DmtData("./A1/B1/C1:Value"), session.getNodeValue("./A1/B1/C1"));
+		assertThat(session.getNodeTitle("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Title");
+		assertThat(session.getNodeType("./A1/B1/C1")).isEqualTo("./A1/B1/C1:Type");
+		assertThat(session.getNodeValue("./A1/B1/C1")).isEqualTo(new DmtData("./A1/B1/C1:Value"));
 		assertNodeNotFound("./A1/B1/C2");
 		session.close();
 
