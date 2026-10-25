@@ -9,3 +9,6 @@ Bundle-Category:		osgi, test
 
 -privatepackage =		${p}.tb7
 -fixupmessages.host: "Host * for this fragment"
+# bnd 7 imports java.* by default; an extra import keeps the fragment
+# from attaching to its already-resolved host
+-noimportjava: true
